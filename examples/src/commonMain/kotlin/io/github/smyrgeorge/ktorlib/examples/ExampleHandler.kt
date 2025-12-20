@@ -6,32 +6,15 @@ import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.*
 import io.ktor.server.routing.*
 
-/**
- * Example REST handler demonstrating how to use the AbstractRestHandler framework.
- *
- * This example shows:
- * 1. How to extend AbstractRestHandler
- * 2. How to define routes using the HTTP method helpers (GET, POST, etc.)
- * 3. How to use permission-based access control
- * 4. How to handle requests with context
- * 5. How to extract path parameters and query parameters
- * 6. How to customize HTTP status codes
- */
 class ExampleHandler : AbstractRestHandler() {
 
     override val log = Logger.of(this::class)
 
-    /**
-     * Defines the base URI prefix for all routes in this handler.
-     */
     override fun String.uri(): String = "/api/v1$this"
 
-    /**
-     * Defines the routes for this handler.
-     */
     override fun Route.routes() {
         // Example 1: Simple GET endpoint
-        GET("/hello".uri()) {
+        GET("/hello") {
             // Access user information from context
             log.info("User ${user.username} accessed /hello")
             "Hello, ${user.username}!"
@@ -39,7 +22,7 @@ class ExampleHandler : AbstractRestHandler() {
 
         // Example 2: GET with permission check
         GET(
-            path = "/admin".uri(),
+            path = "/admin",
             permissions = { ctx -> ctx.user.hasRole("ADMIN") }
         ) {
             log.info("Admin ${user.username} accessed /admin")
@@ -47,7 +30,7 @@ class ExampleHandler : AbstractRestHandler() {
         }
 
         // Example 3: GET with path parameter
-        GET("/users/{id}".uri()) {
+        GET("/users/{id}") {
             // Extract path parameter
             val userId = req.pathVariable("id").asString()
             log.info("Fetching user: $userId")
@@ -60,7 +43,7 @@ class ExampleHandler : AbstractRestHandler() {
         }
 
         // Example 4: GET with query parameters
-        GET("/search".uri()) {
+        GET("/search") {
             // Extract query parameters
             val query = req.queryParam("q").asStringOrNull() ?: ""
             val limit = req.queryParam("limit").asIntOrNull() ?: 10
@@ -76,7 +59,7 @@ class ExampleHandler : AbstractRestHandler() {
 
         // Example 5: Using custom success code
         GET(
-            path = "/auto-respond".uri(),
+            path = "/auto-respond",
             successCode = HttpStatusCode.Accepted
         ) {
             log.info("Auto-responding for ${user.username}")

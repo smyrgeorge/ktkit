@@ -3,6 +3,7 @@
 package io.github.smyrgeorge.ktorlib.util
 
 import io.github.smyrgeorge.ktorlib.domain.Context
+import io.github.smyrgeorge.ktorlib.util.extentions.IO_DISPATCHER
 import io.github.smyrgeorge.log4k.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ interface AbstractComponent {
      * @return The result of the function executed within the IO context.
      */
     suspend fun <T> io(f: suspend CoroutineScope.() -> T): T =
-        withContext(Dispatchers.Default) { f() }
+        withContext(Dispatchers.IO_DISPATCHER) { f() }
 
     /**
      * Repeatedly executes a suspending block of code with a specified number of attempts and delay policy until

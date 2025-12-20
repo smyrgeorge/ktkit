@@ -6,6 +6,7 @@ import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationProvider.Compani
 import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.util.applicationLogger
 import io.github.smyrgeorge.ktorlib.util.httpEngine
+import io.github.smyrgeorge.log4k.RootLogger
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -45,6 +46,7 @@ class Application(
         makeServer().start(wait)
     }
 
+    @Suppress("unused")
     class Configurer(
         private val application: KtorApplication
     ) {
@@ -65,6 +67,21 @@ class Application(
 
         fun withRestHandler(handler: AbstractRestHandler): Configurer {
             routes.add(handler)
+            return this
+        }
+
+        fun logging(config: RootLogger.Logging.() -> Unit): Configurer {
+            RootLogger.Logging.config()
+            return this
+        }
+
+        fun tracing(config: RootLogger.Tracing.() -> Unit): Configurer {
+            RootLogger.Tracing.config()
+            return this
+        }
+
+        fun metering(config: RootLogger.Metering.() -> Unit): Configurer {
+            RootLogger.Metering.config()
             return this
         }
 

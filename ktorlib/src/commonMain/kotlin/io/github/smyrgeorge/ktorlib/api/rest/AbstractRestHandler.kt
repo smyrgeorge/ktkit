@@ -1,8 +1,9 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
+import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationExtractor
 import io.github.smyrgeorge.ktorlib.domain.Context
-import io.github.smyrgeorge.ktorlib.domain.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
+import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.github.smyrgeorge.ktorlib.util.AbstractComponent
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -16,14 +17,17 @@ import kotlinx.coroutines.withContext
  * Abstract base class for REST handlers in Ktor.
  *
  * Provides utilities for:
+ * - Pluggable authentication extraction
  * - Permission-based access control
  * - Request context management
  * - Structured error handling
  *
+ * @property authenticationExtractor Strategy for extracting user authentication from requests
  * @property permissions Lambda function to check user permissions for all applied endpoints
  */
 @Suppress("FunctionName")
 abstract class AbstractRestHandler(
+    private val authenticationExtractor: AuthenticationExtractor,
     private val permissions: (ctx: Context) -> Boolean = { true }
 ) : AbstractComponent {
 
@@ -54,7 +58,10 @@ abstract class AbstractRestHandler(
         successCode: HttpStatusCode = HttpStatusCode.OK,
         crossinline f: suspend Context.() -> T
     ) {
-        val user = createMockUser()
+        // Extract user authentication from the request
+        val user = authenticationExtractor.extract(call)
+            ?: UnauthorizedImpl("Authentication required").ex()
+
         val context = Context.of(call = call, user = user)
 
         // Check that user has access to the corresponding resources.
@@ -77,17 +84,17 @@ abstract class AbstractRestHandler(
      *
      * @param path The route path
      * @param permissions Optional permission check function
-     * @param successCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.GET(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
-        successCode: HttpStatusCode = HttpStatusCode.OK,
+        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend Context.() -> T
     ) {
         get(path.uri()) {
-            handle(call, permissions, successCode, handler)
+            handle(call, permissions, onSuccessHttpCode, handler)
         }
     }
 
@@ -96,17 +103,17 @@ abstract class AbstractRestHandler(
      *
      * @param path The route path
      * @param permissions Optional permission check function
-     * @param successCode The HTTP status code to use for successful responses (default: 201 Created)
+     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 201 Created)
      * @param handler The function to execute
      */
     fun <T> Route.POST(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
-        successCode: HttpStatusCode = HttpStatusCode.Created,
+        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.Created,
         handler: suspend Context.() -> T
     ) {
         post(path.uri()) {
-            handle(call, permissions, successCode, handler)
+            handle(call, permissions, onSuccessHttpCode, handler)
         }
     }
 
@@ -115,17 +122,17 @@ abstract class AbstractRestHandler(
      *
      * @param path The route path
      * @param permissions Optional permission check function
-     * @param successCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.PUT(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
-        successCode: HttpStatusCode = HttpStatusCode.OK,
+        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend Context.() -> T
     ) {
         put(path.uri()) {
-            handle(call, permissions, successCode, handler)
+            handle(call, permissions, onSuccessHttpCode, handler)
         }
     }
 
@@ -134,17 +141,17 @@ abstract class AbstractRestHandler(
      *
      * @param path The route path
      * @param permissions Optional permission check function
-     * @param successCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.PATCH(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
-        successCode: HttpStatusCode = HttpStatusCode.OK,
+        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend Context.() -> T
     ) {
         patch(path.uri()) {
-            handle(call, permissions, successCode, handler)
+            handle(call, permissions, onSuccessHttpCode, handler)
         }
     }
 
@@ -153,31 +160,17 @@ abstract class AbstractRestHandler(
      *
      * @param path The route path
      * @param permissions Optional permission check function
-     * @param successCode The HTTP status code to use for successful responses (default: 204 No Content)
+     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.DELETE(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
-        successCode: HttpStatusCode = HttpStatusCode.NoContent,
+        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend Context.() -> T
     ) {
         delete(path.uri()) {
-            handle(call, permissions, successCode, handler)
+            handle(call, permissions, onSuccessHttpCode, handler)
         }
     }
-
-    /**
-     * Creates a mock user for demonstration purposes.
-     * In a real application, this would come from authentication/authorization.
-     */
-    private fun createMockUser() = UserToken(
-        uuid = "00000000-0000-0000-0000-000000000001",
-        username = "demo-user",
-        email = "demo@example.com",
-        name = "Demo User",
-        firstName = "Demo",
-        lastName = "User",
-        roles = setOf("USER", "ADMIN")
-    )
 }

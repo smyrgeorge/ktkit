@@ -1,12 +1,18 @@
 package io.github.smyrgeorge.ktorlib.examples
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktorlib.domain.UserToken
+import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationExtractor
+import io.github.smyrgeorge.ktorlib.api.rest.auth.XRealNameAuthenticationExtractor
 import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.*
 import io.ktor.server.routing.*
 
-class ExampleHandler : AbstractRestHandler() {
+/**
+ * Example handler using X-Real-Name authentication (common for internal services).
+ */
+class ExampleHandler(
+    authenticationExtractor: AuthenticationExtractor = XRealNameAuthenticationExtractor()
+) : AbstractRestHandler(authenticationExtractor) {
 
     override val log = Logger.of(this::class)
 
@@ -60,7 +66,7 @@ class ExampleHandler : AbstractRestHandler() {
         // Example 5: Using custom success code
         GET(
             path = "/auto-respond",
-            successCode = HttpStatusCode.Accepted
+            onSuccessHttpCode = HttpStatusCode.Accepted
         ) {
             log.info("Auto-responding for ${user.username}")
             mapOf("status" to "success", "data" to "Hello!")
@@ -79,8 +85,7 @@ class ExampleHandler : AbstractRestHandler() {
  *     }
  *
  *     routing {
- *         val handler = ExampleHandler()
- *         with(handler) {
+ *         with(ExampleHandler()) {
  *             routes()
  *         }
  *     }

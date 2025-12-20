@@ -19,7 +19,7 @@ class Application(
     private val name: String,
     private val host: String = "localhost",
     private val port: Int = 8080,
-    private val configure: Configurer.() -> Unit
+    private val configure: Configurer.() -> Unit = {}
 ) {
     private fun makeServer(): EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration> = embeddedServer(
         factory = httpEngine(),

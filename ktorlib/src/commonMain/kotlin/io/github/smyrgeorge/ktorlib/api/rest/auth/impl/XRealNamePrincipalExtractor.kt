@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktorlib.api.rest.auth.impl
 
-import io.github.smyrgeorge.ktorlib.api.rest.auth.PrinciplaExtractor
+import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.domain.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.ktor.server.application.ApplicationCall
@@ -18,7 +18,7 @@ import kotlin.io.encoding.Base64
  * - API gateway authentication forwarding
  * - Testing and development environments
  */
-class XRealNamePrincipalExtractor : PrinciplaExtractor {
+class XRealNamePrincipalExtractor : PrincipalExtractor {
     private val headerName: String = "x-real-name"
     private val serde: Json = Json { ignoreUnknownKeys = true }
 

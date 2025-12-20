@@ -11,11 +11,11 @@ import io.ktor.server.auth.AuthenticationProvider as KtorAuthenticationProvider
  * AuthenticationProvider is a Ktor authentication provider designed to integrate
  * flexible and customizable authentication mechanisms within a Ktor application.
  *
- * This implementation relies on an [PrinciplaExtractor] to parse authentication
+ * This implementation relies on an [PrincipalExtractor] to parse authentication
  * information from incoming HTTP requests, providing an authenticated principal if successful.
  *
  * @constructor Instantiates the AuthenticationProvider with the specified configuration.
- * @param config Configuration containing the required [PrinciplaExtractor].
+ * @param config Configuration containing the required [PrincipalExtractor].
  */
 class AuthenticationProvider(
     private val config: Config
@@ -30,10 +30,10 @@ class AuthenticationProvider(
     }
 
     class Config(
-        val extractor: PrinciplaExtractor
+        val extractor: PrincipalExtractor
     ) : KtorAuthenticationProvider.Config(extractor::class.simpleName ?: "extractor-${extractor.hashCode()}") {
         class Template {
-            var extractor: PrinciplaExtractor? = null
+            var extractor: PrincipalExtractor? = null
         }
     }
 

@@ -32,7 +32,7 @@ import io.ktor.server.application.ApplicationCall
  * }
  * ```
  */
-interface PrinciplaExtractor {
+interface PrincipalExtractor {
 
     /**
      * Extracts user authentication from the ApplicationCall.

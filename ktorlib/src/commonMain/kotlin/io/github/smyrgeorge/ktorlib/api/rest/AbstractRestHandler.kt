@@ -1,15 +1,20 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
-import io.github.smyrgeorge.ktorlib.api.rest.auth.UserTokenKey
 import io.github.smyrgeorge.ktorlib.domain.Context
 import io.github.smyrgeorge.ktorlib.domain.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.github.smyrgeorge.ktorlib.util.AbstractComponent
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.principal
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.patch
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
@@ -22,11 +27,21 @@ import kotlinx.coroutines.withContext
  * - Request context management
  * - Structured error handling
  *
- * **Important**: This handler requires the Authentication plugin to be installed.
+ * **Important**: This handler requires Ktor's Authentication plugin to be installed.
  * Install it in your Application.module():
  * ```
+ * // Option 1: Using convenience method
  * install(Authentication) {
- *     extractor = XRealNameAuthenticationExtractor()
+ *     xRealName {
+ *         headerName = "x-real-name"
+ *     }
+ * }
+ *
+ * // Option 2: Using generic provider (for custom extractors)
+ * install(Authentication) {
+ *     ktorlib {
+ *         extractor = XRealNameAuthenticationExtractor()
+ *     }
  * }
  * ```
  *
@@ -64,8 +79,9 @@ abstract class AbstractRestHandler(
         successCode: HttpStatusCode = HttpStatusCode.OK,
         crossinline f: suspend Context.() -> T
     ) {
-        // Get the authenticated user from the call (set by the Authentication plugin)
-        val user = call.authenticatedUser()
+        // Get the authenticated user from the call (set by Ktor's Authentication plugin)
+        val user = call.principal<UserToken>()
+            ?: UnauthorizedImpl("User is not authenticated").ex()
 
         val context = Context.of(call = call, user = user)
 
@@ -178,7 +194,4 @@ abstract class AbstractRestHandler(
             handle(call, permissions, onSuccessHttpCode, handler)
         }
     }
-
-    private fun ApplicationCall.authenticatedUser(): UserToken =
-        attributes.getOrNull(UserTokenKey) ?: UnauthorizedImpl("User is not authenticated.").ex()
 }

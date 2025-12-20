@@ -15,6 +15,7 @@ kotlin {
                 api(libs.kotlinx.serialization.core)
                 api(libs.kotlinx.serialization.json)
                 api(libs.ktor.server.core)
+                api(libs.ktor.server.auth)
                 api(libs.ktor.server.content.negotiation)
                 api(libs.ktor.server.status.pages)
                 api(libs.ktor.serialization.kotlinx.json)

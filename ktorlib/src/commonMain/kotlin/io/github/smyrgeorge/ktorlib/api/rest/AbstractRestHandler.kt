@@ -84,7 +84,7 @@ abstract class AbstractRestHandler(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
         successCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T?
+        handler: suspend Context.() -> T
     ) {
         get(path.uri()) {
             handle(call, permissions, successCode, handler)
@@ -103,7 +103,7 @@ abstract class AbstractRestHandler(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
         successCode: HttpStatusCode = HttpStatusCode.Created,
-        handler: suspend Context.() -> T?
+        handler: suspend Context.() -> T
     ) {
         post(path.uri()) {
             handle(call, permissions, successCode, handler)
@@ -122,7 +122,7 @@ abstract class AbstractRestHandler(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
         successCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T?
+        handler: suspend Context.() -> T
     ) {
         put(path.uri()) {
             handle(call, permissions, successCode, handler)
@@ -141,7 +141,7 @@ abstract class AbstractRestHandler(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
         successCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T?
+        handler: suspend Context.() -> T
     ) {
         patch(path.uri()) {
             handle(call, permissions, successCode, handler)
@@ -160,7 +160,7 @@ abstract class AbstractRestHandler(
         path: String,
         permissions: (ctx: Context) -> Boolean = { true },
         successCode: HttpStatusCode = HttpStatusCode.NoContent,
-        handler: suspend Context.() -> T?
+        handler: suspend Context.() -> T
     ) {
         delete(path.uri()) {
             handle(call, permissions, successCode, handler)

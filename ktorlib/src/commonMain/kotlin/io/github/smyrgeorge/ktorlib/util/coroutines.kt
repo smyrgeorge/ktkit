@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package io.github.smyrgeorge.ktorlib.util.extentions
+package io.github.smyrgeorge.ktorlib.util
 
 import io.github.smyrgeorge.ktorlib.domain.Context
 import kotlinx.coroutines.*

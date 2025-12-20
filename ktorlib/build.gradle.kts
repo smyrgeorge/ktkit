@@ -23,5 +23,10 @@ kotlin {
                 api(libs.log4k)
             }
         }
+        jvmMain {
+            dependencies {
+                implementation(libs.log4k.slf4j)
+            }
+        }
     }
 }

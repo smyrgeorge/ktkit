@@ -3,7 +3,6 @@
 package io.github.smyrgeorge.ktorlib.util
 
 import io.github.smyrgeorge.ktorlib.domain.Context
-import io.github.smyrgeorge.ktorlib.util.extentions.IO_DISPATCHER
 import io.github.smyrgeorge.log4k.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

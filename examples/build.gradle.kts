@@ -17,7 +17,6 @@ kotlin {
         jvmMain {
             dependencies {
                 implementation(libs.ktor.server.cio)
-                implementation(libs.log4k.slf4j)
             }
         }
     }

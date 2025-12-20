@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.examples
+package io.github.smyrgeorge.ktorlib.util
 
 import io.github.smyrgeorge.log4k.Level
 import io.github.smyrgeorge.log4k.Logger
@@ -6,11 +6,8 @@ import org.slf4j.Marker
 import io.ktor.util.logging.Logger as KtorLogger
 
 @Suppress("OVERRIDE_BY_INLINE", "NOTHING_TO_INLINE")
-class ApplicationLogger(name: String) : KtorLogger {
-    val log = Logger.of(name)
-
-    fun String?.orNull() = this ?: "null"
-    fun markerNotSupported() = error("Marker not supported")
+class LoggerJvm(name: String) : KtorLogger {
+    val log: Logger = Logger.of(name)
 
     override fun getName(): String = log.name
 
@@ -78,4 +75,7 @@ class ApplicationLogger(name: String) : KtorLogger {
     override inline fun error(marker: Marker?, format: String?, arg1: Any?, arg2: Any?): Unit = markerNotSupported()
     override inline fun error(marker: Marker?, format: String?, vararg arguments: Any?): Unit = markerNotSupported()
     override inline fun error(marker: Marker?, msg: String?, t: Throwable?) = markerNotSupported()
+
+    fun String?.orNull() = this ?: "null"
+    fun markerNotSupported() = error("Marker not supported")
 }

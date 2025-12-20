@@ -1,7 +1,8 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
-import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationExtractor
+import io.github.smyrgeorge.ktorlib.api.rest.auth.UserTokenKey
 import io.github.smyrgeorge.ktorlib.domain.Context
+import io.github.smyrgeorge.ktorlib.domain.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.github.smyrgeorge.ktorlib.util.AbstractComponent
@@ -17,17 +18,22 @@ import kotlinx.coroutines.withContext
  * Abstract base class for REST handlers in Ktor.
  *
  * Provides utilities for:
- * - Pluggable authentication extraction
  * - Permission-based access control
  * - Request context management
  * - Structured error handling
  *
- * @property authenticationExtractor Strategy for extracting user authentication from requests
+ * **Important**: This handler requires the Authentication plugin to be installed.
+ * Install it in your Application.module():
+ * ```
+ * install(Authentication) {
+ *     extractor = XRealNameAuthenticationExtractor()
+ * }
+ * ```
+ *
  * @property permissions Lambda function to check user permissions for all applied endpoints
  */
 @Suppress("FunctionName")
 abstract class AbstractRestHandler(
-    private val authenticationExtractor: AuthenticationExtractor,
     private val permissions: (ctx: Context) -> Boolean = { true }
 ) : AbstractComponent {
 
@@ -58,9 +64,8 @@ abstract class AbstractRestHandler(
         successCode: HttpStatusCode = HttpStatusCode.OK,
         crossinline f: suspend Context.() -> T
     ) {
-        // Extract user authentication from the request
-        val user = authenticationExtractor.extract(call)
-            ?: UnauthorizedImpl("Authentication required").ex()
+        // Get the authenticated user from the call (set by the Authentication plugin)
+        val user = call.authenticatedUser()
 
         val context = Context.of(call = call, user = user)
 
@@ -173,4 +178,7 @@ abstract class AbstractRestHandler(
             handle(call, permissions, onSuccessHttpCode, handler)
         }
     }
+
+    private fun ApplicationCall.authenticatedUser(): UserToken =
+        attributes.getOrNull(UserTokenKey) ?: UnauthorizedImpl("User is not authenticated.").ex()
 }

@@ -16,13 +16,9 @@ import kotlin.io.encoding.Base64
  * - Internal service-to-service communication
  * - API gateway authentication forwarding
  * - Testing and development environments
- *
- * @property headerName The name of the header containing the encoded user token
- * @property serde The JSON serializer to use for deserialization (default: Json { ignoreUnknownKeys = true })
  */
-class XRealNameAuthenticationExtractor(
-    private val headerName: String = "x-real-name",
-) : AuthenticationExtractor {
+class XRealNameAuthenticationExtractor : AuthenticationExtractor {
+    private val headerName: String = "x-real-name"
     private val serde: Json = Json { ignoreUnknownKeys = true }
 
     override suspend fun extract(call: ApplicationCall): UserToken? {

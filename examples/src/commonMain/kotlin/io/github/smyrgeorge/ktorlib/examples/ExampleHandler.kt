@@ -1,18 +1,16 @@
 package io.github.smyrgeorge.ktorlib.examples
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationExtractor
-import io.github.smyrgeorge.ktorlib.api.rest.auth.XRealNameAuthenticationExtractor
 import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.*
 import io.ktor.server.routing.*
 
 /**
- * Example handler using X-Real-Name authentication (common for internal services).
+ * Example REST handler demonstrating the usage of the AbstractRestHandler.
+ *
+ * This handler requires the Authentication plugin to be installed in your application.
  */
-class ExampleHandler(
-    authenticationExtractor: AuthenticationExtractor = XRealNameAuthenticationExtractor()
-) : AbstractRestHandler(authenticationExtractor) {
+class ExampleHandler : AbstractRestHandler() {
 
     override val log = Logger.of(this::class)
 
@@ -80,10 +78,17 @@ class ExampleHandler(
  * In your Application.module() function:
  * ```
  * fun Application.module() {
+ *     // Install the ContentNegotiation plugin
  *     install(ContentNegotiation) {
  *         json()
  *     }
  *
+ *     // Example 1: Install Authentication with x-real-Name extractor (for internal services)
+ *     install(Authentication) {
+ *         extractor = XRealNameAuthenticationExtractor()
+ *     }
+ *
+ *     // Register your routes
  *     routing {
  *         with(ExampleHandler()) {
  *             routes()

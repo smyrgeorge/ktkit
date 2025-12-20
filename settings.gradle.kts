@@ -10,3 +10,4 @@ pluginManagement {
 }
 
 //include("dokka")
+include("ktorlib")

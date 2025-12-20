@@ -25,13 +25,13 @@ kotlin {
         }
         jvmMain {
             dependencies {
-                api(libs.log4k.slf4j)
-                api(libs.ktor.server.cio)
+                implementation(libs.log4k.slf4j)
+                implementation(libs.ktor.server.netty)
             }
         }
         nativeMain {
             dependencies {
-                api(libs.ktor.server.cio)
+                implementation(libs.ktor.server.cio)
             }
         }
     }

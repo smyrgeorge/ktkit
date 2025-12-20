@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 
-fun Application.module() {
+fun Application.cofigure() {
     builder()
         .withAuthenticationExtractor(XRealNamePrincipalExtractor())
         .withRoutes(ExampleHandler())
@@ -14,10 +14,21 @@ fun Application.module() {
 }
 
 fun main() {
+    val env = applicationEnvironment {
+        log = ApplicationLogger("io.github.smyrgeorge.ktorlib.examples")
+    }
+
     embeddedServer(
         factory = CIO,
-        port = 8080,
-        host = "0.0.0.0",
-        module = Application::module
+        environment = env,
+        configure = {
+            connectors.add(
+                EngineConnectorBuilder().apply {
+                    host = "localhost"
+                    port = 8080
+                }
+            )
+        },
+        module = { cofigure() }
     ).start(wait = true)
 }

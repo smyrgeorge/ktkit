@@ -15,19 +15,19 @@ import kotlinx.serialization.Serializable
 data class ApiError(
     val code: String,
     val requestId: String? = null,
-    val details: ErrorDetails
-)
-
-/**
- * Detailed error information for API responses.
- *
- * @property type Error type (class name)
- * @property message Error message
- * @property http HTTP error information
- */
-@Serializable
-data class ErrorDetails(
-    val type: String,
-    val message: String,
-    val http: Error.HttpError
-)
+    val details: Details
+) {
+    /**
+     * Detailed error information for API responses.
+     *
+     * @property type Error type (class name)
+     * @property message Error message
+     * @property http HTTP error information
+     */
+    @Serializable
+    data class Details(
+        val type: String,
+        val message: String,
+        val http: Error.HttpError
+    )
+}

@@ -1,17 +1,13 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
 import io.github.smyrgeorge.ktorlib.error.ApiError
-import io.github.smyrgeorge.ktorlib.error.ErrorDetails
 import io.github.smyrgeorge.ktorlib.error.InternalError
 import io.github.smyrgeorge.ktorlib.error.types.UnknownError
 import io.github.smyrgeorge.log4k.Logger
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.install
-import io.ktor.server.plugins.statuspages.StatusPages
-import io.ktor.server.plugins.statuspages.StatusPagesConfig
-import io.ktor.server.response.respond
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.response.*
 
 /**
  * Exception handler for converting structured errors to HTTP responses.
@@ -47,12 +43,15 @@ object ExceptionHandler {
         val error = cause.error
         val requestId = call.request.headers["X-Request-ID"]
 
-        log.error("InternalError: ${error.type} - ${error.message}", cause)
+        // Only log server errors (5xx)
+        if (error.http.code >= 500) {
+            log.error("InternalError: ${error.type} - ${error.message}", cause)
+        }
 
         val apiError = ApiError(
             code = error.type,
             requestId = requestId,
-            details = ErrorDetails(
+            details = ApiError.Details(
                 type = error.type,
                 message = error.message,
                 http = error.http
@@ -79,7 +78,7 @@ object ExceptionHandler {
         val apiError = ApiError(
             code = error.type,
             requestId = requestId,
-            details = ErrorDetails(
+            details = ApiError.Details(
                 type = error.type,
                 message = error.message,
                 http = error.http

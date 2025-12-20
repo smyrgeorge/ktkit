@@ -1,13 +1,10 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
 import io.github.smyrgeorge.ktorlib.error.ApiError
-import io.github.smyrgeorge.ktorlib.error.Error
 import io.github.smyrgeorge.ktorlib.error.ErrorDetails
 import io.github.smyrgeorge.ktorlib.error.InternalError
 import io.github.smyrgeorge.ktorlib.error.types.UnknownError
-import io.github.smyrgeorge.ktorlib.examples.ExampleHandler
 import io.github.smyrgeorge.log4k.Logger
-import io.github.smyrgeorge.log4k.LoggerFactory
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*

@@ -22,9 +22,9 @@ import kotlinx.coroutines.withContext
  *
  * @property permissions Lambda function to check user permissions for all applied endpoints
  */
+@Suppress("FunctionName")
 abstract class AbstractRestHandler(
-    // Checks for user permissions to all applied endpoints.
-    val permissions: (ctx: Context) -> Boolean = { true }
+    private val permissions: (ctx: Context) -> Boolean = { true }
 ) : AbstractComponent {
 
     /**
@@ -44,21 +44,18 @@ abstract class AbstractRestHandler(
      * - Unit (responds with 200 OK)
      *
      * @param call The Ktor ApplicationCall
-     * @param user The user token
      * @param permissions Optional permission check function
      * @param successCode The HTTP status code to use for successful responses
-     * @param attributes Optional attributes
      * @param f The function to execute
      */
-    suspend inline fun <T> handle(
+    private suspend inline fun <T> handle(
         call: ApplicationCall,
-        user: UserToken,
-        permissions: (ctx: Context) -> Boolean = { true },
+        permissions: (ctx: Context) -> Boolean,
         successCode: HttpStatusCode = HttpStatusCode.OK,
-        attributes: Map<String, Any> = emptyMap(),
         crossinline f: suspend Context.() -> T
     ) {
-        val context = Context.of(call = call, user = user, attributes = attributes)
+        val user = createMockUser()
+        val context = Context.of(call = call, user = user)
 
         // Check that user has access to the corresponding resources.
         val hasAccess = this.permissions(context) && permissions(context)
@@ -74,4 +71,113 @@ abstract class AbstractRestHandler(
             else -> call.respond(successCode, result as Any)
         }
     }
+
+    /**
+     * Defines a GET route with integrated request handling.
+     *
+     * @param path The route path
+     * @param permissions Optional permission check function
+     * @param successCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param handler The function to execute
+     */
+    fun <T> Route.GET(
+        path: String,
+        permissions: (ctx: Context) -> Boolean = { true },
+        successCode: HttpStatusCode = HttpStatusCode.OK,
+        handler: suspend Context.() -> T?
+    ) {
+        get(path.uri()) {
+            handle(call, permissions, successCode, handler)
+        }
+    }
+
+    /**
+     * Defines a POST route with integrated request handling.
+     *
+     * @param path The route path
+     * @param permissions Optional permission check function
+     * @param successCode The HTTP status code to use for successful responses (default: 201 Created)
+     * @param handler The function to execute
+     */
+    fun <T> Route.POST(
+        path: String,
+        permissions: (ctx: Context) -> Boolean = { true },
+        successCode: HttpStatusCode = HttpStatusCode.Created,
+        handler: suspend Context.() -> T?
+    ) {
+        post(path.uri()) {
+            handle(call, permissions, successCode, handler)
+        }
+    }
+
+    /**
+     * Defines a PUT route with integrated request handling.
+     *
+     * @param path The route path
+     * @param permissions Optional permission check function
+     * @param successCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param handler The function to execute
+     */
+    fun <T> Route.PUT(
+        path: String,
+        permissions: (ctx: Context) -> Boolean = { true },
+        successCode: HttpStatusCode = HttpStatusCode.OK,
+        handler: suspend Context.() -> T?
+    ) {
+        put(path.uri()) {
+            handle(call, permissions, successCode, handler)
+        }
+    }
+
+    /**
+     * Defines a PATCH route with integrated request handling.
+     *
+     * @param path The route path
+     * @param permissions Optional permission check function
+     * @param successCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param handler The function to execute
+     */
+    fun <T> Route.PATCH(
+        path: String,
+        permissions: (ctx: Context) -> Boolean = { true },
+        successCode: HttpStatusCode = HttpStatusCode.OK,
+        handler: suspend Context.() -> T?
+    ) {
+        patch(path.uri()) {
+            handle(call, permissions, successCode, handler)
+        }
+    }
+
+    /**
+     * Defines a DELETE route with integrated request handling.
+     *
+     * @param path The route path
+     * @param permissions Optional permission check function
+     * @param successCode The HTTP status code to use for successful responses (default: 204 No Content)
+     * @param handler The function to execute
+     */
+    fun <T> Route.DELETE(
+        path: String,
+        permissions: (ctx: Context) -> Boolean = { true },
+        successCode: HttpStatusCode = HttpStatusCode.NoContent,
+        handler: suspend Context.() -> T?
+    ) {
+        delete(path.uri()) {
+            handle(call, permissions, successCode, handler)
+        }
+    }
+
+    /**
+     * Creates a mock user for demonstration purposes.
+     * In a real application, this would come from authentication/authorization.
+     */
+    private fun createMockUser() = UserToken(
+        uuid = "00000000-0000-0000-0000-000000000001",
+        username = "demo-user",
+        email = "demo@example.com",
+        name = "Demo User",
+        firstName = "Demo",
+        lastName = "User",
+        roles = setOf("USER", "ADMIN")
+    )
 }

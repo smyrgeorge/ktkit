@@ -4,7 +4,6 @@ import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.domain.UserToken
 import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 /**
@@ -36,85 +35,65 @@ class ExampleHandler : AbstractRestHandler() {
             val user = createMockUser()
 
             // Handle the request with context
-            val result = handle(call, user) {
-                of { ctx ->
-                    // Access user information from context
-                    log.info("User ${ctx.user.username} accessed /hello")
-                    "Hello, ${ctx.user.username}!"
-                }
+            handle(call, user) {
+                // Access user information from context
+                log.info("User ${user.username} accessed /hello")
+                "Hello, ${user.username}!"
             }
-
-            call.respond(HttpStatusCode.OK, result)
         }
 
         // Example 2: GET with permission check
         get("/admin".uri()) {
             val user = createMockUser()
 
-            val result = handle(call, user) {
-                // Only allow users with "ADMIN" role
-                of(permissions = { ctx -> ctx.user.hasRole("ADMIN") }) { ctx ->
-                    log.info("Admin ${ctx.user.username} accessed /admin")
-                    "Welcome, admin ${ctx.user.username}!"
-                }
+            // Only allow users with "ADMIN" role
+            handle(call, user, permissions = { ctx -> ctx.user.hasRole("ADMIN") }) {
+                log.info("Admin ${user.username} accessed /admin")
+                "Welcome, admin ${user.username}!"
             }
-
-            call.respond(HttpStatusCode.OK, result)
         }
 
         // Example 3: GET with path parameter
         get("/users/{id}".uri()) {
             val user = createMockUser()
+            handle(call, user) {
+                // Extract path parameter
+                val userId = req.pathVariable("id").asString()
+                log.info("Fetching user: $userId")
 
-            val result = handle(call, user) {
-                of { ctx ->
-                    // Extract path parameter
-                    val userId = ctx.req.pathVariable("id").asString()
-                    log.info("Fetching user: $userId")
-
-                    mapOf(
-                        "id" to userId,
-                        "name" to "Example User",
-                        "email" to "user@example.com"
-                    )
-                }
+                mapOf(
+                    "id" to userId,
+                    "name" to "Example User",
+                    "email" to "user@example.com"
+                )
             }
-
-            call.respond(HttpStatusCode.OK, result)
         }
 
         // Example 4: GET with query parameters
         get("/search".uri()) {
             val user = createMockUser()
 
-            val result = handle(call, user) {
-                of { ctx ->
-                    // Extract query parameters
-                    val query = ctx.req.queryParam("q").asStringOrNull() ?: ""
-                    val limit = ctx.req.queryParam("limit").asIntOrNull() ?: 10
+            handle(call, user) {
+                // Extract query parameters
+                val query = req.queryParam("q").asStringOrNull() ?: ""
+                val limit = req.queryParam("limit").asIntOrNull() ?: 10
 
-                    log.info("Searching for: $query (limit: $limit)")
+                log.info("Searching for: $query (limit: $limit)")
 
-                    mapOf(
-                        "query" to query,
-                        "limit" to limit,
-                        "results" to emptyList<String>()
-                    )
-                }
+                mapOf(
+                    "query" to query,
+                    "limit" to limit,
+                    "results" to emptyList<String>()
+                )
             }
-
-            call.respond(HttpStatusCode.OK, result)
         }
 
         // Example 5: Using handleAndRespond for automatic response handling
         get("/auto-respond".uri()) {
             val user = createMockUser()
-
-            handleAndRespond(call, user) {
-                of { ctx ->
-                    log.info("Auto-responding for ${ctx.user.username}")
-                    mapOf("status" to "success", "data" to "Hello!")
-                }
+            handle(call, user, successCode = HttpStatusCode.Accepted) {
+                log.info("Auto-responding for ${user.username}")
+                mapOf("status" to "success", "data" to "Hello!")
             }
         }
     }

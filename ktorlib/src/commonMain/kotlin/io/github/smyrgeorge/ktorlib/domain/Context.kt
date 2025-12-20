@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package io.github.smyrgeorge.ktorlib.domain
 
 import io.github.smyrgeorge.ktorlib.error.types.MissingParameter
@@ -143,16 +141,16 @@ data class Context(
         /**
          * Creates a Context from an ApplicationCall with a user token.
          *
-         * @param call The Ktor ApplicationCall
          * @param user The user token
-         * @param attributes Custom attributes map
+         * @param call The Ktor ApplicationCall
          * @param reqId Request ID (defaults to a generated UUID-like string)
+         * @param attributes Custom attributes map
          */
         fun of(
-            call: ApplicationCall,
             user: UserToken,
+            call: ApplicationCall,
+            reqId: String = generateRequestId(),
             attributes: Map<String, Any> = emptyMap(),
-            reqId: String = generateRequestId()
         ): Context = Context(
             user = user,
             reqId = reqId,
@@ -164,13 +162,13 @@ data class Context(
          * Creates a Context without an ApplicationCall (for background tasks, etc.).
          *
          * @param user The user token
-         * @param attributes Custom attributes map
          * @param reqId Request ID (defaults to a generated UUID-like string)
+         * @param attributes Custom attributes map
          */
         fun of(
             user: UserToken,
+            reqId: String = generateRequestId(),
             attributes: Map<String, Any> = emptyMap(),
-            reqId: String = generateRequestId()
         ): Context = Context(
             user = user,
             reqId = reqId,

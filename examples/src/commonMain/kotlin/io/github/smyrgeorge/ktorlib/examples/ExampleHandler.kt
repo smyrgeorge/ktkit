@@ -36,7 +36,7 @@ class ExampleHandler : AbstractRestHandler() {
         // Example 3: GET with path parameter
         GET("/users/{id}") {
             // Extract path parameter
-            val userId = req.pathVariable("id").asString()
+            val userId = httpRequest.pathVariable("id").asString()
             log.info("Fetching user: $userId")
 
             mapOf(
@@ -49,8 +49,8 @@ class ExampleHandler : AbstractRestHandler() {
         // Example 4: GET with query parameters
         GET("/search") {
             // Extract query parameters
-            val query = req.queryParam("q").asStringOrNull() ?: ""
-            val limit = req.queryParam("limit").asIntOrNull() ?: 10
+            val query = httpRequest.queryParam("q").asStringOrNull() ?: ""
+            val limit = httpRequest.queryParam("limit").asIntOrNull() ?: 10
 
             log.info("Searching for: $query (limit: $limit)")
 

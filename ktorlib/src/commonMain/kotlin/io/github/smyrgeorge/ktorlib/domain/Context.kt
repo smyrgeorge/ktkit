@@ -17,18 +17,18 @@ import kotlin.time.Instant
  * @property reqId Unique request identifier
  * @property reqTs Request timestamp
  * @property user User token containing authentication/authorization information
- * @property call Optional Ktor ApplicationCall for accessing request data
  * @property attributes Custom attributes map for storing request-scoped data
+ * @property call Optional Ktor ApplicationCall for accessing request data
  */
 data class Context(
     val reqId: String,
     val reqTs: Instant = Clock.System.now(),
     val user: UserToken,
-    private var call: ApplicationCall? = null,
     val attributes: Map<String, Any> = emptyMap(),
+    private var call: ApplicationCall? = null,
 ) : CoroutineContext.Element {
 
-    val req = Request(call)
+    val httpRequest = Request(call)
 
     /**
      * Clears the [Context] from possible left-overs.
@@ -36,13 +36,14 @@ data class Context(
      */
     fun clear() {
         call = null
+        httpRequest.call = null
     }
 
     /**
      * Wrapper class for accessing request data from Ktor's ApplicationCall.
      */
     class Request(
-        private val call: ApplicationCall?
+        var call: ApplicationCall?
     ) {
         /**
          * Represents a request variable (path param, query param, or header) with type conversion utilities.

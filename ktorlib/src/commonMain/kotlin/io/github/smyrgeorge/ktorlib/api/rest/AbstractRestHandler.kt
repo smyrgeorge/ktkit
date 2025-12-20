@@ -87,7 +87,7 @@ abstract class AbstractRestHandler(
 
         // Check that user has access to the corresponding resources.
         val hasAccess = this.permissions(context) && permissions(context)
-        if (!hasAccess) ForbiddenImpl("User does not have access to uri='${context.req.uri()}'.").ex()
+        if (!hasAccess) ForbiddenImpl("User does not have access to uri='${context.httpRequest.uri()}'.").ex()
 
         // Clears the [Context] here (ensures no leftovers).
         context.clear()

@@ -94,6 +94,8 @@ abstract class AbstractRestHandler(
 
         val result = withContext(context) { f(context) }
         when (result) {
+            // TODO: handle Result<*>
+            // TODO: handle Either<*, *>
             is Flow<*> -> call.respond(successCode, result.filterNotNull())
             is Unit -> call.respond(successCode)
             else -> call.respond(successCode, result as Any)

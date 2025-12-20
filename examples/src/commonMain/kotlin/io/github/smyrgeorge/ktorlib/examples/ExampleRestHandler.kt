@@ -5,7 +5,7 @@ import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.Route
 
-class ExampleHandler : AbstractRestHandler() {
+class ExampleRestHandler : AbstractRestHandler() {
 
     override val log = Logger.of(this::class)
 

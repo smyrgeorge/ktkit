@@ -12,6 +12,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonBuilder
 import io.ktor.server.application.Application as KtorApplication
 
 class Application(
@@ -50,6 +51,12 @@ class Application(
         private var authenticationExtractor: PrincipalExtractor? = null
         private var routes: MutableList<AbstractRestHandler> = mutableListOf()
         private var other: KtorApplication.() -> Unit = {}
+        private var json: Json = Json {
+            isLenient = true
+            prettyPrint = false
+            ignoreUnknownKeys = true
+            explicitNulls = false
+        }
 
         fun withAuthenticationExtractor(extractor: PrincipalExtractor): Configurer {
             authenticationExtractor = extractor
@@ -58,6 +65,11 @@ class Application(
 
         fun withRestHandler(handler: AbstractRestHandler): Configurer {
             routes.add(handler)
+            return this
+        }
+
+        fun json(builder: JsonBuilder.() -> Unit): Configurer {
+            json = Json { builder() }
             return this
         }
 
@@ -72,12 +84,7 @@ class Application(
 
             // Install content negotiation for JSON serialization
             install(ContentNegotiation) {
-                json(Json {
-                    isLenient = true
-                    prettyPrint = false
-                    ignoreUnknownKeys = true
-                    explicitNulls = false
-                })
+                json(json)
             }
 
             // Install authentication.

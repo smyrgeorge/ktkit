@@ -12,6 +12,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
+import io.ktor.server.routing.head
+import io.ktor.server.routing.options
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
@@ -53,25 +55,6 @@ abstract class AbstractRestHandler(
     abstract fun Route.routes()
 
     /**
-     * Responds to an HTTP request based on the type of the provided result.
-     *
-     * Supports the following result types:
-     * - Flow<*>: Responds with a filtered Flow, excluding null values.
-     * - Unit: Responds with the provided success code, typically indicating success without a body.
-     * - Any other type: Responds with the provided success code and the result serialized as the response body.
-     *
-     * @param result The response body or stream to return to the client.
-     * @param successCode The HTTP status code indicating a successful response.
-     */
-    private suspend inline fun <T> ApplicationCall.respond(result: T, successCode: HttpStatusCode) {
-        when (result) {
-            is Flow<*> -> respond(successCode, result.filterNotNull())
-            is Unit -> respond(successCode)
-            else -> respond(successCode, result as Any)
-        }
-    }
-
-    /**
      * Handles a request and automatically responds based on the result type.
      *
      * Supports:
@@ -80,18 +63,22 @@ abstract class AbstractRestHandler(
      * - Unit (responds with 200 OK)
      *
      * @param call The Ktor ApplicationCall
+     * @param defaultUserToken The default user token to use if none is provided in the request
      * @param permissions Optional permission check function
-     * @param successCode The HTTP status code to use for successful responses
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses
      * @param f The function to execute
      */
     private suspend inline fun <T> handle(
         call: ApplicationCall,
+        defaultUserToken: UserToken? = null,
         permissions: HttpRequest.() -> Boolean,
-        successCode: HttpStatusCode,
+        onSuccessHttpStatusCode: HttpStatusCode,
         crossinline f: suspend HttpRequest.() -> T
     ) {
         // Get the authenticated user from the call (set by Ktor's Authentication plugin)
-        val user = call.principal<UserToken>() ?: UnauthorizedImpl("User is not authenticated").ex()
+        val user = call.principal<UserToken>()
+            ?: defaultUserToken
+            ?: UnauthorizedImpl("User is not authenticated").ex()
 
         // Role based authorization.
         hasRole?.let { role -> user.requireRole(role) }
@@ -110,11 +97,11 @@ abstract class AbstractRestHandler(
 
         when (result) {
             // TODO: handle Either<*, *>
-            is Result<*> -> result.fold(
-                onSuccess = { value -> call.respond(value, successCode) },
-                onFailure = { throw it }
-            )
-            else -> call.respond(result, successCode)
+            is Result<*> -> result
+                .onSuccess { value -> respond(call, onSuccessHttpStatusCode, value) }
+                .onFailure { throw it }
+
+            else -> respond(call, onSuccessHttpStatusCode, result)
         }
 
         // Clears the [Context] here (ensures no leftovers).
@@ -122,21 +109,43 @@ abstract class AbstractRestHandler(
     }
 
     /**
+     * Responds to an HTTP request based on the type of the provided result.
+     *
+     * Supports the following result types:
+     * - Flow<*>: Responds with a filtered Flow, excluding null values.
+     * - Unit: Responds with the provided success code, typically indicating success without a body.
+     * - Any other type: Responds with the provided success code and the result serialized as the response body.
+     *
+     * @param call The Ktor ApplicationCall.
+     * @param onSuccessHttpStatusCode The HTTP status code indicating a successful response.
+     * @param result The response body or stream to return to the client.
+     */
+    private suspend inline fun <T> respond(call: ApplicationCall, onSuccessHttpStatusCode: HttpStatusCode, result: T) {
+        when (result) {
+            is Flow<*> -> call.respond(onSuccessHttpStatusCode, result.filterNotNull())
+            is Unit -> call.respond(onSuccessHttpStatusCode)
+            else -> call.respond(onSuccessHttpStatusCode, result as Any)
+        }
+    }
+
+    /**
      * Defines a GET route with integrated request handling.
      *
      * @param path The route path
+     * @param defaultUserToken The default user token to use if none is provided in the request
      * @param permissions Optional permission check function
-     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.GET(
         path: String,
+        defaultUserToken: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
-        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
+        onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend HttpRequest.() -> T
     ) {
         get(path.uri()) {
-            handle(call, permissions, onSuccessHttpCode, handler)
+            handle(call, defaultUserToken, permissions, onSuccessHttpStatusCode, handler)
         }
     }
 
@@ -144,18 +153,20 @@ abstract class AbstractRestHandler(
      * Defines a POST route with integrated request handling.
      *
      * @param path The route path
+     * @param defaultUserToken The default user token to use if none is provided in the request
      * @param permissions Optional permission check function
-     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 201 Created)
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 201 Created)
      * @param handler The function to execute
      */
     fun <T> Route.POST(
         path: String,
+        defaultUserToken: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
-        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.Created,
+        onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.Created,
         handler: suspend HttpRequest.() -> T
     ) {
         post(path.uri()) {
-            handle(call, permissions, onSuccessHttpCode, handler)
+            handle(call, defaultUserToken, permissions, onSuccessHttpStatusCode, handler)
         }
     }
 
@@ -163,18 +174,20 @@ abstract class AbstractRestHandler(
      * Defines a PUT route with integrated request handling.
      *
      * @param path The route path
+     * @param defaultUserToken The default user token to use if none is provided in the request
      * @param permissions Optional permission check function
-     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.PUT(
         path: String,
+        defaultUserToken: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
-        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
+        onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend HttpRequest.() -> T
     ) {
         put(path.uri()) {
-            handle(call, permissions, onSuccessHttpCode, handler)
+            handle(call, defaultUserToken, permissions, onSuccessHttpStatusCode, handler)
         }
     }
 
@@ -182,18 +195,20 @@ abstract class AbstractRestHandler(
      * Defines a PATCH route with integrated request handling.
      *
      * @param path The route path
+     * @param defaultUserToken The default user token to use if none is provided in the request
      * @param permissions Optional permission check function
-     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.PATCH(
         path: String,
+        defaultUserToken: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
-        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
+        onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend HttpRequest.() -> T
     ) {
         patch(path.uri()) {
-            handle(call, permissions, onSuccessHttpCode, handler)
+            handle(call, defaultUserToken, permissions, onSuccessHttpStatusCode, handler)
         }
     }
 
@@ -201,18 +216,62 @@ abstract class AbstractRestHandler(
      * Defines a DELETE route with integrated request handling.
      *
      * @param path The route path
+     * @param defaultUserToken The default user token to use if none is provided in the request
      * @param permissions Optional permission check function
-     * @param onSuccessHttpCode The HTTP status code to use for successful responses (default: 200 OK)
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
     fun <T> Route.DELETE(
         path: String,
+        defaultUserToken: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
-        onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
+        onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
         handler: suspend HttpRequest.() -> T
     ) {
         delete(path.uri()) {
-            handle(call, permissions, onSuccessHttpCode, handler)
+            handle(call, defaultUserToken, permissions, onSuccessHttpStatusCode, handler)
+        }
+    }
+
+    /**
+     * Defines an HEAD route with integrated request handling.
+     *
+     * @param path The route path.
+     * @param defaultUserToken The default user token to use if none is provided in the request. Defaults to null.
+     * @param permissions Optional permission check function. Defaults to a function that always returns true.
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses. Defaults to HttpStatusCode.OK.
+     * @param handler The function to execute for handling the request.
+     */
+    fun <T> Route.HEAD(
+        path: String,
+        defaultUserToken: UserToken? = null,
+        permissions: HttpRequest.() -> Boolean = { true },
+        onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
+        handler: suspend HttpRequest.() -> T
+    ) {
+        head(path.uri()) {
+            handle(call, defaultUserToken, permissions, onSuccessHttpStatusCode, handler)
+        }
+    }
+
+    /**
+     * Defines an OPTIONS route with integrated request handling.
+     *
+     * @param path The route path.
+     * @param defaultUserToken The default user token to use if none is provided in the request. Defaults to null.
+     * @param permissions Optional permission check function. Defaults to a function that always returns true.
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses. Defaults to HttpStatusCode.OK.
+     * @param handler The function to execute for handling the request.
+     */
+    fun <T> Route.OPTIONS(
+        path: String,
+        defaultUserToken: UserToken? = null,
+        permissions: HttpRequest.() -> Boolean = { true },
+        onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
+        handler: suspend HttpRequest.() -> T
+    ) {
+        options(path.uri()) {
+            handle(call, defaultUserToken, permissions, onSuccessHttpStatusCode, handler)
         }
     }
 }

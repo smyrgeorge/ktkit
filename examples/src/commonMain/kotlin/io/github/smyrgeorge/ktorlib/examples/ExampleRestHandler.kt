@@ -58,7 +58,7 @@ class ExampleRestHandler(
         // Example 5: Using custom success code
         GET(
             path = "/auto-respond",
-            onSuccessHttpCode = HttpStatusCode.Accepted
+            onSuccessHttpStatusCode = HttpStatusCode.Accepted
         ) {
             log.info("Auto-responding for ${user.username}")
             mapOf("status" to "success", "data" to "Hello!")

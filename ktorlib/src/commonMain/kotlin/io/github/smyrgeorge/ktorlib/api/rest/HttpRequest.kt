@@ -5,6 +5,7 @@ import io.github.smyrgeorge.ktorlib.error.types.MissingParameter
 import io.github.smyrgeorge.ktorlib.error.types.UnsupportedEnumValue
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.ApplicationRequest
+import io.ktor.server.request.receive
 import io.ktor.server.request.uri
 
 /**
@@ -19,8 +20,8 @@ class HttpRequest(
     val user: UserToken,
     internal var call: ApplicationCall?,
 ) {
-    private val httpCall: ApplicationCall get() = call ?: error("ApplicationCall is null.")
-    private val httpRequest: ApplicationRequest get() = httpCall.request
+    val httpCall: ApplicationCall get() = call ?: error("ApplicationCall is null.")
+    val httpRequest: ApplicationRequest get() = httpCall.request
 
     /**
      * Represents a variable with a type, name, and an optional value. The variable can be used
@@ -119,4 +120,12 @@ class HttpRequest(
      * Gets all headers with the given name.
      */
     fun headers(name: String): List<String> = httpRequest.headers.getAll(name) ?: emptyList()
+
+    /**
+     * Receives the request body and deserializes it to the specified type.
+     *
+     * @param T The type to deserialize the body into
+     * @return The deserialized body of type T
+     */
+    suspend inline fun <reified T : Any> body(): T = httpCall.receive()
 }

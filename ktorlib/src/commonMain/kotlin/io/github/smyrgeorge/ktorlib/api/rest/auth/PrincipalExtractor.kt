@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktorlib.api.rest.auth
 
-import io.github.smyrgeorge.ktorlib.domain.UserToken
+import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.ktor.server.application.ApplicationCall
 
 /**
@@ -11,15 +11,6 @@ import io.ktor.server.application.ApplicationCall
  *
  * Built-in implementations:
  * - [io.github.smyrgeorge.ktorlib.api.rest.auth.impl.XRealNamePrincipalExtractor] - Extracts user from Base64-encoded JSON header
- *
- * Usage with the generic ktorlib provider:
- * ```
- * install(Authentication) {
- *     ktorlib {
- *         extractor = XRealNameAuthenticationExtractor()
- *     }
- * }
- * ```
  *
  * Creating a custom extractor:
  * ```

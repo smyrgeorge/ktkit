@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.domain
+package io.github.smyrgeorge.ktorlib.context
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement

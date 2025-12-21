@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
-import io.github.smyrgeorge.ktorlib.domain.Context
-import io.github.smyrgeorge.ktorlib.domain.UserToken
+import io.github.smyrgeorge.ktorlib.context.Context
+import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.github.smyrgeorge.ktorlib.util.AbstractComponent
@@ -19,34 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 
-/**
- * Abstract base class for REST handlers in Ktor.
- *
- * Provides utilities for:
- * - Permission-based access control
- * - Request context management
- * - Structured error handling
- *
- * **Important**: This handler requires Ktor's Authentication plugin to be installed.
- * Install it in your Application.module():
- * ```
- * // Option 1: Using convenience method
- * install(Authentication) {
- *     xRealName {
- *         headerName = "x-real-name"
- *     }
- * }
- *
- * // Option 2: Using generic provider (for custom extractors)
- * install(Authentication) {
- *     ktorlib {
- *         extractor = XRealNameAuthenticationExtractor()
- *     }
- * }
- * ```
- *
- * @property permissions Lambda function to check user permissions for all applied endpoints
- */
 @Suppress("FunctionName")
 abstract class AbstractRestHandler(
     private val permissions: (ctx: Context) -> Boolean = { true }
@@ -79,6 +51,7 @@ abstract class AbstractRestHandler(
         successCode: HttpStatusCode = HttpStatusCode.OK,
         crossinline f: suspend Context.() -> T
     ) {
+        val request = Request(call)
         // Get the authenticated user from the call (set by Ktor's Authentication plugin)
         val user = call.principal<UserToken>()
             ?: UnauthorizedImpl("User is not authenticated").ex()

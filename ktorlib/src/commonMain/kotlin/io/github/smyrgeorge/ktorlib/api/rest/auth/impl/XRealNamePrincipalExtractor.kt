@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktorlib.api.rest.auth.impl
 
 import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
-import io.github.smyrgeorge.ktorlib.domain.UserToken
+import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.ktor.server.application.ApplicationCall
 import kotlinx.serialization.json.Json
@@ -10,7 +10,7 @@ import kotlin.io.encoding.Base64
 /**
  * Authentication extractor that retrieves user information from a custom header.
  *
- * This extractor expects a Base64-encoded JSON representation of [io.github.smyrgeorge.ktorlib.domain.UserToken]
+ * This extractor expects a Base64-encoded JSON representation of [io.github.smyrgeorge.ktorlib.context.UserToken]
  * in the specified header (default: "x-real-name").
  *
  * Common use cases:

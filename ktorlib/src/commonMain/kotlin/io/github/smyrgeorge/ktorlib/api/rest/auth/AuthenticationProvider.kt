@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktorlib.api.rest.auth
 
-import io.github.smyrgeorge.ktorlib.domain.UserToken
+import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication

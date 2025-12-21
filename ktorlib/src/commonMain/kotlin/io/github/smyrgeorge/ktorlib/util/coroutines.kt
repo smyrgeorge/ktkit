@@ -2,7 +2,7 @@
 
 package io.github.smyrgeorge.ktorlib.util
 
-import io.github.smyrgeorge.ktorlib.domain.Context
+import io.github.smyrgeorge.ktorlib.context.Context
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext

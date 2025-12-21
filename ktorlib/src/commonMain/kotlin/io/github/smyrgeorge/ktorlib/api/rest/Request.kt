@@ -1,0 +1,119 @@
+package io.github.smyrgeorge.ktorlib.api.rest
+
+import io.github.smyrgeorge.ktorlib.error.types.MissingParameter
+import io.github.smyrgeorge.ktorlib.error.types.UnsupportedEnumValue
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.request.ApplicationRequest
+import io.ktor.server.request.uri
+
+/**
+ * Represents a wrapper for an incoming application call request, providing utilities
+ * to access request data such as path variables, query parameters, headers, and the URI.
+ *
+ * @property call The underlying application call associated with the request.
+ */
+@Suppress("unused")
+class Request(
+    internal var call: ApplicationCall?
+) {
+    private val httpCall: ApplicationCall get() = call ?: error("ApplicationCall is null.")
+    private val httpRequest: ApplicationRequest get() = httpCall.request
+
+    /**
+     * Represents a variable with a type, name, and an optional value. The variable can be used
+     * to retrieve its value in various formats such as String, Long, Int, Float, Double, Boolean,
+     * or as an enum value.
+     *
+     * @constructor Creates an instance of Var with a specified type, name, and optional value.
+     * @param type The type of the variable. It can be one of the values from [Type].
+     * @param name The name of the variable.
+     * @param value The optional value of the variable.
+     */
+    class Var(
+        private val type: Type,
+        private val name: String,
+        private val value: String?
+    ) {
+        fun asString(): String = value ?: MissingParameter(type.name, name).ex()
+        fun asStringOrNull(): String? = value
+
+        fun asLong(): Long = asString().toLong()
+        fun asLongOrNull(): Long? = value?.toLongOrNull()
+
+        fun asInt(): Int = asString().toInt()
+        fun asIntOrNull(): Int? = value?.toIntOrNull()
+
+        fun asFloat(): Float = asString().toFloat()
+        fun asFloatOrNull(): Float? = value?.toFloatOrNull()
+
+        fun asDouble(): Double = asString().toDouble()
+        fun asDoubleOrNull(): Double? = value?.toDoubleOrNull()
+
+        fun asBoolean(): Boolean = asString().toBoolean()
+        fun asBooleanOrNull(): Boolean? = value?.toBooleanStrictOrNull()
+
+        inline fun <reified T : Enum<T>> asEnum(): T = asString().toEnum<T>()
+        inline fun <reified T : Enum<T>> asEnumOrNull(): T? = asStringOrNull()?.toEnumOrNull<T>()
+
+        inline fun <reified T : Enum<T>> String.toEnum(): T =
+            try {
+                enumValueOf<T>(this)
+            } catch (_: Exception) {
+                UnsupportedEnumValue(T::class.simpleName ?: "Unknown", this).ex()
+            }
+
+        inline fun <reified T : Enum<T>> String.toEnumOrNull(): T? =
+            try {
+                enumValueOf<T>(this)
+            } catch (_: Exception) {
+                null
+            }
+
+        /**
+         * Represents the type of variable in an HTTP context.
+         *
+         * This enum class defines different categories for how a variable is used
+         * in the context of HTTP requests and responses.
+         *
+         * Types:
+         * - `HEADER`: Represents a variable that is used in the headers of an HTTP request.
+         * - `PATH_VARIABLE`: Represents a variable that is part of the URI path in an HTTP request.
+         * - `QUERY_PARAM`: Represents a variable that is used as a query parameter in an HTTP request.
+         */
+        enum class Type {
+            HEADER,
+            PATH_VARIABLE,
+            QUERY_PARAM
+        }
+    }
+
+    /**
+     * Gets the request URI.
+     */
+    fun uri(): String = httpCall.request.uri
+
+    /**
+     * Gets a path parameter by name.
+     */
+    fun pathVariable(name: String): Var = Var(Var.Type.PATH_VARIABLE, name, httpCall.parameters[name])
+
+    /**
+     * Gets a query parameter by name.
+     */
+    fun queryParam(name: String): Var = Var(Var.Type.QUERY_PARAM, name, httpRequest.queryParameters[name])
+
+    /**
+     * Gets all query parameters with the given name.
+     */
+    fun queryParams(name: String): List<String> = httpRequest.queryParameters.getAll(name) ?: emptyList()
+
+    /**
+     * Gets a header by name.
+     */
+    fun header(name: String): Var = Var(Var.Type.HEADER, name, httpRequest.headers[name])
+
+    /**
+     * Gets all headers with the given name.
+     */
+    fun headers(name: String): List<String> = httpRequest.headers.getAll(name) ?: emptyList()
+}

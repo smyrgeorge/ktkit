@@ -1,11 +1,14 @@
 package io.github.smyrgeorge.ktorlib.examples
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
+import io.github.smyrgeorge.ktorlib.examples.service.UserService
 import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.Route
 
-class ExampleRestHandler : AbstractRestHandler() {
+class ExampleRestHandler(
+    private val userService: UserService  // Injected via constructor
+) : AbstractRestHandler() {
 
     override val log = Logger.of(this::class)
 
@@ -28,31 +31,27 @@ class ExampleRestHandler : AbstractRestHandler() {
             "Welcome, admin ${user.username}!"
         }
 
-        // Example 3: GET with path parameter
+        // Example 3: GET with path parameter - using service
         GET("/users/{id}") {
-            // Extract path parameter
             val userId = pathVariable("id").asString()
             log.info("Fetching user: $userId")
 
-            mapOf(
-                "id" to userId,
-                "name" to "Example User",
-                "email" to "user@example.com"
-            )
+            // Business logic delegated to service
+            userService.getUserById(userId)
         }
 
-        // Example 4: GET with query parameters
+        // Example 4: GET with query parameters - using service
         GET("/search") {
-            // Extract query parameters
             val query = queryParam("q").asStringOrNull() ?: ""
             val limit = queryParam("limit").asIntOrNull() ?: 10
 
             log.info("Searching for: $query (limit: $limit)")
 
+            // Business logic delegated to service
             mapOf(
                 "query" to query,
                 "limit" to limit,
-                "results" to emptyList<String>()
+                "results" to userService.searchUsers(query, limit)
             )
         }
 

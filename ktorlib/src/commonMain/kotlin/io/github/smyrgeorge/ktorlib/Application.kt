@@ -65,7 +65,7 @@ class Application(
             return this
         }
 
-        fun withRestHandler(handler: AbstractRestHandler): Configurer {
+        fun <T : AbstractRestHandler> withRestHandler(handler: T): Configurer {
             routes.add(handler)
             return this
         }

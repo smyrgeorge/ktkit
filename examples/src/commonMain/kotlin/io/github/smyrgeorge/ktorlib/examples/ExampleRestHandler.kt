@@ -1,7 +1,6 @@
 package io.github.smyrgeorge.ktorlib.examples
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktorlib.examples.service.UserService
 import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.Route
@@ -65,4 +64,3 @@ class ExampleRestHandler(
         }
     }
 }
-

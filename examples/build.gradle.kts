@@ -10,7 +10,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":ktorlib"))
-                api(libs.koin.core)
             }
         }
     }

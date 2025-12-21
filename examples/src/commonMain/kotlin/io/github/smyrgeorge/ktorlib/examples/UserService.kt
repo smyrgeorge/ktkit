@@ -1,6 +1,5 @@
-package io.github.smyrgeorge.ktorlib.examples.service
+package io.github.smyrgeorge.ktorlib.examples
 
-import io.github.smyrgeorge.ktorlib.examples.repository.UserRepository
 import io.github.smyrgeorge.log4k.Logger
 
 interface UserService {

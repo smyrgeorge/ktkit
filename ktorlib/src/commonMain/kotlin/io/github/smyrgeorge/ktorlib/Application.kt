@@ -8,23 +8,50 @@ import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.util.ANONYMOUS_USER
 import io.github.smyrgeorge.ktorlib.util.SYSTEM_USER
 import io.github.smyrgeorge.ktorlib.util.applicationLogger
+import io.github.smyrgeorge.ktorlib.util.getAll
 import io.github.smyrgeorge.ktorlib.util.httpEngine
+import io.github.smyrgeorge.ktorlib.util.registerShutdownHook
+import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.RootLogger
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.routing.*
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
+import io.ktor.server.application.log
+import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.EmbeddedServer
+import io.ktor.server.engine.EngineConnectorBuilder
+import io.ktor.server.engine.applicationEnvironment
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
+import org.koin.core.KoinApplication
+import org.koin.core.context.startKoin
+import org.koin.core.module.Module
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import io.ktor.server.application.Application as KtorApplication
 
+@Suppress("unused")
 class Application(
     private val name: String,
     private val host: String = "localhost",
     private val port: Int = 8080,
     private val configure: Configurer.() -> Unit = {}
 ) {
+    private val log: Logger = Logger.of(name)
+
+    private var _di: KoinApplication? = null
+    private var _ktor: KtorApplication? = null
+    private var _server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>? = null
+
+    val di: KoinApplication
+        get() = _di ?: error("Koin Application not initialized. Run start() first.")
+    val ktor: KtorApplication
+        get() = _ktor ?: error("Ktor Application not initialized. Run start() first.")
+    val server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>
+        get() = _server ?: error("Ktor Server not initialized. Run start() first.")
+
     private fun makeServer(): EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration> = embeddedServer(
         factory = httpEngine(),
         environment = applicationEnvironment {
@@ -39,106 +66,128 @@ class Application(
             )
         },
         module = {
-            val configurer = Configurer(this)
-            configure(configurer)
-            configurer.configure()
+            _ktor = this
+            Configurer(this@Application, this).apply(configure).configure()
         }
     )
 
     fun start(wait: Boolean = true) {
-        makeServer().start(wait)
+        makeServer().apply {
+            _server = this
+            registerShutdownHook()
+        }.start(wait)
     }
 
-    @Suppress("unused")
+    fun shutdown(gracePeriod: Duration = 1.seconds, timeout: Duration = 5.seconds) {
+        log.info("Shutting down...")
+        di.close()
+        server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)
+    }
+
     class Configurer(
-        private val application: KtorApplication
+        private val app: Application,
+        private val ktor: KtorApplication
     ) {
+        private var module: Module = Module()
+        private var json: Json = Json { default() }
         private var authenticationExtractor: PrincipalExtractor? = null
         private var routes: MutableList<AbstractRestHandler> = mutableListOf()
         private var other: KtorApplication.() -> Unit = {}
-        private var json: Json = Json {
+
+        fun di(config: Module.() -> Unit) {
+            module.config()
+        }
+
+
+        fun withSystemUser(user: UserToken) {
+            SYSTEM_USER = user
+        }
+
+        fun withAnonymoousUser(user: UserToken) {
+            ANONYMOUS_USER = user
+        }
+
+        fun withAuthenticationExtractor(extractor: PrincipalExtractor) {
+            authenticationExtractor = extractor
+        }
+
+        internal fun <T : AbstractRestHandler> withRestHandler(handler: T) {
+            routes.add(handler)
+        }
+
+        internal fun withRestHandlers(vararg handlers: AbstractRestHandler) {
+            routes.addAll(handlers)
+        }
+
+        internal fun withRestHandlers(handlers: List<AbstractRestHandler>) {
+            routes.addAll(handlers)
+        }
+
+        fun logging(config: RootLogger.Logging.() -> Unit) {
+            RootLogger.Logging.config()
+        }
+
+        fun tracing(config: RootLogger.Tracing.() -> Unit) {
+            RootLogger.Tracing.config()
+        }
+
+        fun metering(config: RootLogger.Metering.() -> Unit) {
+            RootLogger.Metering.config()
+        }
+
+        private fun JsonBuilder.default() {
             isLenient = true
             prettyPrint = false
             ignoreUnknownKeys = true
             explicitNulls = false
         }
 
-        fun withSystemUser(user: UserToken): Configurer {
-            SYSTEM_USER = user
-            return this
+        fun json(config: JsonBuilder.() -> Unit) {
+            json = Json {
+                default()
+                config()
+            }
         }
 
-        fun withAnonymoousUser(user: UserToken): Configurer {
-            ANONYMOUS_USER = user
-            return this
+        fun ktor(config: KtorApplication.() -> Unit) {
+            this.other = config
         }
 
-        fun withAuthenticationExtractor(extractor: PrincipalExtractor): Configurer {
-            authenticationExtractor = extractor
-            return this
-        }
-
-        fun <T : AbstractRestHandler> withRestHandler(handler: T): Configurer {
-            routes.add(handler)
-            return this
-        }
-
-        fun withRestHandlers(vararg handlers: AbstractRestHandler): Configurer {
-            routes.addAll(handlers)
-            return this
-        }
-
-        fun withRestHandlers(handlers: List<AbstractRestHandler>): Configurer {
-            routes.addAll(handlers)
-            return this
-        }
-
-        fun logging(config: RootLogger.Logging.() -> Unit): Configurer {
-            RootLogger.Logging.config()
-            return this
-        }
-
-        fun tracing(config: RootLogger.Tracing.() -> Unit): Configurer {
-            RootLogger.Tracing.config()
-            return this
-        }
-
-        fun metering(config: RootLogger.Metering.() -> Unit): Configurer {
-            RootLogger.Metering.config()
-            return this
-        }
-
-        fun json(builder: JsonBuilder.() -> Unit): Configurer {
-            json = Json { builder() }
-            return this
-        }
-
-        fun ktor(other: KtorApplication.() -> Unit): Configurer {
-            this.other = other
-            return this
-        }
-
-        internal fun configure(): KtorApplication = application.apply {
-            // Install exception handling for structured error responses.
-            installExceptionHandling()
-
-            // Install content negotiation for JSON serialization
-            install(ContentNegotiation) {
-                json(json)
+        internal fun configure() {
+            // Start Koin.
+            startKoin { modules(module) }.apply {
+                app._di = this
+                // Auto register discovered REST handlers.
+                withRestHandlers(getAll<AbstractRestHandler>())
             }
 
-            // Install authentication.
-            authenticationExtractor?.let { installAuthenticationProvider { extractor = it } }
+            ktor.apply {
+                // Install exception handling for structured error responses.
+                installExceptionHandling()
 
-            // Register routes.
-            routing {
-                routes.forEach {
-                    log.info("Registering REST Handler: ${it::class.simpleName}")
-                    with(it) { routes() }
+                // Install content negotiation for JSON serialization
+                install(ContentNegotiation) {
+                    json(json)
                 }
-            }
 
-            other()
+                // Install authentication.
+                authenticationExtractor?.let { installAuthenticationProvider { extractor = it } }
+
+                // Register routes.
+                routing {
+                    routes.forEach {
+                        log.info("Registering REST Handler: ${it::class.simpleName}")
+                        with(it) { routes() }
+                    }
+                }
+
+                // Other configuration for Ktor.
+                other()
+            }
         }
+    }
+
+    companion object {
+        lateinit var INSTANCE: Application
     }
 }

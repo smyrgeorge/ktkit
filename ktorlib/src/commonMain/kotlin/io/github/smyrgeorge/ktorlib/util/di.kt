@@ -17,4 +17,3 @@ inline fun <reified T : AbstractComponent> KoinApplication.get(
 ): T = koin.get(qualifier, parameters)
 
 inline fun <reified T : AbstractComponent> KoinApplication.getAll(): List<T> = koin.getAll()
-

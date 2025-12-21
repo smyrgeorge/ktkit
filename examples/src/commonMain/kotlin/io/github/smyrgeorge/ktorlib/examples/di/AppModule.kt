@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktorlib.examples.di
 
+import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.examples.ExampleRestHandler
 import io.github.smyrgeorge.ktorlib.examples.repository.UserRepository
 import io.github.smyrgeorge.ktorlib.examples.repository.UserRepositoryImpl
@@ -17,5 +18,5 @@ val appModule = module {
     singleOf(::UserServiceImpl) { bind<UserService>() }
 
     // REST Handlers
-    singleOf(::ExampleRestHandler)
+    singleOf(::ExampleRestHandler) { bind<AbstractRestHandler>() }
 }

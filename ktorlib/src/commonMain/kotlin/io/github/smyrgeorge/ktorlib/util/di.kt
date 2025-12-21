@@ -15,3 +15,6 @@ inline fun <reified T : AbstractComponent> KoinApplication.get(
     qualifier: Qualifier? = null,
     noinline parameters: ParametersDefinition? = null
 ): T = koin.get(qualifier, parameters)
+
+inline fun <reified T : AbstractComponent> KoinApplication.getAll(): List<T> = koin.getAll()
+

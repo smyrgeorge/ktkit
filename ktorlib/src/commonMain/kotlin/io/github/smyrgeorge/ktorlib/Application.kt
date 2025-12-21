@@ -70,6 +70,16 @@ class Application(
             return this
         }
 
+        fun withRestHandlers(vararg handlers: AbstractRestHandler): Configurer {
+            routes.addAll(handlers)
+            return this
+        }
+
+        fun withRestHandlers(handlers: List<AbstractRestHandler>): Configurer {
+            routes.addAll(handlers)
+            return this
+        }
+
         fun logging(config: RootLogger.Logging.() -> Unit): Configurer {
             RootLogger.Logging.config()
             return this

@@ -75,6 +75,7 @@ abstract class AbstractRestHandler(
         val user = call.principal<UserToken>()
             ?: UnauthorizedImpl("User is not authenticated").ex()
 
+        // Role based authorization.
         hasRole?.let { role -> user.requireRole(role) }
         hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
         hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
@@ -83,10 +84,7 @@ abstract class AbstractRestHandler(
 
         // Check that user has access to the corresponding resources.
         val hasAccess = this.permissions(context.httpRequest) && permissions(context.httpRequest)
-        if (!hasAccess) ForbiddenImpl("User does not have access to uri='${context.httpRequest.uri()}'.").ex()
-
-        // Clears the [Context] here (ensures no leftovers).
-        context.clear()
+        if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${context.httpRequest.uri()}'").ex()
 
         val result = withContext(context) { context.httpRequest.f() }
         when (result) {
@@ -96,6 +94,9 @@ abstract class AbstractRestHandler(
             is Unit -> call.respond(successCode)
             else -> call.respond(successCode, result as Any)
         }
+
+        // Clears the [Context] here (ensures no leftovers).
+        context.clear()
     }
 
     /**

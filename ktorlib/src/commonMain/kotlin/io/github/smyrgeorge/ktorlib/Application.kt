@@ -74,6 +74,7 @@ class Application(
     fun start(wait: Boolean = true) {
         makeServer().apply {
             _server = this
+            INSTANCE = this@Application
             registerShutdownHook()
         }.start(wait)
     }

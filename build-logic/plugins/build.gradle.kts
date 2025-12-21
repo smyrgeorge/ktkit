@@ -8,6 +8,10 @@ gradlePlugin {
             id = "io.github.smyrgeorge.ktorlib.multiplatform"
             implementationClass = "io.github.smyrgeorge.ktorlib.multiplatform.MultiplatformConventions"
         }
+        create("multiplatform.binaries") {
+            id = "io.github.smyrgeorge.ktorlib.multiplatform.binaries"
+            implementationClass = "io.github.smyrgeorge.ktorlib.multiplatform.MultiplatformBinariesConventions"
+        }
         create("publish") {
             id = "io.github.smyrgeorge.ktorlib.publish"
             implementationClass = "io.github.smyrgeorge.ktorlib.publish.PublishConventions"

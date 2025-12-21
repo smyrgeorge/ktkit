@@ -41,11 +41,12 @@ object ExceptionHandler {
      */
     private suspend fun handleInternalError(call: ApplicationCall, cause: InternalError) {
         val error = cause.error
+        // TODO: handle request it correctly
         val requestId = call.request.headers["X-Request-ID"]
 
         // Only log server errors (5xx)
         if (error.http.code >= 500) {
-            log.error("InternalError: ${error.type} - ${error.message}", cause)
+            log.error(cause.message ?: "null", cause)
         }
 
         val apiError = ApiError(
@@ -70,9 +71,10 @@ object ExceptionHandler {
      * @param cause The [Throwable] representing the unexpected error that occurred.
      */
     private suspend fun handleUnknownError(call: ApplicationCall, cause: Throwable) {
+        // TODO: handle request it correctly
         val requestId = call.request.headers["X-Request-ID"]
 
-        log.error("Unknown error occurred", cause)
+        log.error(cause.message ?: "null", cause)
 
         val error = UnknownError(cause.message ?: "An unknown error occurred")
         val apiError = ApiError(

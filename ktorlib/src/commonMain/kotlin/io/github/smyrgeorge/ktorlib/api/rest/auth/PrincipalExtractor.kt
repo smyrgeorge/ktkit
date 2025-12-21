@@ -4,32 +4,33 @@ import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.ktor.server.application.ApplicationCall
 
 /**
- * Interface for extracting user authentication information from HTTP requests.
+ * Defines a contract for extracting a [UserToken] from an incoming [ApplicationCall].
  *
- * Implementations should define how to extract user tokens from specific
- * authentication mechanisms (e.g., Bearer tokens, custom headers, API keys, etc.).
+ * Implementations of this interface are responsible for interpreting the HTTP request
+ * to authenticate and extract any relevant user credentials or metadata. The extracted
+ * result can either be a valid user token or null, wrapped in a [Result] to account for
+ * potential errors during the extraction process.
  *
- * Built-in implementations:
- * - [io.github.smyrgeorge.ktorlib.api.rest.auth.impl.XRealNamePrincipalExtractor] - Extracts user from Base64-encoded JSON header
+ * This interface is typically used in conjunction with authentication providers
+ * to enable custom logic for principal extraction.
  *
- * Creating a custom extractor:
- * ```
- * class CustomExtractor : AuthenticationExtractor {
- *     override suspend fun extract(call: ApplicationCall): UserToken? {
- *         val token = call.request.headers["X-Custom-Auth"] ?: return null
- *         // Parse and validate token
- *         return UserToken(...)
- *     }
- * }
- * ```
+ * @see UserToken
+ * @see ApplicationCall
  */
 interface PrincipalExtractor {
-
     /**
-     * Extracts user authentication from the ApplicationCall.
+     * Extracts a [UserToken] from the given [ApplicationCall].
      *
-     * @param call The Ktor ApplicationCall containing the HTTP request
-     * @return UserToken if authentication is successful, null otherwise
+     * This method is responsible for parsing the incoming HTTP request represented by
+     * the [ApplicationCall] to extract authentication information. The result of this
+     * operation is a [UserToken], if the extraction is successful, or null if no valid
+     * token could be resolved. Any errors encountered during the process are captured
+     * within the [Result] wrapper.
+     *
+     * @param call The [ApplicationCall] representing the incoming HTTP request from
+     * which the [UserToken] will be extracted.
+     * @return A [Result] containing a [UserToken] if extraction is successful,
+     * null if no token could be resolved, or an exception if an error occurs.
      */
-    suspend fun extract(call: ApplicationCall): UserToken?
+    suspend fun extract(call: ApplicationCall): Result<UserToken?>
 }

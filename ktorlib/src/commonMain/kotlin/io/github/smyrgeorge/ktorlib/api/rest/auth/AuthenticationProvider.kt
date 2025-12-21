@@ -5,34 +5,35 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.AuthenticationContext
+import io.ktor.util.logging.Logger
 import io.ktor.server.auth.AuthenticationProvider as KtorAuthenticationProvider
 
 /**
- * AuthenticationProvider is a Ktor authentication provider designed to integrate
- * flexible and customizable authentication mechanisms within a Ktor application.
+ * Represents an authentication provider for Ktor applications.
  *
- * This implementation relies on an [PrincipalExtractor] to parse authentication
- * information from incoming HTTP requests, providing an authenticated principal if successful.
+ * This class is responsible for managing authentication mechanisms based on user tokens
+ * extracted from incoming HTTP requests. It integrates with Ktor's authentication system
+ * and provides functionality for validating and assigning authenticated principals.
  *
- * @constructor Instantiates the AuthenticationProvider with the specified configuration.
- * @param config Configuration containing the required [PrincipalExtractor].
+ * @constructor Creates an instance of the authentication provider using the given configuration.
+ * @param config A configuration object containing the necessary components such as logger and principal extractor.
  */
 class AuthenticationProvider(
     private val config: Config
 ) : KtorAuthenticationProvider(config) {
     override suspend fun onAuthenticate(context: AuthenticationContext) {
-        val call = context.call
-        val userToken: UserToken? = config.extractor.extract(call)
-
-        if (userToken != null) {
-            context.principal(userToken)
-        }
+        val userToken: Result<UserToken?> = config.extractor.extract(context.call)
+        userToken
+            .onSuccess { it?.let { context.principal(config.name, it) } }
+            .onFailure { config.log.debug("Failed to extract user token from request: ${it.message}") }
     }
 
     class Config(
+        val log: Logger,
         val extractor: PrincipalExtractor
     ) : KtorAuthenticationProvider.Config(extractor::class.simpleName ?: "extractor-${extractor.hashCode()}") {
-        class Template {
+        class Builder {
+            var log: Logger? = null
             var extractor: PrincipalExtractor? = null
         }
     }
@@ -51,13 +52,12 @@ class AuthenticationProvider(
          * }
          *
          */
-        fun Application.installAuthenticationProvider(configure: Config.Template.() -> Unit) {
+        fun Application.installAuthenticationProvider(configure: Config.Builder.() -> Unit) {
             install(Authentication) {
-                val config = Config.Template().apply(configure)
-                val extractor = config.extractor
-                    ?: error("AuthenticationExtractor must be configured in ktorlib authentication provider")
-
-                val provider = AuthenticationProvider(Config(extractor))
+                val config = Config.Builder().apply(configure)
+                val log = config.log ?: error("Logger must be configured in ktorlib authentication provider")
+                val extractor = config.extractor ?: error("AuthenticationExtractor must be configured in ktorlib authentication provider")
+                val provider = AuthenticationProvider(Config(log, extractor))
                 register(provider)
             }
         }

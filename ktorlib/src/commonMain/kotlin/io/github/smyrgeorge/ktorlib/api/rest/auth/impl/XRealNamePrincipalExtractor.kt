@@ -22,13 +22,15 @@ class XRealNamePrincipalExtractor : PrincipalExtractor {
     private val headerName: String = "x-real-name"
     private val serde: Json = Json { ignoreUnknownKeys = true }
 
-    override suspend fun extract(call: ApplicationCall): UserToken? {
-        val header = call.request.headers[headerName] ?: return null
-        return try {
-            val json = Base64.decode(header).decodeToString()
-            serde.decodeFromString<UserToken>(json)
-        } catch (e: Exception) {
-            UnauthorizedImpl("Cannot extract $headerName header: ${e.message}").ex(e)
+    override suspend fun extract(call: ApplicationCall): Result<UserToken?> {
+        return runCatching {
+            val header = call.request.headers[headerName] ?: return@runCatching null
+            return@runCatching try {
+                val json = Base64.decode(header).decodeToString()
+                serde.decodeFromString<UserToken>(json)
+            } catch (e: Exception) {
+                UnauthorizedImpl("Cannot extract $headerName header: ${e.message}").ex(e)
+            }
         }
     }
 }

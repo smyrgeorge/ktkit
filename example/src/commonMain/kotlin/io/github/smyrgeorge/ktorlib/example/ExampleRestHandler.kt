@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.examples
+package io.github.smyrgeorge.ktorlib.example
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.log4k.Logger

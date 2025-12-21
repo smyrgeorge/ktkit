@@ -16,11 +16,11 @@ kotlin {
 }
 
 tasks.named<Jar>("jvmJar") {
-    archiveFileName.set("examples.jar")
+    archiveFileName.set("example.jar")
 
     manifest {
         attributes(
-            "Main-Class" to "io.github.smyrgeorge.ktorlib.examples.MainKt"
+            "Main-Class" to "io.github.smyrgeorge.ktorlib.example.MainKt"
         )
     }
 

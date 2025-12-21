@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
+import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.context.Context
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
@@ -53,6 +54,25 @@ abstract class AbstractRestHandler(
     abstract fun Route.routes()
 
     /**
+     * Responds to an HTTP request based on the type of the provided result.
+     *
+     * Supports the following result types:
+     * - Flow<*>: Responds with a filtered Flow, excluding null values.
+     * - Unit: Responds with the provided success code, typically indicating success without a body.
+     * - Any other type: Responds with the provided success code and the result serialized as the response body.
+     *
+     * @param result The response body or stream to return to the client.
+     * @param successCode The HTTP status code indicating a successful response.
+     */
+    private suspend inline fun <T> ApplicationCall.respond(result: T, successCode: HttpStatusCode) {
+        when (result) {
+            is Flow<*> -> respond(successCode, result.filterNotNull())
+            is Unit -> respond(successCode)
+            else -> respond(successCode, result as Any)
+        }
+    }
+
+    /**
      * Handles a request and automatically responds based on the result type.
      *
      * Supports:
@@ -88,12 +108,14 @@ abstract class AbstractRestHandler(
         if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpRequest.uri()}'").ex()
 
         val result = withContext(context) { httpRequest.f() }
+
         when (result) {
-            // TODO: handle Result<*>
             // TODO: handle Either<*, *>
-            is Flow<*> -> call.respond(successCode, result.filterNotNull())
-            is Unit -> call.respond(successCode)
-            else -> call.respond(successCode, result as Any)
+            is Result<*> -> result.fold(
+                onSuccess = { value -> call.respond(value, successCode) },
+                onFailure = { throw it }
+            )
+            else -> call.respond(result, successCode)
         }
 
         // Clears the [Context] here (ensures no leftovers).

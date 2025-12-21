@@ -32,10 +32,17 @@ import kotlinx.coroutines.withContext
  * @property permissions Default permission check function that can be overridden in each
  * route handler. Ensures that the API request is authorized based on custom logic.
  */
-@Suppress("FunctionName", "unused")
+@Suppress("FunctionName", "unused", "CanBePrimaryConstructorProperty")
 abstract class AbstractRestHandler(
+    hasRole: String? = null,
+    hasAnyRole: List<String>? = null,
+    hasAllRoles: List<String>? = null,
     private val permissions: HttpRequest.() -> Boolean = { true }
 ) : AbstractComponent {
+
+    private val hasRole: String? = hasRole
+    private val hasAnyRole: Array<String>? = hasAnyRole?.toTypedArray()
+    private val hasAllRoles: Array<String>? = hasAllRoles?.toTypedArray()
 
     /**
      * Helper method used to build the base path.
@@ -61,12 +68,16 @@ abstract class AbstractRestHandler(
     private suspend inline fun <T> handle(
         call: ApplicationCall,
         permissions: HttpRequest.() -> Boolean,
-        successCode: HttpStatusCode = HttpStatusCode.OK,
+        successCode: HttpStatusCode,
         crossinline f: suspend HttpRequest.() -> T
     ) {
         // Get the authenticated user from the call (set by Ktor's Authentication plugin)
         val user = call.principal<UserToken>()
             ?: UnauthorizedImpl("User is not authenticated").ex()
+
+        hasRole?.let { role -> user.requireRole(role) }
+        hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
+        hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
 
         val context = Context.of(call = call, user = user)
 

@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktorlib.context
 
+import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -58,4 +59,36 @@ data class UserToken(
      * @return true if the user has all of the roles, false otherwise
      */
     fun hasAllRoles(vararg roles: String): Boolean = roles.all { this.roles.contains(it) }
+
+    /**
+     * Ensures that the user possesses the specified role. Throws an error if the role is not assigned to the user.
+     *
+     * @param role The name of the role required for the operation.
+     * @throws ForbiddenImpl If the user does not have the specified role.
+     */
+    fun requireRole(role: String) {
+        if (!hasRole(role)) ForbiddenImpl("User does not have authority $role").ex()
+    }
+
+    /**
+     * Ensures that the user possesses at least one of the specified roles.
+     * Throws an error if the user does not have any of the roles.
+     *
+     * @param roles The role names to check. One or more roles that the user must have at least one of.
+     * @throws ForbiddenImpl If the user does not have any of the specified roles.
+     */
+    fun requireAnyRole(vararg roles: String) {
+        if (!hasAnyRole(*roles)) ForbiddenImpl("User does not have authorities $roles").ex()
+    }
+
+    /**
+     * Ensures that the user possesses all of the specified roles.
+     * Throws an error if the user does not have all the required roles.
+     *
+     * @param roles The role names that the user must have. One or more roles to check.
+     * @throws ForbiddenImpl If the user does not have all of the specified roles.
+     */
+    fun requireAllRoles(vararg roles: String) {
+        if (!hasAllRoles(*roles)) ForbiddenImpl("User does not have authorities $roles").ex()
+    }
 }

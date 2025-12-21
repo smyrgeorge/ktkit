@@ -21,21 +21,18 @@ kotlin {
                 api(libs.ktor.server.status.pages)
                 api(libs.ktor.serialization.kotlinx.json)
                 api(libs.log4k)
-                api("io.insert-koin:koin-core:3.5.3")
-//                api("io.insert-koin:koin-ktor:3.5.3")
+                api(libs.koin.core)
             }
         }
         jvmMain {
             dependencies {
                 implementation(libs.log4k.slf4j)
                 implementation(libs.ktor.server.netty)
-                api("io.insert-koin:koin-core:3.5.3")
             }
         }
         nativeMain {
             dependencies {
                 implementation(libs.ktor.server.cio)
-                api("io.insert-koin:koin-core:3.5.3")
             }
         }
     }

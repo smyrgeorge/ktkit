@@ -9,7 +9,7 @@ import org.koin.core.module.dsl.singleOf
 
 fun start() {
     Application(
-        name = "io.github.smyrgeorge.ktorlib.examples.Application",
+        name = "io.github.smyrgeorge.ktorlib.example.Application",
         host = "localhost",
         port = 8080,
         configure = {
@@ -17,7 +17,7 @@ fun start() {
             di {
                 singleOf(::UserServiceImpl) { bind<UserService>() }
                 singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
-                singleOf(::ExampleRestHandler) { bind<AbstractRestHandler>() }
+                singleOf(::UserRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
             }
         }

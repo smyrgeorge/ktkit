@@ -5,7 +5,7 @@ import io.github.smyrgeorge.log4k.Logger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.Route
 
-class ExampleRestHandler(
+class UserRestHandler(
     private val userService: UserService  // Injected via constructor
 ) : AbstractRestHandler() {
 

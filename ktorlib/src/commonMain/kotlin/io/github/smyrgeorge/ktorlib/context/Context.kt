@@ -1,10 +1,7 @@
 package io.github.smyrgeorge.ktorlib.context
 
-import io.github.smyrgeorge.ktorlib.api.rest.Request
-import io.github.smyrgeorge.ktorlib.error.types.MissingParameter
-import io.github.smyrgeorge.ktorlib.error.types.UnsupportedEnumValue
+import io.github.smyrgeorge.ktorlib.api.rest.HttpRequest
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
@@ -29,7 +26,7 @@ data class Context(
     private var call: ApplicationCall? = null,
 ) : CoroutineContext.Element {
 
-    val httpRequest: Request = Request(call)
+    val httpRequest: HttpRequest = HttpRequest(call)
 
     /**
      * Clears the [Context] from possible left-overs.

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 
-@Suppress("FunctionName")
+@Suppress("FunctionName", "unused")
 abstract class AbstractRestHandler(
     private val permissions: (ctx: Context) -> Boolean = { true }
 ) : AbstractComponent {
@@ -51,7 +51,7 @@ abstract class AbstractRestHandler(
         successCode: HttpStatusCode = HttpStatusCode.OK,
         crossinline f: suspend Context.() -> T
     ) {
-        val request = Request(call)
+        val request = HttpRequest(call)
         // Get the authenticated user from the call (set by Ktor's Authentication plugin)
         val user = call.principal<UserToken>()
             ?: UnauthorizedImpl("User is not authenticated").ex()

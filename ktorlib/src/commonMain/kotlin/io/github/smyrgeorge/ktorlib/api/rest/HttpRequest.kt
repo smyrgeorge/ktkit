@@ -13,7 +13,7 @@ import io.ktor.server.request.uri
  * @property call The underlying application call associated with the request.
  */
 @Suppress("unused")
-class Request(
+class HttpRequest(
     internal var call: ApplicationCall?
 ) {
     private val httpCall: ApplicationCall get() = call ?: error("ApplicationCall is null.")

@@ -4,6 +4,8 @@ import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 /**
  * Represents a user authentication token containing user information and metadata.
@@ -23,7 +25,8 @@ import kotlinx.serialization.json.JsonObject
  */
 @Serializable
 data class UserToken(
-    val uuid: String,
+    @OptIn(ExperimentalUuidApi::class)
+    val uuid: Uuid,
     val username: String,
     val email: String? = null,
     val name: String? = null,

@@ -4,6 +4,9 @@ import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.api.rest.ExceptionHandler.installExceptionHandling
 import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationProvider.Companion.installAuthenticationProvider
 import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
+import io.github.smyrgeorge.ktorlib.context.UserToken
+import io.github.smyrgeorge.ktorlib.util.ANONYMOUS_USER
+import io.github.smyrgeorge.ktorlib.util.SYSTEM_USER
 import io.github.smyrgeorge.ktorlib.util.applicationLogger
 import io.github.smyrgeorge.ktorlib.util.httpEngine
 import io.github.smyrgeorge.log4k.RootLogger
@@ -58,6 +61,16 @@ class Application(
             prettyPrint = false
             ignoreUnknownKeys = true
             explicitNulls = false
+        }
+
+        fun withSystemUser(user: UserToken): Configurer {
+            SYSTEM_USER = user
+            return this
+        }
+
+        fun withAnonymoousUser(user: UserToken): Configurer {
+            ANONYMOUS_USER = user
+            return this
         }
 
         fun withAuthenticationExtractor(extractor: PrincipalExtractor): Configurer {

@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktorlib.api.rest.auth
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.application.log
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.AuthenticationContext
 import io.ktor.util.logging.Logger
@@ -33,7 +34,6 @@ class AuthenticationProvider(
         val extractor: PrincipalExtractor
     ) : KtorAuthenticationProvider.Config(extractor::class.simpleName ?: "extractor-${extractor.hashCode()}") {
         class Builder {
-            var log: Logger? = null
             var extractor: PrincipalExtractor? = null
         }
     }
@@ -55,7 +55,7 @@ class AuthenticationProvider(
         fun Application.installAuthenticationProvider(configure: Config.Builder.() -> Unit) {
             install(Authentication) {
                 val config = Config.Builder().apply(configure)
-                val log = config.log ?: error("Logger must be configured in ktorlib authentication provider")
+                val log = this@installAuthenticationProvider.log
                 val extractor = config.extractor ?: error("AuthenticationExtractor must be configured in ktorlib authentication provider")
                 val provider = AuthenticationProvider(Config(log, extractor))
                 register(provider)

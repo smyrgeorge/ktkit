@@ -1,6 +1,5 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
-import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.context.Context
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl

@@ -26,7 +26,7 @@ data class Context(
     private var call: ApplicationCall? = null,
 ) : CoroutineContext.Element {
 
-    val httpRequest: HttpRequest = HttpRequest(call)
+    val httpRequest: HttpRequest = HttpRequest(user, call)
 
     /**
      * Clears the [Context] from possible left-overs.

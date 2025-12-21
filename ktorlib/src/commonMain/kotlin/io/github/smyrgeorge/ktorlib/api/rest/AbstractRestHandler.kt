@@ -72,21 +72,22 @@ abstract class AbstractRestHandler(
         crossinline f: suspend HttpRequest.() -> T
     ) {
         // Get the authenticated user from the call (set by Ktor's Authentication plugin)
-        val user = call.principal<UserToken>()
-            ?: UnauthorizedImpl("User is not authenticated").ex()
+        val user = call.principal<UserToken>() ?: UnauthorizedImpl("User is not authenticated").ex()
 
         // Role based authorization.
         hasRole?.let { role -> user.requireRole(role) }
         hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
         hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
 
+        // Create the context for the request.
         val context = Context.of(call = call, user = user)
+        val httpRequest = context.httpRequest
 
         // Check that user has access to the corresponding resources.
-        val hasAccess = this.permissions(context.httpRequest) && permissions(context.httpRequest)
-        if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${context.httpRequest.uri()}'").ex()
+        val hasAccess = this.permissions(httpRequest) && permissions(httpRequest)
+        if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpRequest.uri()}'").ex()
 
-        val result = withContext(context) { context.httpRequest.f() }
+        val result = withContext(context) { httpRequest.f() }
         when (result) {
             // TODO: handle Result<*>
             // TODO: handle Either<*, *>

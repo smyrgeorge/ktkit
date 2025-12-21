@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
+import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.MissingParameter
 import io.github.smyrgeorge.ktorlib.error.types.UnsupportedEnumValue
 import io.ktor.server.application.ApplicationCall
@@ -7,14 +8,16 @@ import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.uri
 
 /**
- * Represents a wrapper for an incoming application call request, providing utilities
- * to access request data such as path variables, query parameters, headers, and the URI.
+ * Represents an HTTP request, encapsulating user authentication information and
+ * providing methods for retrieving various HTTP request parameters and headers.
  *
- * @property call The underlying application call associated with the request.
+ * @property user The authenticated user's token containing user data and permissions
+ * @property call The application call associated with this request, or null if not available
  */
 @Suppress("unused")
 class HttpRequest(
-    internal var call: ApplicationCall?
+    val user: UserToken,
+    internal var call: ApplicationCall?,
 ) {
     private val httpCall: ApplicationCall get() = call ?: error("ApplicationCall is null.")
     private val httpRequest: ApplicationRequest get() = httpCall.request

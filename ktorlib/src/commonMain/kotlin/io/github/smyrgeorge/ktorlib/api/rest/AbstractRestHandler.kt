@@ -19,9 +19,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 
+/**
+ * Abstract base class for defining RESTful API handlers with integrated route handling,
+ * permission checks, and response management.
+ *
+ * This class provides a structured way to define API routes using Ktor's routing mechanism,
+ * with built-in support for handling permissions, different HTTP methods, and response types.
+ *
+ * Subclasses need to implement the `uri` method for building base paths and the `routes`
+ * method for defining specific API routes.
+ *
+ * @property permissions Default permission check function that can be overridden in each
+ * route handler. Ensures that the API request is authorized based on custom logic.
+ */
 @Suppress("FunctionName", "unused")
 abstract class AbstractRestHandler(
-    private val permissions: (ctx: Context) -> Boolean = { true }
+    private val permissions: HttpRequest.() -> Boolean = { true }
 ) : AbstractComponent {
 
     /**
@@ -47,11 +60,10 @@ abstract class AbstractRestHandler(
      */
     private suspend inline fun <T> handle(
         call: ApplicationCall,
-        permissions: (ctx: Context) -> Boolean,
+        permissions: HttpRequest.() -> Boolean,
         successCode: HttpStatusCode = HttpStatusCode.OK,
-        crossinline f: suspend Context.() -> T
+        crossinline f: suspend HttpRequest.() -> T
     ) {
-        val request = HttpRequest(call)
         // Get the authenticated user from the call (set by Ktor's Authentication plugin)
         val user = call.principal<UserToken>()
             ?: UnauthorizedImpl("User is not authenticated").ex()
@@ -59,13 +71,13 @@ abstract class AbstractRestHandler(
         val context = Context.of(call = call, user = user)
 
         // Check that user has access to the corresponding resources.
-        val hasAccess = this.permissions(context) && permissions(context)
+        val hasAccess = this.permissions(context.httpRequest) && permissions(context.httpRequest)
         if (!hasAccess) ForbiddenImpl("User does not have access to uri='${context.httpRequest.uri()}'.").ex()
 
         // Clears the [Context] here (ensures no leftovers).
         context.clear()
 
-        val result = withContext(context) { f(context) }
+        val result = withContext(context) { context.httpRequest.f() }
         when (result) {
             // TODO: handle Result<*>
             // TODO: handle Either<*, *>
@@ -85,9 +97,9 @@ abstract class AbstractRestHandler(
      */
     fun <T> Route.GET(
         path: String,
-        permissions: (ctx: Context) -> Boolean = { true },
+        permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend HttpRequest.() -> T
     ) {
         get(path.uri()) {
             handle(call, permissions, onSuccessHttpCode, handler)
@@ -104,9 +116,9 @@ abstract class AbstractRestHandler(
      */
     fun <T> Route.POST(
         path: String,
-        permissions: (ctx: Context) -> Boolean = { true },
+        permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpCode: HttpStatusCode = HttpStatusCode.Created,
-        handler: suspend Context.() -> T
+        handler: suspend HttpRequest.() -> T
     ) {
         post(path.uri()) {
             handle(call, permissions, onSuccessHttpCode, handler)
@@ -123,9 +135,9 @@ abstract class AbstractRestHandler(
      */
     fun <T> Route.PUT(
         path: String,
-        permissions: (ctx: Context) -> Boolean = { true },
+        permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend HttpRequest.() -> T
     ) {
         put(path.uri()) {
             handle(call, permissions, onSuccessHttpCode, handler)
@@ -142,9 +154,9 @@ abstract class AbstractRestHandler(
      */
     fun <T> Route.PATCH(
         path: String,
-        permissions: (ctx: Context) -> Boolean = { true },
+        permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend HttpRequest.() -> T
     ) {
         patch(path.uri()) {
             handle(call, permissions, onSuccessHttpCode, handler)
@@ -161,9 +173,9 @@ abstract class AbstractRestHandler(
      */
     fun <T> Route.DELETE(
         path: String,
-        permissions: (ctx: Context) -> Boolean = { true },
+        permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend HttpRequest.() -> T
     ) {
         delete(path.uri()) {
             handle(call, permissions, onSuccessHttpCode, handler)

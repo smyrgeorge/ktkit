@@ -8,15 +8,19 @@ import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 
 /**
- * Authentication extractor that retrieves user information from a custom header.
+ * Implementation of the [PrincipalExtractor] interface for extracting a [UserToken] from
+ * an HTTP request's `x-real-name` header.
  *
- * This extractor expects a Base64-encoded JSON representation of [io.github.smyrgeorge.ktorlib.context.UserToken]
- * in the specified header (default: "x-real-name").
+ * This extractor decodes a base64-encoded JSON string from the `x-real-name` header,
+ * deserializes the string into a [UserToken] object, and returns it as a [Result].
+ * If the header is missing or the decoding/deserialization fails, the method captures
+ * the error and returns it within the [Result].
  *
- * Common use cases:
- * - Internal service-to-service communication
- * - API gateway authentication forwarding
- * - Testing and development environments
+ * @constructor Initializes the extractor with a predefined header name (`x-real-name`)
+ * and a JSON serializer configured to ignore unknown keys during deserialization.
+ *
+ * @see PrincipalExtractor
+ * @see UserToken
  */
 class XRealNamePrincipalExtractor : PrincipalExtractor {
     private val headerName: String = "x-real-name"
@@ -25,7 +29,7 @@ class XRealNamePrincipalExtractor : PrincipalExtractor {
     override suspend fun extract(call: ApplicationCall): Result<UserToken?> {
         return runCatching {
             val header = call.request.headers[headerName] ?: return@runCatching null
-            return@runCatching try {
+            try {
                 val json = Base64.decode(header).decodeToString()
                 serde.decodeFromString<UserToken>(json)
             } catch (e: Exception) {

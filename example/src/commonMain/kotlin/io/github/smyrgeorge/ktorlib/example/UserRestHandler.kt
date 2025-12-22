@@ -6,6 +6,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.Route
 
 class UserRestHandler(
+    private val cTs: CTestService,
+    private val cpTs: CPTestService,
     private val userService: UserService  // Injected via constructor
 ) : AbstractRestHandler() {
 
@@ -19,6 +21,11 @@ class UserRestHandler(
             // Access user information from context
             log.info("User ${user.username} accessed /hello")
             "Hello, ${user.username}!"
+
+            // Context
+            cTs.test()
+            // Context Parameters
+            cpTs.test()
         }
 
         // Example 2: GET with permission check

@@ -2,6 +2,7 @@ package io.github.smyrgeorge.ktorlib.example.test
 
 import io.github.smyrgeorge.ktorlib.api.rest.impl.AnonymousRestHandler
 import io.github.smyrgeorge.log4k.Logger
+import io.github.smyrgeorge.log4k.Tracer
 import io.ktor.server.routing.Route
 
 class TestRestHandler(
@@ -9,14 +10,15 @@ class TestRestHandler(
 ) : AnonymousRestHandler() {
 
     override val log = Logger.of(this::class)
+    val tracer = Tracer.of(this::class)
 
     override fun String.uri(): String = "/api/v1/test$this"
 
     override fun Route.routes() {
         GET("") {
-            log.info("Hello, ${user.username}!")
-            testService.withTransaction {
-                testService.with(ctx(), this) {
+            tracer.span("test") {
+                log.info("Hello, ${user.username}!")
+                testService.withTransaction {
                     testService.findAll()
                 }
             }

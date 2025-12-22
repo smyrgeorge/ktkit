@@ -13,6 +13,7 @@ import io.github.smyrgeorge.ktorlib.example.user.UserRepositoryImpl
 import io.github.smyrgeorge.ktorlib.example.user.UserRestHandler
 import io.github.smyrgeorge.ktorlib.example.user.UserService
 import io.github.smyrgeorge.ktorlib.example.user.UserServiceImpl
+import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleConsoleTracingAppender
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
@@ -36,6 +37,11 @@ fun start() {
         port = 8080,
         configure = {
             withAuthenticationExtractor(XRealNamePrincipalExtractor())
+
+            tracing {
+                appenders.register(SimpleConsoleTracingAppender())
+            }
+
             di {
                 single { db }.bind<Driver>()
 

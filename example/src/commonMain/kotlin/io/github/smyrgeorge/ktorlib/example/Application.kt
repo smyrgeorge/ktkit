@@ -8,6 +8,17 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 
 fun start() {
+//    val options = ConnectionPool.Options.builder()
+//        .maxConnections(10)
+//        .build()
+//
+//    val db = postgreSQL(
+//        url = "postgresql://localhost:15432/test",
+//        username = "postgres",
+//        password = "postgres",
+//        options = options
+//    )
+
     Application(
         name = "io.github.smyrgeorge.ktorlib.example.Application",
         host = "localhost",

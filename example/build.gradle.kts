@@ -10,6 +10,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":ktorlib"))
+                api(libs.sqlx4k.postgres)
             }
         }
     }

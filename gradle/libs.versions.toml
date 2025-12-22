@@ -19,6 +19,8 @@ kotlinx-serialization = "1.9.0"
 ktor = "3.3.3"
 # https://github.com/InsertKoinIO/koin
 koin = "4.1.1"
+# https://github.com/smyrgeorge/sqlx4k
+sqlx4k = "1.5.0"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -44,6 +46,8 @@ ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", versio
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+sqlx4k = { module = "io.github.smyrgeorge:sqlx4k", version.ref = "sqlx4k" }
+sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

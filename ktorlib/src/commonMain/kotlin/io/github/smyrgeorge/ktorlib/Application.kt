@@ -104,7 +104,7 @@ class Application(
             SYSTEM_USER = user
         }
 
-        fun withAnonymoousUser(user: UserToken) {
+        fun withAnonymousUser(user: UserToken) {
             ANONYMOUS_USER = user
         }
 

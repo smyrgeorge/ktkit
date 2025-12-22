@@ -1,8 +1,8 @@
 package io.github.smyrgeorge.ktorlib.context
 
 import io.github.smyrgeorge.ktorlib.api.rest.HttpRequest
-import io.ktor.server.application.*
-import io.ktor.util.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.util.generateNonce
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant

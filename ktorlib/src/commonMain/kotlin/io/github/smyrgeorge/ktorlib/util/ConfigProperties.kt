@@ -10,7 +10,8 @@ object ConfigProperties {
         deserializer: DeserializationStrategy<T>,
         path: String
     ): T {
-        val map = parseToStringMap(readEntireFileUtf8(path))
+        val file = readEntireFileUtf8(path)
+        val map = parseToStringMap(file)
         return loadFromStringMap(deserializer, map)
     }
 

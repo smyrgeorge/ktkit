@@ -23,6 +23,7 @@ kotlin {
                 api(libs.ktor.serialization.kotlinx.json)
                 api(libs.log4k)
                 api(libs.koin.core)
+                api(libs.ktoml.core)
             }
         }
         jvmMain {

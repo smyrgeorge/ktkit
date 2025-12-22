@@ -9,8 +9,6 @@ publish = "0.35.0"
 dokka = "2.1.0"
 # https://github.com/smyrgeorge/log4k
 log4k = "1.1.2"
-# https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-slf4j = "2.0.17"
 # https://github.com/willowtreeapps/assertk
 assertk = "0.28.1"
 # https://github.com/Kotlin/kotlinx.serialization
@@ -30,29 +28,25 @@ gradle-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin",
 gradle-dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
-kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-properties = { module = "org.jetbrains.kotlinx:kotlinx-serialization-properties", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 log4k = { module = "io.github.smyrgeorge:log4k", version.ref = "log4k" }
-log4k-coroutines = { module = "io.github.smyrgeorge:log4k-coroutines", version.ref = "log4k" }
 log4k-slf4j = { module = "io.github.smyrgeorge:log4k-slf4j", version.ref = "log4k" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-slf4j-reload4j = { module = "org.slf4j:slf4j-reload4j", version.ref = "slf4j" }
+log4k-coroutines = { module = "io.github.smyrgeorge:log4k-coroutines", version.ref = "log4k" }
 assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
-ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 sqlx4k = { module = "io.github.smyrgeorge:sqlx4k", version.ref = "sqlx4k" }
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
 ktoml-core = { module = "com.akuleshov7:ktoml-core", version.ref = "ktoml" }
-ktoml-file = { module = "com.akuleshov7:ktoml-file", version.ref = "ktoml" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

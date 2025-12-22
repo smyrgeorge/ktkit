@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.example
+package io.github.smyrgeorge.ktorlib.example.user
 
 interface UserRepository {
     suspend fun findById(id: String): UserDto?

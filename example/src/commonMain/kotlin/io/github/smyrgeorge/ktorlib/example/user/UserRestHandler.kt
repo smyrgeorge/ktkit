@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.example
+package io.github.smyrgeorge.ktorlib.example.user
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.log4k.Logger
@@ -6,12 +6,12 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.Route
 
 class UserRestHandler(
-    private val cTs: CTestService,
-    private val cpTs: CPTestService,
+//    private val cTs: CTestService,
+//    private val cpTs: CPTestService,
     private val userService: UserService  // Injected via constructor
 ) : AbstractRestHandler() {
 
-    override val log = Logger.of(this::class)
+    override val log = Logger.Companion.of(this::class)
 
     override fun String.uri(): String = "/api/v1$this"
 
@@ -23,9 +23,9 @@ class UserRestHandler(
             "Hello, ${user.username}!"
 
             // Context
-            cTs.test()
+//            cTs.test()
             // Context Parameters
-            cpTs.test()
+//            cpTs.test()
         }
 
         // Example 2: GET with permission check
@@ -64,7 +64,7 @@ class UserRestHandler(
         // Example 5: Using custom success code
         GET(
             path = "/auto-respond",
-            onSuccessHttpStatusCode = HttpStatusCode.Accepted
+            onSuccessHttpStatusCode = HttpStatusCode.Companion.Accepted
         ) {
             log.info("Auto-responding for ${user.username}")
             mapOf("status" to "success", "data" to "Hello!")

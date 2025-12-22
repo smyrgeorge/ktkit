@@ -21,7 +21,7 @@ import kotlin.uuid.Uuid
 var SYSTEM_USER: UserToken =
     UserToken(
         uuid = Uuid.parse("00000000-0000-0000-0000-000000000000"),
-        username = "System",
+        username = "system",
         email = "system@internal.user",
         name = "System User",
         firstName = "System",
@@ -34,7 +34,7 @@ var SYSTEM_USER: UserToken =
  * This object can be used to identify or handle requests from unauthenticated users.
  * The `ANONYMOUS_USER` instance is initialized with default values such as:
  * - A universally unique identifier (UUID) specific to anonymous users.
- * - A generic username ("Anonymous").
+ * - A generic username ("anonymous").
  * - An email address set to "anonymous@internal.user".
  * - A user name and first/last names reflecting the anonymous role.
  *
@@ -43,7 +43,7 @@ var SYSTEM_USER: UserToken =
 var ANONYMOUS_USER: UserToken =
     UserToken(
         uuid = Uuid.parse("00000000-0000-0000-0000-000000000001"),
-        username = "Anonymous",
+        username = "anonymous",
         email = "anonymous@internal.user",
         name = "Anonymous User",
         firstName = "Anonymous",

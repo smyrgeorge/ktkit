@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.example
+package io.github.smyrgeorge.ktorlib.example.user
 
 import io.github.smyrgeorge.log4k.Logger
 

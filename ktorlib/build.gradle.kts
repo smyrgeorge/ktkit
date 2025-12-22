@@ -7,6 +7,9 @@ plugins {
 
 kotlin {
     sourceSets {
+        all {
+            languageSettings.enableLanguageFeature("ContextParameters")
+        }
         configureEach {
             languageSettings.progressiveMode = true
         }
@@ -24,6 +27,7 @@ kotlin {
                 api(libs.log4k)
                 api(libs.koin.core)
                 api(libs.ktoml.core)
+                api(libs.sqlx4k)
             }
         }
         jvmMain {

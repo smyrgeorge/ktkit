@@ -4,14 +4,25 @@ import io.github.smyrgeorge.ktorlib.Application
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.api.rest.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktorlib.api.rest.impl.ApplicationStatusRestHandler
+import io.github.smyrgeorge.ktorlib.example.generated.TestRepositoryImpl
+import io.github.smyrgeorge.ktorlib.example.test.TestRepository
+import io.github.smyrgeorge.ktorlib.example.test.TestRestHandler
+import io.github.smyrgeorge.ktorlib.example.test.TestService
+import io.github.smyrgeorge.ktorlib.example.user.UserRepository
+import io.github.smyrgeorge.ktorlib.example.user.UserRepositoryImpl
+import io.github.smyrgeorge.ktorlib.example.user.UserRestHandler
+import io.github.smyrgeorge.ktorlib.example.user.UserService
+import io.github.smyrgeorge.ktorlib.example.user.UserServiceImpl
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
+import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 
 fun start() {
     val db = postgreSQL(
-        url = "postgresql://localhost:15432/test",
+        url = "postgresql://localhost:35432/test",
         username = "postgres",
         password = "postgres",
         options = ConnectionPool.Options.builder()
@@ -26,9 +37,16 @@ fun start() {
         configure = {
             withAuthenticationExtractor(XRealNamePrincipalExtractor())
             di {
+                single { db }.bind<Driver>()
+
+                singleOf(::UserRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::UserServiceImpl) { bind<UserService>() }
                 singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
-                singleOf(::UserRestHandler) { bind<AbstractRestHandler>() }
+
+                singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
+                singleOf(::TestService)
+                single { TestRepositoryImpl }.bind<TestRepository>()
+
                 singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
             }
         }

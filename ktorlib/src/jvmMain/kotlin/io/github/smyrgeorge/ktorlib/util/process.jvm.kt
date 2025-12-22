@@ -10,3 +10,5 @@ actual fun registerShutdownHook() {
         }
     )
 }
+
+actual fun pwd(): String = System.getProperty("user.dir")

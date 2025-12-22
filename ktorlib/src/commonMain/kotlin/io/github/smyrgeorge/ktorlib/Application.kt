@@ -10,6 +10,7 @@ import io.github.smyrgeorge.ktorlib.util.SYSTEM_USER
 import io.github.smyrgeorge.ktorlib.util.applicationLogger
 import io.github.smyrgeorge.ktorlib.util.getAll
 import io.github.smyrgeorge.ktorlib.util.httpEngine
+import io.github.smyrgeorge.ktorlib.util.pwd
 import io.github.smyrgeorge.ktorlib.util.registerShutdownHook
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.RootLogger
@@ -72,6 +73,8 @@ class Application(
     )
 
     fun start(wait: Boolean = true) {
+        log.info("PWD: ${pwd()}")
+        log.info("Starting $name...")
         makeServer().apply {
             _server = this
             INSTANCE = this@Application

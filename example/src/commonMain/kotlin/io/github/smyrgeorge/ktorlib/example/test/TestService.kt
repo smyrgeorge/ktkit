@@ -12,16 +12,10 @@ class TestService(
 ) : AbstractService {
     override val log = Logger.of(this::class)
 
-    context(tx: Transaction)
+    context(_: Context, tx: Transaction)
     suspend fun findAll(): List<Test> {
         log.info { "Fetching all tests" }
         return testRepository.findAll().getOrThrow()
-    }
-
-    context(ctx: Context)
-    suspend fun findAll(): List<Test> {
-        log.info { "Fetching all tests" }
-        return emptyList()
     }
 }
 

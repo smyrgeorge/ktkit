@@ -19,8 +19,8 @@ interface AbstractService : AbstractComponent {
 
     companion object {
         suspend inline fun <R> AbstractService.withTransaction(
-            crossinline f: suspend Transaction.() -> R
-        ): R = db.transaction { f() }
+            crossinline f: suspend context(Context, Transaction)() -> R
+        ): R = db.transaction { with(ctx(), this) { f() } }
 
         suspend inline fun <R> AbstractService.withExecutionContext(
             crossinline f: suspend Context.() -> R

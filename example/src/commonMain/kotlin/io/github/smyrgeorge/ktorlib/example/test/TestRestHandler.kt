@@ -20,8 +20,6 @@ class TestRestHandler(
             testService.withTransaction {
                 testService.findAll()
             }
-
-            testService.withExecutionContext { testService.findAll() }
         }
     }
 }

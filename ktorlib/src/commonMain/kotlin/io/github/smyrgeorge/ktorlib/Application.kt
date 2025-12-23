@@ -40,7 +40,7 @@ class Application(
     private val port: Int = 8080,
     private val configure: Configurer.() -> Unit = {}
 ) {
-    private val log: Logger = Logger.of(name)
+    val log: Logger = Logger.of(name)
 
     private var _di: KoinApplication? = null
     private var _ktor: KtorApplication? = null

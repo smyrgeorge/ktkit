@@ -17,6 +17,8 @@ import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleConsoleTracingAppe
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
+import io.ktor.server.application.log
+import kotlinx.coroutines.runBlocking
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -31,7 +33,7 @@ fun start() {
             .build()
     )
 
-    Application(
+    val app = Application(
         name = "io.github.smyrgeorge.ktorlib.example.Application",
         host = "localhost",
         port = 8080,
@@ -56,5 +58,14 @@ fun start() {
                 singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
             }
         }
-    ).start(wait = true)
+    )
+
+    runBlocking {
+        db.migrate(
+            path = "./src/db/migrations",
+            afterFileMigration = { m, d -> app.log.info { "Applied migration $m to database (took $d)" } }
+        ).getOrThrow()
+    }
+
+    app.start(wait = true)
 }

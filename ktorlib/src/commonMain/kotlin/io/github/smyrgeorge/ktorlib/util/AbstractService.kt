@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktorlib.util
 
+import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.context.Context
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
@@ -18,9 +19,20 @@ interface AbstractService : AbstractComponent {
     val db: Driver
 
     companion object {
-        suspend inline fun <R> AbstractService.withTransaction(
-            crossinline f: suspend context(Context, Transaction)() -> R
-        ): R = db.transaction { with(ctx(), this) { f() } }
+        suspend fun <R> AbstractService.withTransaction(f: suspend context(Context, Transaction)() -> R): R =
+            db.transaction {
+                val result = with(ctx(), this) { f() }
+                @Suppress("UNCHECKED_CAST")
+                when (result) {
+                    is Result<*> -> result.getOrThrow() as R
+                    is Either<*, *> -> result.fold(
+                        ifLeft = { throw it as? Throwable ?: error(it.toString()) },
+                        ifRight = { value -> value as R }
+                    )
+
+                    else -> result
+                }
+            }
 
         suspend inline fun <R> AbstractService.withExecutionContext(
             crossinline f: suspend Context.() -> R

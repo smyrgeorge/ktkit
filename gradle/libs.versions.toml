@@ -23,6 +23,8 @@ sqlx4k = "1.5.0"
 ktoml = "0.7.1"
 # https://github.com/google/ksp
 ksp = "2.3.4"
+# https://github.com/arrow-kt/arrow
+arrow = "2.2.1.1"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -50,6 +52,7 @@ sqlx4k = { module = "io.github.smyrgeorge:sqlx4k", version.ref = "sqlx4k" }
 sqlx4k-codegen = { module = "io.github.smyrgeorge:sqlx4k-codegen", version.ref = "sqlx4k" }
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
 ktoml-core = { module = "com.akuleshov7:ktoml-core", version.ref = "ktoml" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

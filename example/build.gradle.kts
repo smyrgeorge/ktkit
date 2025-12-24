@@ -18,8 +18,9 @@ kotlin {
         }
         commonMain {
             dependencies {
-                api(project(":ktorlib"))
-                api(libs.sqlx4k.postgres)
+                implementation(project(":ktorlib"))
+                implementation(libs.sqlx4k.postgres)
+                implementation(libs.arrow.core)
             }
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }

@@ -1,5 +1,8 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.NonEmptySet
 import io.github.smyrgeorge.ktorlib.context.Context
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
@@ -29,16 +32,16 @@ import kotlinx.coroutines.withContext
  *
  * @param defaultUser A default user token to use for request handling if no authenticated user is present.
  * @param hasRole A specific role required for authorization.
- * @param hasAnyRole A list of roles, of which at least one is required for authorization.
- * @param hasAllRoles A list of roles, all of which are required for authorization.
+ * @param hasAnyRole A set of roles, of which at least one is required for authorization.
+ * @param hasAllRoles A set of roles, all of which are required for authorization.
  * @param permissions Additional permission checks to be enforced during request processing.
  */
 @Suppress("FunctionName", "unused")
 abstract class AbstractRestHandler(
     private val defaultUser: UserToken? = null,
     private val hasRole: String? = null,
-    hasAnyRole: List<String>? = null,
-    hasAllRoles: List<String>? = null,
+    hasAnyRole: NonEmptySet<String>? = null,
+    hasAllRoles: NonEmptySet<String>? = null,
     private val permissions: HttpRequest.() -> Boolean = { true }
 ) : AbstractComponent {
     private val hasAnyRole: Array<String>? = hasAnyRole?.toTypedArray()
@@ -95,10 +98,14 @@ abstract class AbstractRestHandler(
         val result = withContext(context) { httpRequest.f() }
 
         when (result) {
-            // TODO: handle Either<*, *>
             is Result<*> -> result
                 .onSuccess { value -> respond(call, onSuccessHttpStatusCode, value) }
                 .onFailure { throw it }
+
+            is Either<*, *> -> result.fold(
+                ifLeft = { throw it as? Throwable ?: error(it.toString()) },
+                ifRight = { value -> respond(call, onSuccessHttpStatusCode, value) }
+            )
 
             else -> respond(call, onSuccessHttpStatusCode, result)
         }

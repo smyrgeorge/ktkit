@@ -28,6 +28,7 @@ kotlin {
                 api(libs.koin.core)
                 api(libs.ktoml.core)
                 api(libs.sqlx4k)
+                api(libs.arrow.core)
             }
         }
         jvmMain {

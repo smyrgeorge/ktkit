@@ -38,7 +38,8 @@ class Application(
     private val name: String,
     private val host: String = "localhost",
     private val port: Int = 8080,
-    private val configure: Configurer.() -> Unit = {}
+    private val configure: Configurer.() -> Unit = {},
+    private val postConfigure: suspend Application.() -> Unit = {}
 ) {
     val log: Logger = Logger.of(name)
 
@@ -53,7 +54,7 @@ class Application(
     val server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>
         get() = _server ?: error("Ktor Server not initialized. Run start() first.")
 
-    private fun makeServer(): EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration> = embeddedServer(
+    private fun makeServer() = embeddedServer(
         factory = httpEngine(),
         environment = applicationEnvironment {
             log = applicationLogger(name)
@@ -69,6 +70,7 @@ class Application(
         module = {
             _ktor = this
             Configurer(this@Application, this).apply(configure).configure()
+            postConfigure()
         }
     )
 

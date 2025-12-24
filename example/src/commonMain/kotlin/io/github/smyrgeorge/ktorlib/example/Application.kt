@@ -13,12 +13,11 @@ import io.github.smyrgeorge.ktorlib.example.user.UserRepositoryImpl
 import io.github.smyrgeorge.ktorlib.example.user.UserRestHandler
 import io.github.smyrgeorge.ktorlib.example.user.UserService
 import io.github.smyrgeorge.ktorlib.example.user.UserServiceImpl
+import io.github.smyrgeorge.ktorlib.util.get
 import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleConsoleTracingAppender
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
-import io.ktor.server.application.log
-import kotlinx.coroutines.runBlocking
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -33,7 +32,7 @@ fun start() {
             .build()
     )
 
-    val app = Application(
+    Application(
         name = "io.github.smyrgeorge.ktorlib.example.Application",
         host = "localhost",
         port = 8080,
@@ -57,15 +56,15 @@ fun start() {
 
                 singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
             }
+        },
+        postConfigure = {
+            val db = di.get<Driver>()
+            db.migrate(
+                path = "./src/db/migrations",
+                afterFileMigration = { m, d ->
+                    log.info { "Applied migration $m to database (took $d)" }
+                }
+            ).getOrThrow()
         }
-    )
-
-    runBlocking {
-        db.migrate(
-            path = "./src/db/migrations",
-            afterFileMigration = { m, d -> app.log.info { "Applied migration $m to database (took $d)" } }
-        ).getOrThrow()
-    }
-
-    app.start(wait = true)
+    ).start(wait = true)
 }

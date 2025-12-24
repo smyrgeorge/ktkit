@@ -5,15 +5,15 @@ import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
 import kotlin.reflect.KClass
 
-fun <T : AbstractComponent> KoinApplication.get(
+fun <T : Any> KoinApplication.get(
     clazz: KClass<T>,
     qualifier: Qualifier? = null,
     parameters: ParametersDefinition? = null
 ): T = koin.get(clazz, qualifier, parameters)
 
-inline fun <reified T : AbstractComponent> KoinApplication.get(
+inline fun <reified T : Any> KoinApplication.get(
     qualifier: Qualifier? = null,
     noinline parameters: ParametersDefinition? = null
 ): T = koin.get(qualifier, parameters)
 
-inline fun <reified T : AbstractComponent> KoinApplication.getAll(): List<T> = koin.getAll()
+inline fun <reified T : Any> KoinApplication.getAll(): List<T> = koin.getAll()

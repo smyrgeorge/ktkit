@@ -103,7 +103,7 @@ abstract class AbstractRestHandler(
                 .onFailure { throw it }
 
             is Either<*, *> -> result.fold(
-                ifLeft = { throw it as? Throwable ?: error(it.toString()) },
+                ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
                 ifRight = { value -> respond(call, onSuccessHttpStatusCode, value) }
             )
 

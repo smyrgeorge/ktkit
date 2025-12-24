@@ -19,24 +19,21 @@ interface AbstractService : AbstractComponent {
     val db: Driver
 
     companion object {
-        suspend fun <R> AbstractService.withTransaction(f: suspend context(Context, Transaction)() -> R): R =
-            db.transaction {
+        suspend fun <R> AbstractService.withTransaction(f: suspend context(Context, Transaction)() -> R): R {
+            return db.transaction {
                 val result = with(ctx(), this) { f() }
                 @Suppress("UNCHECKED_CAST")
                 when (result) {
                     is Result<*> -> result.getOrThrow() as R
                     is Either<*, *> -> result.fold(
-                        ifLeft = { throw it as? Throwable ?: error(it.toString()) },
+                        ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
                         ifRight = { value -> value as R }
                     )
 
                     else -> result
                 }
             }
-
-        suspend inline fun <R> AbstractService.withExecutionContext(
-            crossinline f: suspend Context.() -> R
-        ): R = ctx().f()
+        }
 
         suspend inline fun <A, R> with(a: A, f: suspend context(A)() -> R): R = f(a)
         suspend inline fun <A, B, R> with(a: A, b: B, f: suspend context(A, B)() -> R): R = f(a, b)

@@ -1,5 +1,6 @@
-package io.github.smyrgeorge.ktorlib.util
+package io.github.smyrgeorge.ktorlib.config
 
+import io.github.smyrgeorge.ktorlib.util.readEntireFileUtf8
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable

@@ -1,6 +1,7 @@
-package io.github.smyrgeorge.ktorlib.util
+package io.github.smyrgeorge.ktorlib.config
 
 import com.akuleshov7.ktoml.Toml
+import io.github.smyrgeorge.ktorlib.util.readEntireFileUtf8
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
 

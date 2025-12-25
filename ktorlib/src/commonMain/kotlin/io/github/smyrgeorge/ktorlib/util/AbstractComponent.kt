@@ -24,15 +24,6 @@ interface AbstractComponent {
     val log: Logger
 
     /**
-     * Executes a suspending block of code in the IO context.
-     *
-     * @param f The suspending function to be executed within the CoroutineScope.
-     * @return The result of the function executed within the IO context.
-     */
-    suspend fun <T> io(f: suspend CoroutineScope.() -> T): T =
-        withContext(Dispatchers.IO_DISPATCHER) { f() }
-
-    /**
      * Repeatedly executes a suspending block of code with a specified number of attempts and delay policy until
      * the block succeeds or the attempts are exhausted.
      *

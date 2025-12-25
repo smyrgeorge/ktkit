@@ -3,9 +3,33 @@
 package io.github.smyrgeorge.ktorlib.util
 
 import io.github.smyrgeorge.ktorlib.context.Context
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+
+/**
+ * A platform-specific implementation of [CoroutineDispatcher] intended for IO-intensive operations.
+ *
+ * This dispatcher is optimized to handle a large number of concurrent coroutines that involve
+ * blocking IO tasks such as file operations or network requests. It allows you to dispatch
+ * coroutines onto a background thread pool designed for such tasks, enabling efficient use
+ * of system resources and ensuring that the main thread is not blocked.
+ *
+ * Suitable uses for this dispatcher include:
+ * - Reading or writing to files
+ * - Making network requests
+ * - Interacting with databases
+ * - Other high-latency or blocking IO tasks
+ *
+ * It is an expected property, meaning its actual implementation may vary depending on the
+ * platform (e.g., JVM, Native, JS).
+ */
+expect val Dispatchers.IO_DISPATCHER: CoroutineDispatcher
 
 /**
  * A global singleton implementation of [CoroutineScope] providing a shared coroutine context.
@@ -26,6 +50,15 @@ object GlobalCoroutineScope : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = EmptyCoroutineContext
 }
+
+/**
+ * Executes a suspending block of code in the IO context.
+ *
+ * @param f The suspending function to be executed within the CoroutineScope.
+ * @return The result of the function executed within the IO context.
+ */
+suspend fun <T> io(f: suspend CoroutineScope.() -> T): T =
+    withContext(Dispatchers.IO_DISPATCHER) { f() }
 
 /**
  * Launches a new coroutine in the context of [GlobalCoroutineScope] with [Dispatchers.IO_DISPATCHER].
@@ -55,23 +88,3 @@ inline fun launch(crossinline f: suspend () -> Unit): Job =
  */
 inline fun launch(ctx: Context, crossinline f: suspend () -> Unit): Job =
     GlobalCoroutineScope.launch(Dispatchers.IO_DISPATCHER) { withContext(ctx) { f() } }
-
-
-/**
- * A platform-specific implementation of [CoroutineDispatcher] intended for IO-intensive operations.
- *
- * This dispatcher is optimized to handle a large number of concurrent coroutines that involve
- * blocking IO tasks such as file operations or network requests. It allows you to dispatch
- * coroutines onto a background thread pool designed for such tasks, enabling efficient use
- * of system resources and ensuring that the main thread is not blocked.
- *
- * Suitable uses for this dispatcher include:
- * - Reading or writing to files
- * - Making network requests
- * - Interacting with databases
- * - Other high-latency or blocking IO tasks
- *
- * It is an expected property, meaning its actual implementation may vary depending on the
- * platform (e.g., JVM, Native, JS).
- */
-expect val Dispatchers.IO_DISPATCHER: CoroutineDispatcher

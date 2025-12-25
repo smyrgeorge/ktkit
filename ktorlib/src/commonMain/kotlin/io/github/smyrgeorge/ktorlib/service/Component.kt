@@ -1,14 +1,10 @@
-@file:Suppress("unused")
-
-package io.github.smyrgeorge.ktorlib.util
+package io.github.smyrgeorge.ktorlib.service
 
 import io.github.smyrgeorge.ktorlib.context.Context
+import io.github.smyrgeorge.ktorlib.util.io
 import io.github.smyrgeorge.log4k.Logger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
 /**
@@ -20,7 +16,7 @@ import kotlin.reflect.KClass
  * - Retry mechanisms with exponential backoff
  * - Context extraction from coroutine context
  */
-interface AbstractComponent {
+interface Component {
     val log: Logger
 
     /**
@@ -96,11 +92,11 @@ interface AbstractComponent {
     }
 
     /**
-     * Retrieves the [Context] from the current CoroutineContext.
+     * Retrieves the [io.github.smyrgeorge.ktorlib.context.Context] from the current CoroutineContext.
      *
-     * @return The [Context] if it exists within the current CoroutineContext.
-     * @throws IllegalStateException if the [Context] cannot be extracted from the CoroutineContext.
+     * @return The [io.github.smyrgeorge.ktorlib.context.Context] if it exists within the current CoroutineContext.
+     * @throws IllegalStateException if the [io.github.smyrgeorge.ktorlib.context.Context] cannot be extracted from the CoroutineContext.
      */
     suspend fun ctx(): Context =
-        currentCoroutineContext()[Context] ?: error("Sanity check :: could not extract Context.")
+        currentCoroutineContext()[Context.Companion] ?: error("Sanity check :: could not extract Context.")
 }

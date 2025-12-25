@@ -1,13 +1,12 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
 import arrow.core.Either
-import arrow.core.NonEmptyList
 import arrow.core.NonEmptySet
 import io.github.smyrgeorge.ktorlib.context.Context
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
-import io.github.smyrgeorge.ktorlib.util.AbstractComponent
+import io.github.smyrgeorge.ktorlib.service.Component
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.principal
@@ -43,7 +42,7 @@ abstract class AbstractRestHandler(
     hasAnyRole: NonEmptySet<String>? = null,
     hasAllRoles: NonEmptySet<String>? = null,
     private val permissions: HttpRequest.() -> Boolean = { true }
-) : AbstractComponent {
+) : Component {
     private val hasAnyRole: Array<String>? = hasAnyRole?.toTypedArray()
     private val hasAllRoles: Array<String>? = hasAllRoles?.toTypedArray()
 

@@ -2,7 +2,7 @@ package io.github.smyrgeorge.ktorlib.example.test
 
 import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.context.Context
-import io.github.smyrgeorge.ktorlib.service.AbstractDbService
+import io.github.smyrgeorge.ktorlib.service.DatabaseService
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
@@ -12,7 +12,7 @@ typealias FlowResult<T> = Either<Throwable, T>
 class TestService(
     override val db: Driver,
     private val testRepository: TestRepository
-) : AbstractDbService {
+) : DatabaseService {
     override val log = Logger.of(this::class)
 
     context(_: Context, tx: Transaction)

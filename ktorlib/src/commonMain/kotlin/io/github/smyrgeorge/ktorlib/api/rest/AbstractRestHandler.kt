@@ -6,7 +6,7 @@ import io.github.smyrgeorge.ktorlib.context.Context
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
-import io.github.smyrgeorge.ktorlib.service.Component
+import io.github.smyrgeorge.ktorlib.service.AbstractComponent
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.principal
@@ -42,7 +42,7 @@ abstract class AbstractRestHandler(
     hasAnyRole: NonEmptySet<String>? = null,
     hasAllRoles: NonEmptySet<String>? = null,
     private val permissions: HttpRequest.() -> Boolean = { true }
-) : Component {
+) : AbstractComponent {
     private val hasAnyRole: Array<String>? = hasAnyRole?.toTypedArray()
     private val hasAllRoles: Array<String>? = hasAllRoles?.toTypedArray()
 
@@ -73,7 +73,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
-        crossinline f: suspend HttpRequest.() -> T
+        crossinline f: suspend Context.() -> T
     ) {
         // Get the authenticated user from the call (set by Ktor's Authentication plugin)
         val user = call.principal<UserToken>()
@@ -88,13 +88,13 @@ abstract class AbstractRestHandler(
 
         // Create the context for the request.
         val context = Context.of(call = call, user = user)
-        val httpRequest = context.httpRequest
+        val httpRequest = context.http
 
         // Check that user has access to the corresponding resources.
         val hasAccess = this.permissions(httpRequest) && permissions(httpRequest)
         if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpRequest.uri()}'").ex()
 
-        val result = withContext(context) { httpRequest.f() }
+        val result = withContext(context) { context.f() }
 
         when (result) {
             is Result<*> -> result
@@ -147,7 +147,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend HttpRequest.() -> T
+        handler: suspend Context.() -> T
     ) {
         get(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -168,7 +168,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.Created,
-        handler: suspend HttpRequest.() -> T
+        handler: suspend Context.() -> T
     ) {
         post(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -189,7 +189,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend HttpRequest.() -> T
+        handler: suspend Context.() -> T
     ) {
         put(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -210,7 +210,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend HttpRequest.() -> T
+        handler: suspend Context.() -> T
     ) {
         patch(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -231,7 +231,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend HttpRequest.() -> T
+        handler: suspend Context.() -> T
     ) {
         delete(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -252,7 +252,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend HttpRequest.() -> T
+        handler: suspend Context.() -> T
     ) {
         head(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -273,7 +273,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpRequest.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend HttpRequest.() -> T
+        handler: suspend Context.() -> T
     ) {
         options(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)

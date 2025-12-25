@@ -11,7 +11,7 @@ class UserRestHandler(
     private val userService: UserService  // Injected via constructor
 ) : AbstractRestHandler() {
 
-    override val log = Logger.Companion.of(this::class)
+    override val log = Logger.of(this::class)
 
     override fun String.uri(): String = "/api/v1$this"
 
@@ -39,7 +39,7 @@ class UserRestHandler(
 
         // Example 3: GET with path parameter - using service
         GET("/users/{id}") {
-            val userId = pathVariable("id").asString()
+            val userId = http.pathVariable("id").asString()
             log.info("Fetching user: $userId")
 
             // Business logic delegated to service
@@ -48,8 +48,8 @@ class UserRestHandler(
 
         // Example 4: GET with query parameters - using service
         GET("/search") {
-            val query = queryParam("q").asStringOrNull() ?: ""
-            val limit = queryParam("limit").asIntOrNull() ?: 10
+            val query = http.queryParam("q").asStringOrNull() ?: ""
+            val limit = http.queryParam("limit").asIntOrNull() ?: 10
 
             log.info("Searching for: $query (limit: $limit)")
 
@@ -64,7 +64,7 @@ class UserRestHandler(
         // Example 5: Using custom success code
         GET(
             path = "/auto-respond",
-            onSuccessHttpStatusCode = HttpStatusCode.Companion.Accepted
+            onSuccessHttpStatusCode = HttpStatusCode.Accepted
         ) {
             log.info("Auto-responding for ${user.username}")
             mapOf("status" to "success", "data" to "Hello!")

@@ -25,8 +25,7 @@ data class Context(
     val attributes: Map<String, Any> = emptyMap(),
     private var call: ApplicationCall? = null,
 ) : CoroutineContext.Element {
-
-    val httpRequest: HttpRequest = HttpRequest(user, call)
+    val http: HttpRequest = HttpRequest(user, call)
 
     /**
      * Clears the [Context] from possible left-overs.
@@ -34,7 +33,7 @@ data class Context(
      */
     fun clear() {
         call = null
-        httpRequest.call = null
+        http.call = null
     }
 
     companion object : CoroutineContext.Key<Context> {

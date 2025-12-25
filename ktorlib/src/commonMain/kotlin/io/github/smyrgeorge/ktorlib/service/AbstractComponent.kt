@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
  * - Retry mechanisms with exponential backoff
  * - Context extraction from coroutine context
  */
-interface Component {
+interface AbstractComponent {
     val log: Logger
 
     /**

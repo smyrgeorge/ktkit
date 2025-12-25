@@ -18,7 +18,7 @@ ktor = "3.3.3"
 # https://github.com/InsertKoinIO/koin
 koin = "4.1.1"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.5.0"
+sqlx4k = "1.5.2"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp
@@ -49,6 +49,7 @@ ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negoti
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 sqlx4k = { module = "io.github.smyrgeorge:sqlx4k", version.ref = "sqlx4k" }
+sqlx4k-arrow = { module = "io.github.smyrgeorge:sqlx4k-arrow", version.ref = "sqlx4k" }
 sqlx4k-codegen = { module = "io.github.smyrgeorge:sqlx4k-codegen", version.ref = "sqlx4k" }
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
 ktoml-core = { module = "com.akuleshov7:ktoml-core", version.ref = "ktoml" }

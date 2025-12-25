@@ -19,8 +19,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":ktorlib"))
-                implementation(libs.sqlx4k.postgres)
                 implementation(libs.arrow.core)
+                implementation(libs.sqlx4k.arrow)
+                implementation(libs.sqlx4k.postgres)
             }
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }
@@ -46,7 +47,6 @@ tasks.named<Jar>("jvmJar") {
 
 ksp {
     arg("output-package", "io.github.smyrgeorge.ktorlib.example.generated")
-    arg("enable-context-parameters", "true")
 }
 
 //dependencies {

@@ -4,8 +4,8 @@ import io.github.smyrgeorge.ktorlib.Application
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.api.rest.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktorlib.api.rest.impl.ApplicationStatusRestHandler
-import io.github.smyrgeorge.ktorlib.example.test.ArrowTestRepository
-import io.github.smyrgeorge.ktorlib.example.test.ArrowTestRepositoryImpl
+import io.github.smyrgeorge.ktorlib.example.generated.TestRepositoryImpl
+import io.github.smyrgeorge.ktorlib.example.test.TestRepository
 import io.github.smyrgeorge.ktorlib.example.test.TestRestHandler
 import io.github.smyrgeorge.ktorlib.example.test.TestService
 import io.github.smyrgeorge.ktorlib.example.user.UserRepository
@@ -52,8 +52,7 @@ fun start() {
 
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::TestService)
-//                single { TestRepositoryImpl }.bind<TestRepository>()
-                single { ArrowTestRepositoryImpl }.bind<ArrowTestRepository>()
+                single { TestRepositoryImpl }.bind<TestRepository>()
 
                 singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
             }

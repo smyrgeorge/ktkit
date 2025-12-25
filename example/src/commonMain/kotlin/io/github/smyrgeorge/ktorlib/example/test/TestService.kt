@@ -11,7 +11,7 @@ typealias FlowResult<T> = Either<Throwable, T>
 
 class TestService(
     override val db: Driver,
-    private val testRepository: ArrowTestRepositoryImpl
+    private val testRepository: TestRepository
 ) : AbstractService {
     override val log = Logger.of(this::class)
 

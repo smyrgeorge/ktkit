@@ -1,7 +1,6 @@
 package io.github.smyrgeorge.ktorlib.example.test
 
 import io.github.smyrgeorge.ktorlib.api.rest.impl.AnonymousRestHandler
-import io.github.smyrgeorge.ktorlib.util.AbstractService.Companion.withExecutionContext
 import io.github.smyrgeorge.ktorlib.util.AbstractService.Companion.withTransaction
 import io.github.smyrgeorge.log4k.Logger
 import io.ktor.server.routing.Route

@@ -1,6 +1,7 @@
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.withType
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
@@ -9,6 +10,9 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
+    }
     sourceSets {
         all {
             languageSettings.enableLanguageFeature("ContextParameters")

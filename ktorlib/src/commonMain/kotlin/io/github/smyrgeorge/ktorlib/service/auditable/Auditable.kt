@@ -1,11 +1,14 @@
 package io.github.smyrgeorge.ktorlib.service.auditable
 
 import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-interface Auditable {
-    var id: Int
+@OptIn(ExperimentalUuidApi::class)
+interface Auditable<ID> {
+    val id: ID
     var createdAt: Instant
+    var createdBy: Uuid
     var updatedAt: Instant
-    var createdBy: String
-    var updatedBy: String
+    var updatedBy: Uuid
 }

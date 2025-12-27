@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktorlib.context
 
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
+import io.ktor.util.Attributes
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -24,8 +25,8 @@ import kotlin.uuid.Uuid
  * @property attributes Custom token claims/attributes as a JSON object
  */
 @Serializable
+@OptIn(ExperimentalUuidApi::class)
 data class UserToken(
-    @OptIn(ExperimentalUuidApi::class)
     val uuid: Uuid,
     val username: String,
     val email: String? = null,
@@ -36,8 +37,7 @@ data class UserToken(
     val iat: Long? = null,
     val exp: Long? = null,
     val authTime: Long? = null,
-    val jwt: String = "EMPTY_JWT_TOKEN",
-    val attributes: JsonElement = JsonObject(emptyMap())
+    val attributes: Map<String, String> = emptyMap()
 ) {
     /**
      * Checks if the user has a specific role.

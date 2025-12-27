@@ -18,7 +18,7 @@ ktor = "3.3.3"
 # https://github.com/InsertKoinIO/koin
 koin = "4.1.1"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.5.2"
+sqlx4k = "1.5.3"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp

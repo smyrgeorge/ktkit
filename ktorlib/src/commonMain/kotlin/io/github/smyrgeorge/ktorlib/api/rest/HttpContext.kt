@@ -13,15 +13,14 @@ import io.ktor.server.request.uri
  * providing methods for retrieving various HTTP request parameters and headers.
  *
  * @property user The authenticated user's token containing user data and permissions
- * @property call The application call associated with this request, or null if not available
+ * @property call The application call associated with this request
  */
 @Suppress("unused")
-class HttpRequest(
+class HttpContext(
     val user: UserToken,
-    internal var call: ApplicationCall?,
+    val call: ApplicationCall,
 ) {
-    val httpCall: ApplicationCall get() = call ?: error("ApplicationCall is null.")
-    val httpRequest: ApplicationRequest get() = httpCall.request
+    val request: ApplicationRequest get() = call.request
 
     /**
      * Represents a variable with a type, name, and an optional value. The variable can be used
@@ -94,32 +93,32 @@ class HttpRequest(
     /**
      * Gets the request URI.
      */
-    fun uri(): String = httpCall.request.uri
+    fun uri(): String = call.request.uri
 
     /**
      * Gets a path parameter by name.
      */
-    fun pathVariable(name: String): Var = Var(Var.Type.PATH_VARIABLE, name, httpCall.parameters[name])
+    fun pathVariable(name: String): Var = Var(Var.Type.PATH_VARIABLE, name, call.parameters[name])
 
     /**
      * Gets a query parameter by name.
      */
-    fun queryParam(name: String): Var = Var(Var.Type.QUERY_PARAM, name, httpRequest.queryParameters[name])
+    fun queryParam(name: String): Var = Var(Var.Type.QUERY_PARAM, name, request.queryParameters[name])
 
     /**
      * Gets all query parameters with the given name.
      */
-    fun queryParams(name: String): List<String> = httpRequest.queryParameters.getAll(name) ?: emptyList()
+    fun queryParams(name: String): List<String> = request.queryParameters.getAll(name) ?: emptyList()
 
     /**
      * Gets a header by name.
      */
-    fun header(name: String): Var = Var(Var.Type.HEADER, name, httpRequest.headers[name])
+    fun header(name: String): Var = Var(Var.Type.HEADER, name, request.headers[name])
 
     /**
      * Gets all headers with the given name.
      */
-    fun headers(name: String): List<String> = httpRequest.headers.getAll(name) ?: emptyList()
+    fun headers(name: String): List<String> = request.headers.getAll(name) ?: emptyList()
 
     /**
      * Receives the request body and deserializes it to the specified type.
@@ -127,5 +126,5 @@ class HttpRequest(
      * @param T The type to deserialize the body into
      * @return The deserialized body of type T
      */
-    suspend inline fun <reified T : Any> body(): T = httpCall.receive()
+    suspend inline fun <reified T : Any> body(): T = call.receive()
 }

@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktorlib.context
 
-import io.github.smyrgeorge.ktorlib.api.rest.HttpRequest
+import io.github.smyrgeorge.ktorlib.api.rest.HttpContext
+import io.github.smyrgeorge.log4k.TracingContext
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.generateNonce
 import kotlin.coroutines.CoroutineContext
@@ -16,46 +17,50 @@ import kotlin.time.Instant
  * @property reqTs Request timestamp
  * @property user User token containing authentication/authorization information
  * @property attributes Custom attributes map for storing request-scoped data
+ * @property tracingContext Optional TracingContext for logging purposes
  * @property call Optional Ktor ApplicationCall for accessing request data
  */
-data class Context(
+class ExecutionContext(
     val reqId: String,
     val reqTs: Instant = Clock.System.now(),
     val user: UserToken,
     val attributes: Map<String, Any> = emptyMap(),
-    private var call: ApplicationCall? = null,
+    tracingContext: TracingContext? = null,
+    var call: ApplicationCall? = null,
 ) : CoroutineContext.Element {
-    val http: HttpRequest = HttpRequest(user, call)
+    private val _tracingContext: TracingContext? = tracingContext
+    private val _http: HttpContext? = call?.let { HttpContext(user, it) }
 
-    /**
-     * Clears the [Context] from possible left-overs.
-     * Should be called manually after request processing.
-     */
-    fun clear() {
-        call = null
-        http.call = null
+    val tracingContext = _tracingContext ?: error("TracingContext is null.")
+    val http: HttpContext = _http ?: error("HttpContext is null.")
+
+    override fun toString(): String {
+        return "Context(attributes=$attributes, user=$user, reqTs=$reqTs, reqId='$reqId')"
     }
 
-    companion object : CoroutineContext.Key<Context> {
+    companion object : CoroutineContext.Key<ExecutionContext> {
 
         /**
          * Creates a Context from an ApplicationCall with a user token.
          *
+         * @param reqId Request ID
          * @param user The user token
          * @param call The Ktor ApplicationCall
-         * @param reqId Request ID (defaults to a generated UUID-like string)
          * @param attributes Custom attributes map
+         * @param tracingContext Optional TracingContext for logging purposes
          */
         fun of(
+            reqId: String,
             user: UserToken,
             call: ApplicationCall,
-            reqId: String = generateRequestId(),
             attributes: Map<String, Any> = emptyMap(),
-        ): Context = Context(
+            tracingContext: TracingContext? = null
+        ): ExecutionContext = ExecutionContext(
             user = user,
             reqId = reqId,
             call = call,
-            attributes = attributes
+            attributes = attributes,
+            tracingContext = tracingContext
         )
 
         /**
@@ -64,15 +69,18 @@ data class Context(
          * @param user The user token
          * @param reqId Request ID (defaults to a generated UUID-like string)
          * @param attributes Custom attributes map
+         * @param tracingContext Optional TracingContext for logging purposes
          */
         fun of(
             user: UserToken,
             reqId: String = generateRequestId(),
             attributes: Map<String, Any> = emptyMap(),
-        ): Context = Context(
+            tracingContext: TracingContext? = null
+        ): ExecutionContext = ExecutionContext(
             user = user,
             reqId = reqId,
-            attributes = attributes
+            attributes = attributes,
+            tracingContext = tracingContext
         )
 
         /**
@@ -82,6 +90,6 @@ data class Context(
         private fun generateRequestId(): String = generateNonce()
     }
 
-    override val key: CoroutineContext.Key<Context>
-        get() = Context
+    override val key: CoroutineContext.Key<ExecutionContext>
+        get() = ExecutionContext
 }

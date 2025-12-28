@@ -2,7 +2,7 @@
 
 package io.github.smyrgeorge.ktorlib.util
 
-import io.github.smyrgeorge.ktorlib.context.Context
+import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -86,5 +86,5 @@ inline fun launch(crossinline f: suspend () -> Unit): Job =
  * @param f The suspending function to be executed.
  * @return A `Job` representing the coroutine.
  */
-inline fun launch(ctx: Context, crossinline f: suspend () -> Unit): Job =
+inline fun launch(ctx: ExecutionContext, crossinline f: suspend () -> Unit): Job =
     GlobalCoroutineScope.launch(Dispatchers.IO_DISPATCHER) { withContext(ctx) { f() } }

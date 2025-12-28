@@ -6,7 +6,7 @@ import io.ktor.util.logging.LogLevel
 import io.ktor.util.logging.Logger as KtorLogger
 
 @Suppress("OVERRIDE_BY_INLINE", "NOTHING_TO_INLINE")
-class LoggerNative(name: String) : KtorLogger {
+internal class LoggerNative(name: String) : KtorLogger {
     val log: Logger = Logger.of(name)
     override val level: LogLevel
         get() = when (log.level) {

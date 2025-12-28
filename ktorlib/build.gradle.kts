@@ -22,7 +22,6 @@ kotlin {
                 api(libs.ktor.server.core)
                 api(libs.ktor.server.auth)
                 api(libs.ktor.server.content.negotiation)
-                api(libs.ktor.server.status.pages)
                 api(libs.ktor.serialization.kotlinx.json)
                 api(libs.log4k)
                 api(libs.koin.core)

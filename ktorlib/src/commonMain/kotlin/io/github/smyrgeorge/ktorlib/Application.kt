@@ -1,7 +1,6 @@
 package io.github.smyrgeorge.ktorlib
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktorlib.api.rest.ExceptionHandler.installExceptionHandling
 import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationProvider.Companion.installAuthenticationProvider
 import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.context.UserToken
@@ -170,9 +169,6 @@ class Application(
             }
 
             ktor.apply {
-                // Install exception handling for structured error responses.
-                installExceptionHandling()
-
                 // Install content negotiation for JSON serialization
                 install(ContentNegotiation) {
                     json(json)

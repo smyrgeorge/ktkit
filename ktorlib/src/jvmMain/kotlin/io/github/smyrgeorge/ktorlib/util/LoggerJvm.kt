@@ -6,7 +6,7 @@ import org.slf4j.Marker
 import io.ktor.util.logging.Logger as KtorLogger
 
 @Suppress("OVERRIDE_BY_INLINE", "NOTHING_TO_INLINE")
-class LoggerJvm(name: String) : KtorLogger {
+internal class LoggerJvm(name: String) : KtorLogger {
     val log: Logger = Logger.of(name)
 
     override fun getName(): String = log.name

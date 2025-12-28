@@ -2,11 +2,24 @@ package io.github.smyrgeorge.ktorlib.api.rest
 
 import arrow.core.Either
 import arrow.core.NonEmptySet
-import io.github.smyrgeorge.ktorlib.context.Context
+import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
+import io.github.smyrgeorge.ktorlib.error.ApiError
+import io.github.smyrgeorge.ktorlib.error.Error
+import io.github.smyrgeorge.ktorlib.error.InternalError
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
+import io.github.smyrgeorge.ktorlib.error.types.UnknownError
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
+import io.github.smyrgeorge.ktorlib.util.spanName
+import io.github.smyrgeorge.ktorlib.util.spanTags
+import io.github.smyrgeorge.log4k.Logger
+import io.github.smyrgeorge.log4k.Tracer
+import io.github.smyrgeorge.log4k.TracingContext
+import io.github.smyrgeorge.log4k.TracingEvent
+import io.github.smyrgeorge.log4k.TracingEvent.Span
+import io.github.smyrgeorge.log4k.impl.OpenTelemetry
+import io.github.smyrgeorge.log4k.impl.Tags
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.principal
@@ -41,8 +54,11 @@ abstract class AbstractRestHandler(
     private val hasRole: String? = null,
     hasAnyRole: NonEmptySet<String>? = null,
     hasAllRoles: NonEmptySet<String>? = null,
-    private val permissions: HttpRequest.() -> Boolean = { true }
+    private val permissions: HttpContext.() -> Boolean = { true }
 ) : AbstractComponent {
+    val log: Logger = Logger.of(this::class)
+    val trace: Tracer = Tracer.of(this::class)
+
     private val hasAnyRole: Array<String>? = hasAnyRole?.toTypedArray()
     private val hasAllRoles: Array<String>? = hasAllRoles?.toTypedArray()
 
@@ -66,51 +82,66 @@ abstract class AbstractRestHandler(
      * @param defaultUser The default user token to use if none is provided in the request
      * @param permissions Optional permission check function
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses
-     * @param f The function to execute
+     * @param handler The function to execute
      */
     private suspend inline fun <T> handle(
         call: ApplicationCall,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean,
+        permissions: HttpContext.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
-        crossinline f: suspend Context.() -> T
+        crossinline handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
-        // Get the authenticated user from the call (set by Ktor's Authentication plugin)
-        val user = call.principal<UserToken>()
-            ?: defaultUser
-            ?: this.defaultUser
-            ?: UnauthorizedImpl("User is not authenticated").ex()
+        // Create the logging-context.
+        val tracingContext = TracingContext.builder()
+//            .with(parent) // TODO: create the remote span.
+            .with(trace)
+            .build()
 
-        // Role based authorization.
-        hasRole?.let { role -> user.requireRole(role) }
-        hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
-        hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
+        // Create the handler span.
+        tracingContext.spanCatching(call.spanName(), call.spanTags()) {
+            try {
+                // Get the authenticated user from the call (set by Ktor's Authentication plugin)
+                val user = call.principal<UserToken>()
+                    ?: defaultUser
+                    ?: this@AbstractRestHandler.defaultUser
+                    ?: UnauthorizedImpl("User is not authenticated").ex()
 
-        // Create the context for the request.
-        val context = Context.of(call = call, user = user)
-        val httpRequest = context.http
+                // Role based authorization.
+                hasRole?.let { role -> user.requireRole(role) }
+                hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
+                hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
 
-        // Check that user has access to the corresponding resources.
-        val hasAccess = this.permissions(httpRequest) && permissions(httpRequest)
-        if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpRequest.uri()}'").ex()
+                // Create the execution-context for the request.
+                val executionContext = ExecutionContext.of(context.spanId, user, call, tracingContext = tracingContext)
+                val httpRequest = executionContext.http
 
-        val result = withContext(context) { context.f() }
+                // Check that user has access to the corresponding resources.
+                val hasAccess = this@AbstractRestHandler.permissions(httpRequest) && permissions(httpRequest)
+                if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpRequest.uri()}'").ex()
 
-        when (result) {
-            is Result<*> -> result
-                .onFailure { throw it }
-                .onSuccess { value -> respond(call, onSuccessHttpStatusCode, value) }
+                // Load the execution context into the coroutine context.
+                val result = withContext(executionContext) {
+                    // Execute the handler.
+                    context(tracingContext) { executionContext.handler() }
+                }
 
-            is Either<*, *> -> result.fold(
-                ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
-                ifRight = { value -> respond(call, onSuccessHttpStatusCode, value) }
-            )
+                when (result) {
+                    is Result<*> -> result
+                        .onFailure { throw it }
+                        .onSuccess { value -> respond(this, call, onSuccessHttpStatusCode, value) }
 
-            else -> respond(call, onSuccessHttpStatusCode, result)
+                    is Either<*, *> -> result.fold(
+                        ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
+                        ifRight = { value -> respond(this, call, onSuccessHttpStatusCode, value) }
+                    )
+
+                    else -> respond(this, call, onSuccessHttpStatusCode, result)
+                }
+            } catch (e: Throwable) {
+                respond(this, call, e)
+                throw e
+            }
         }
-
-        // Clears the [Context] here (ensures no leftovers).
-        context.clear()
     }
 
     /**
@@ -121,16 +152,63 @@ abstract class AbstractRestHandler(
      * - Unit: Responds with the provided success code, typically indicating success without a body.
      * - Any other type: Responds with the provided success code and the result serialized as the response body.
      *
+     * @param span The tracing span for the operation.
      * @param call The Ktor ApplicationCall.
-     * @param onSuccessHttpStatusCode The HTTP status code indicating a successful response.
+     * @param status The HTTP status code indicating a successful response.
      * @param result The response body or stream to return to the client.
      */
-    private suspend inline fun <T> respond(call: ApplicationCall, onSuccessHttpStatusCode: HttpStatusCode, result: T) {
+    private suspend inline fun <T> respond(
+        span: TracingEvent.Span.Local,
+        call: ApplicationCall,
+        status: HttpStatusCode,
+        result: T
+    ) {
+        // Set the HTTP status code and tags on the span.
+        span.tags[OpenTelemetry.HTTP_STATUS_CODE] = status.value
         when (result) {
-            is Flow<*> -> call.respond(onSuccessHttpStatusCode, result.filterNotNull())
-            is Unit -> call.respond(onSuccessHttpStatusCode)
-            else -> call.respond(onSuccessHttpStatusCode, result as Any)
+            is Flow<*> -> call.respond(status, result.filterNotNull())
+            is Unit -> call.respond(status)
+            else -> call.respond(status, result as Any)
         }
+    }
+
+    /**
+     * Handles the response process for a given HTTP call by generating an appropriate API error
+     * based on the provided throwable and tracing span. Logs server errors and sends the
+     * generated API error as a response with the corresponding HTTP status code.
+     *
+     * @param span The tracing span associated with the current context to assist with observability.
+     * @param call The application call representing the HTTP request and response context.
+     * @param cause The throwable that triggered the error response handling.
+     */
+    private suspend fun respond(
+        span: TracingEvent.Span.Local,
+        call: ApplicationCall,
+        cause: Throwable,
+    ) {
+        val error: Error = if (cause is InternalError) cause.error
+        else UnknownError(cause.message ?: "An unknown error occurred")
+
+        // Only log server errors (5xx)
+        if (error.http.code >= 500) {
+            log.error(cause) { cause.message ?: "null" }
+        }
+
+        // Set the HTTP status code and tags on the span.
+        span.tags[OpenTelemetry.HTTP_STATUS_CODE] = error.http.code
+
+        val res = ApiError(
+            code = error.type,
+            requestId = span.context.spanId,
+            details = ApiError.Details(
+                type = error.type,
+                message = error.message,
+                http = error.http
+            )
+        )
+
+        val status = HttpStatusCode.fromValue(error.http.code)
+        call.respond(status, res)
     }
 
     /**
@@ -145,9 +223,9 @@ abstract class AbstractRestHandler(
     fun <T> Route.GET(
         path: String,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean = { true },
+        permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
         get(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -166,9 +244,9 @@ abstract class AbstractRestHandler(
     fun <T> Route.POST(
         path: String,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean = { true },
+        permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.Created,
-        handler: suspend Context.() -> T
+        handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
         post(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -187,9 +265,9 @@ abstract class AbstractRestHandler(
     fun <T> Route.PUT(
         path: String,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean = { true },
+        permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
         put(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -208,9 +286,9 @@ abstract class AbstractRestHandler(
     fun <T> Route.PATCH(
         path: String,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean = { true },
+        permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
         patch(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -229,9 +307,9 @@ abstract class AbstractRestHandler(
     fun <T> Route.DELETE(
         path: String,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean = { true },
+        permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
         delete(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -250,9 +328,9 @@ abstract class AbstractRestHandler(
     fun <T> Route.HEAD(
         path: String,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean = { true },
+        permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
         head(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -271,12 +349,18 @@ abstract class AbstractRestHandler(
     fun <T> Route.OPTIONS(
         path: String,
         defaultUser: UserToken? = null,
-        permissions: HttpRequest.() -> Boolean = { true },
+        permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend Context.() -> T
+        handler: suspend context(TracingContext) ExecutionContext.() -> T
     ) {
         options(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
         }
     }
+
+    private inline fun <T> TracingContext.spanCatching(
+        name: String,
+        tags: Tags = emptyMap(),
+        f: Span.Local.() -> T
+    ): Result<T> = runCatching { span(name, tags, f) }
 }

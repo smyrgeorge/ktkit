@@ -1,10 +1,7 @@
 package io.github.smyrgeorge.ktorlib.context
 
 import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
-import io.ktor.util.Attributes
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -81,7 +78,7 @@ data class UserToken(
      * @throws ForbiddenImpl If the user does not have any of the specified roles.
      */
     fun requireAnyRole(vararg roles: String) {
-        if (!hasAnyRole(*roles)) ForbiddenImpl("User does not have authorities $roles").ex()
+        if (!hasAnyRole(*roles)) ForbiddenImpl("User does not have authorities: ${roles.joinToString()}").ex()
     }
 
     /**
@@ -92,6 +89,6 @@ data class UserToken(
      * @throws ForbiddenImpl If the user does not have all of the specified roles.
      */
     fun requireAllRoles(vararg roles: String) {
-        if (!hasAllRoles(*roles)) ForbiddenImpl("User does not have authorities $roles").ex()
+        if (!hasAllRoles(*roles)) ForbiddenImpl("User does not have authorities: ${roles.joinToString()}").ex()
     }
 }

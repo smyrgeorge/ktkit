@@ -32,7 +32,7 @@ class AuthenticationProvider(
     class Config(
         val log: Logger,
         val extractor: PrincipalExtractor
-    ) : KtorAuthenticationProvider.Config(extractor::class.simpleName ?: "extractor-${extractor.hashCode()}") {
+    ) : KtorAuthenticationProvider.Config(extractor.name()) {
         class Builder {
             var extractor: PrincipalExtractor? = null
         }
@@ -56,7 +56,8 @@ class AuthenticationProvider(
             install(Authentication) {
                 val config = Config.Builder().apply(configure)
                 val log = this@installAuthenticationProvider.log
-                val extractor = config.extractor ?: error("AuthenticationExtractor must be configured in ktorlib authentication provider")
+                val extractor = config.extractor
+                    ?: error("AuthenticationExtractor must be configured in ktorlib authentication provider")
                 val provider = AuthenticationProvider(Config(log, extractor))
                 register(provider)
             }

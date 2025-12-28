@@ -4,6 +4,7 @@ import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.ktor.server.application.ApplicationCall
+import io.ktor.utils.io.core.toByteArray
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 
@@ -24,7 +25,6 @@ import kotlin.io.encoding.Base64
  */
 class XRealNamePrincipalExtractor : PrincipalExtractor {
     private val headerName: String = "x-real-name"
-    private val serde: Json = Json { ignoreUnknownKeys = true }
 
     override suspend fun extract(call: ApplicationCall): Result<UserToken?> {
         return runCatching {
@@ -35,6 +35,13 @@ class XRealNamePrincipalExtractor : PrincipalExtractor {
             } catch (e: Exception) {
                 UnauthorizedImpl("Cannot extract $headerName header: ${e.message}").ex(e)
             }
+        }
+    }
+
+    companion object {
+        private val serde: Json = Json { ignoreUnknownKeys = true }
+        fun UserToken.toXRealName(): String {
+            return Base64.encode(serde.encodeToString(this).toByteArray())
         }
     }
 }

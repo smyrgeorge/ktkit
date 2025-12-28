@@ -98,8 +98,8 @@ abstract class AbstractRestHandler(
 
         when (result) {
             is Result<*> -> result
-                .onSuccess { value -> respond(call, onSuccessHttpStatusCode, value) }
                 .onFailure { throw it }
+                .onSuccess { value -> respond(call, onSuccessHttpStatusCode, value) }
 
             is Either<*, *> -> result.fold(
                 ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },

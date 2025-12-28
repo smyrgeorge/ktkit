@@ -8,11 +8,6 @@ import io.github.smyrgeorge.ktorlib.example.generated.TestRepositoryImpl
 import io.github.smyrgeorge.ktorlib.example.test.TestRepository
 import io.github.smyrgeorge.ktorlib.example.test.TestRestHandler
 import io.github.smyrgeorge.ktorlib.example.test.TestService
-import io.github.smyrgeorge.ktorlib.example.user.UserRepository
-import io.github.smyrgeorge.ktorlib.example.user.UserRepositoryImpl
-import io.github.smyrgeorge.ktorlib.example.user.UserRestHandler
-import io.github.smyrgeorge.ktorlib.example.user.UserService
-import io.github.smyrgeorge.ktorlib.example.user.UserServiceImpl
 import io.github.smyrgeorge.ktorlib.util.get
 import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleConsoleTracingAppender
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
@@ -45,10 +40,6 @@ fun start() {
 
             di {
                 single { db }.bind<Driver>()
-
-                singleOf(::UserRestHandler) { bind<AbstractRestHandler>() }
-                singleOf(::UserServiceImpl) { bind<UserService>() }
-                singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
 
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::TestService)

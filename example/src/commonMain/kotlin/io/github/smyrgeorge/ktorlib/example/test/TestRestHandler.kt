@@ -1,13 +1,13 @@
 package io.github.smyrgeorge.ktorlib.example.test
 
-import io.github.smyrgeorge.ktorlib.api.rest.impl.AnonymousRestHandler
+import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.log4k.Logger
 import io.ktor.server.routing.Route
 
 class TestRestHandler(
     private val testService: TestService
-) : AnonymousRestHandler() {
+) : AbstractRestHandler() {
 
     override val log = Logger.of(this::class)
 

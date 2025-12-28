@@ -7,7 +7,7 @@ import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
-interface AuditableCrudRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> {
+interface AuditablRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> {
     override suspend fun preInsertHook(entity: T): T {
         val user = ctx().user
         entity.createdAt = Clock.System.now()

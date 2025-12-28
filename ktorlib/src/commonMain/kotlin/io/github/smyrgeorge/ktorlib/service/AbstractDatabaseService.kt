@@ -2,7 +2,9 @@ package io.github.smyrgeorge.ktorlib.service
 
 import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService.Companion.withTransaction
+import io.github.smyrgeorge.ktorlib.util.EitherThrowable
 import io.github.smyrgeorge.sqlx4k.Driver
+import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.Transaction
 
 /**
@@ -18,20 +20,22 @@ interface AbstractDatabaseService : AbstractService {
     val db: Driver
 
     companion object {
-        suspend fun <R> AbstractDatabaseService.withTransaction(f: suspend context(Transaction)() -> R): R {
-            return db.transaction {
-                val result = f()
-                @Suppress("UNCHECKED_CAST")
-                when (result) {
-                    is Result<*> -> result.getOrThrow() as R
-                    is Either<*, *> -> result.fold(
-                        ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
-                        ifRight = { value -> value as R }
-                    )
+        suspend inline fun <R> AbstractDatabaseService.withTransaction(
+            crossinline f: suspend context(Transaction)() -> R
+        ): R = db.transaction {
+            when (val result = f()) {
+                // Ensure that in case of an error, the transaction is rolled back.
+                is Result<*> if result.isFailure -> throw result.exceptionOrNull()!!
+                is Either<*, *> if result.isLeft() ->
+                    throw (result.leftOrNull() as? Throwable
+                        ?: SQLError(SQLError.Code.UknownError, result.leftOrNull().toString()))
 
-                    else -> result
-                }
+                else -> result
             }
         }
+
+        suspend inline fun <R> AbstractDatabaseService.withTransactionCatching(
+            noinline f: suspend context(Transaction)() -> R
+        ): EitherThrowable<R> = Either.catch { withTransaction(f) }
     }
 }

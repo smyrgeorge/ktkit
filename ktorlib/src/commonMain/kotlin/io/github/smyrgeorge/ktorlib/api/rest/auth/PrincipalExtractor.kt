@@ -33,4 +33,17 @@ interface PrincipalExtractor {
      * null if no token could be resolved, or an exception if an error occurs.
      */
     suspend fun extract(call: ApplicationCall): Result<UserToken?>
+
+    /**
+     * Provides the name of the implementing class or a unique identifier if the class name
+     * cannot be resolved.
+     *
+     * The default implementation attempts to resolve the simple name of the implementing class.
+     * If the class name is unavailable (e.g., due to obfuscation or reflection limitations),
+     * a fallback string incorporating the object's hash code is returned, ensuring uniqueness.
+     *
+     * @return The name of the implementing class or a fallback identifier in the format
+     * "extractor-${hashCode()}".
+     */
+    fun name(): String = this::class.simpleName ?: "extractor-${hashCode()}"
 }

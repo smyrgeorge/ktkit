@@ -17,12 +17,14 @@ import io.github.smyrgeorge.log4k.RootLogger
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.application.log
+import io.ktor.server.auth.authenticate
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.EngineConnectorBuilder
 import io.ktor.server.engine.applicationEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.routing.Route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
@@ -181,9 +183,18 @@ class Application(
 
                 // Register routes.
                 routing {
-                    routes.forEach {
-                        log.info("Registering REST Handler: ${it::class.simpleName}")
-                        with(it) { routes() }
+                    val routes: Route.() -> Unit = {
+                        this@Configurer.routes.forEach {
+                            log.info("Registering REST Handler: ${it::class.simpleName}")
+                            with(it) { routes() }
+                        }
+                    }
+
+                    // If authentication is configured, wrap routes in authenticate block
+                    if (authenticationExtractor != null) {
+                        authenticate(authenticationExtractor!!.name(), optional = false, build = routes)
+                    } else {
+                        routes()
                     }
                 }
 

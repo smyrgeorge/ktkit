@@ -105,7 +105,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
-        crossinline handler: suspend context(TracingContext) ExecutionContext.() -> T
+        crossinline handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ): Unit = call.handleWithTracing { span ->
         try {
             // Get the authenticated user from the call (set by Ktor's Authentication plugin)
@@ -130,7 +130,7 @@ abstract class AbstractRestHandler(
             // Load the execution context into the coroutine context.
             val result = withContext(executionContext) {
                 // Execute the handler.
-                executionContext.handler()
+                context(executionContext) { httpContext.handler() }
             }
 
             when (result) {
@@ -232,7 +232,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(TracingContext) ExecutionContext.() -> T
+        handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ) {
         get(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -253,7 +253,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.Created,
-        handler: suspend context(TracingContext) ExecutionContext.() -> T
+        handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ) {
         post(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -274,7 +274,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(TracingContext) ExecutionContext.() -> T
+        handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ) {
         put(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -295,7 +295,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(TracingContext) ExecutionContext.() -> T
+        handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ) {
         patch(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -316,7 +316,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(TracingContext) ExecutionContext.() -> T
+        handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ) {
         delete(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -337,7 +337,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(TracingContext) ExecutionContext.() -> T
+        handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ) {
         head(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -358,7 +358,7 @@ abstract class AbstractRestHandler(
         defaultUser: UserToken? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(TracingContext) ExecutionContext.() -> T
+        handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
     ) {
         options(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)

@@ -18,7 +18,6 @@ import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.log4k.TracingEvent.Span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetry
-import io.github.smyrgeorge.log4k.impl.Tags
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.principal
@@ -70,6 +69,24 @@ abstract class AbstractRestHandler(
     abstract fun Route.routes()
 
     /**
+     * Handles the current application call within a tracing context by creating a handler span
+     * and executing the provided function within that span.
+     *
+     * @param f A lambda function to be executed within the tracing context. It takes a `Span`
+     *          as a parameter and performs tracing-related logic.
+     */
+    private inline fun ApplicationCall.handleWithTracing(f: TracingContext.(Span) -> Unit) {
+        // Create the logging-context.
+        val tracing = TracingContext.builder()
+//            .with(parent) // TODO: create the remote span.
+            .with(trace)
+            .build()
+
+        // Create the handler span.
+        runCatching { tracing.span(spanName(), spanTags()) { tracing.f(this) } }
+    }
+
+    /**
      * Handles a request and automatically responds based on the result type.
      *
      * Supports:
@@ -89,57 +106,48 @@ abstract class AbstractRestHandler(
         permissions: HttpContext.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
         crossinline handler: suspend context(TracingContext) ExecutionContext.() -> T
-    ) {
-        // Create the logging-context.
-        val tracingContext = TracingContext.builder()
-//            .with(parent) // TODO: create the remote span.
-            .with(trace)
-            .build()
+    ): Unit = call.handleWithTracing { span ->
+        try {
+            // Get the authenticated user from the call (set by Ktor's Authentication plugin)
+            val user = call.principal<UserToken>()
+                ?: defaultUser
+                ?: this@AbstractRestHandler.defaultUser
+                ?: UnauthorizedImpl("User is not authenticated").ex()
 
-        // Create the handler span.
-        tracingContext.spanCatching(call.spanName(), call.spanTags()) {
-            try {
-                // Get the authenticated user from the call (set by Ktor's Authentication plugin)
-                val user = call.principal<UserToken>()
-                    ?: defaultUser
-                    ?: this@AbstractRestHandler.defaultUser
-                    ?: UnauthorizedImpl("User is not authenticated").ex()
+            // Role-based authorization.
+            hasRole?.let { role -> user.requireRole(role) }
+            hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
+            hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
 
-                // Role-based authorization.
-                hasRole?.let { role -> user.requireRole(role) }
-                hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
-                hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
+            // Create the execution-context for the request.
+            val httpContext = HttpContext(user, call)
+            val executionContext = ExecutionContext.fromHttp(span.context.spanId, user, httpContext, this)
 
-                // Create the execution-context for the request.
-                val executionContext = ExecutionContext.of(context.spanId, user, call, tracingContext = tracingContext)
-                val httpRequest = executionContext.http
+            // Check that the user has access to the corresponding resources.
+            val hasAccess = this@AbstractRestHandler.permissions(httpContext) && permissions(httpContext)
+            if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpContext.uri()}'").ex()
 
-                // Check that the user has access to the corresponding resources.
-                val hasAccess = this@AbstractRestHandler.permissions(httpRequest) && permissions(httpRequest)
-                if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpRequest.uri()}'").ex()
-
-                // Load the execution context into the coroutine context.
-                val result = withContext(executionContext) {
-                    // Execute the handler.
-                    context(tracingContext) { executionContext.handler() }
-                }
-
-                when (result) {
-                    is Result<*> -> result
-                        .onFailure { throw it }
-                        .onSuccess { value -> respond(this, call, onSuccessHttpStatusCode, value) }
-
-                    is Either<*, *> -> result.fold(
-                        ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
-                        ifRight = { value -> respond(this, call, onSuccessHttpStatusCode, value) }
-                    )
-
-                    else -> respond(this, call, onSuccessHttpStatusCode, result)
-                }
-            } catch (e: Throwable) {
-                respond(this, call, e)
-                throw e
+            // Load the execution context into the coroutine context.
+            val result = withContext(executionContext) {
+                // Execute the handler.
+                executionContext.handler()
             }
+
+            when (result) {
+                is Result<*> -> result
+                    .onFailure { throw it }
+                    .onSuccess { value -> respond(span, call, onSuccessHttpStatusCode, value) }
+
+                is Either<*, *> -> result.fold(
+                    ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
+                    ifRight = { value -> respond(span, call, onSuccessHttpStatusCode, value) }
+                )
+
+                else -> respond(span, call, onSuccessHttpStatusCode, result)
+            }
+        } catch (e: Throwable) {
+            respond(span, call, e)
+            throw e
         }
     }
 
@@ -157,7 +165,7 @@ abstract class AbstractRestHandler(
      * @param result The response body or stream to return to the client.
      */
     private suspend inline fun <T> respond(
-        span: Span.Local,
+        span: Span,
         call: ApplicationCall,
         status: HttpStatusCode,
         result: T
@@ -181,7 +189,7 @@ abstract class AbstractRestHandler(
      * @param cause The throwable that triggered the error response handling.
      */
     private suspend fun respond(
-        span: Span.Local,
+        span: Span,
         call: ApplicationCall,
         cause: Throwable,
     ) {
@@ -356,10 +364,4 @@ abstract class AbstractRestHandler(
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
         }
     }
-
-    private inline fun <T> TracingContext.spanCatching(
-        name: String,
-        tags: Tags = emptyMap(),
-        f: Span.Local.() -> T
-    ): Result<T> = runCatching { span(name, tags, f) }
 }

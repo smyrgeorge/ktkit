@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktorlib.service.auditable
 
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
+import io.github.smyrgeorge.log4k.impl.OpenTelemetry
 import io.github.smyrgeorge.sqlx4k.Statement
 import io.github.smyrgeorge.sqlx4k.arrow.ArrowContextCrudRepository
 import kotlinx.coroutines.currentCoroutineContext
@@ -8,7 +9,7 @@ import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
-interface AuditablRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> {
+interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> {
     override suspend fun preInsertHook(entity: T): T {
         val user = ctx().user
         entity.createdAt = Clock.System.now()
@@ -25,10 +26,15 @@ interface AuditablRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> {
     }
 
     override suspend fun <R> aroundQuery(method: String, statement: Statement, block: suspend () -> R): R {
-        fun span() = "${this::class.simpleName}.$method"
+        val operation = "${this::class.simpleName}.$method"
         return ctx().tracingContext.span(
-            name = span(),
-            tags = mapOf() // TODO: Fill in tags.
+            name = operation,
+            tags = mapOf(
+//                OpenTelemetry.DB_SYSTEM to "sqlx4k",
+//                OpenTelemetry.DB_STATEMENT to statement.toString(),
+                OpenTelemetry.DB_OPERATION to operation,
+                OpenTelemetry.DB_DRIVER_NAME to "sqlx4k"
+            )
         ) { block() }
     }
 

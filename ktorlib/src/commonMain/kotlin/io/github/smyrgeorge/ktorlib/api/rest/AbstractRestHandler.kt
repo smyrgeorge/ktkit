@@ -16,7 +16,6 @@ import io.github.smyrgeorge.ktorlib.util.spanTags
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
-import io.github.smyrgeorge.log4k.TracingEvent
 import io.github.smyrgeorge.log4k.TracingEvent.Span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetry
 import io.github.smyrgeorge.log4k.impl.Tags
@@ -106,7 +105,7 @@ abstract class AbstractRestHandler(
                     ?: this@AbstractRestHandler.defaultUser
                     ?: UnauthorizedImpl("User is not authenticated").ex()
 
-                // Role based authorization.
+                // Role-based authorization.
                 hasRole?.let { role -> user.requireRole(role) }
                 hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
                 hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
@@ -115,7 +114,7 @@ abstract class AbstractRestHandler(
                 val executionContext = ExecutionContext.of(context.spanId, user, call, tracingContext = tracingContext)
                 val httpRequest = executionContext.http
 
-                // Check that user has access to the corresponding resources.
+                // Check that the user has access to the corresponding resources.
                 val hasAccess = this@AbstractRestHandler.permissions(httpRequest) && permissions(httpRequest)
                 if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpRequest.uri()}'").ex()
 
@@ -158,7 +157,7 @@ abstract class AbstractRestHandler(
      * @param result The response body or stream to return to the client.
      */
     private suspend inline fun <T> respond(
-        span: TracingEvent.Span.Local,
+        span: Span.Local,
         call: ApplicationCall,
         status: HttpStatusCode,
         result: T
@@ -182,7 +181,7 @@ abstract class AbstractRestHandler(
      * @param cause The throwable that triggered the error response handling.
      */
     private suspend fun respond(
-        span: TracingEvent.Span.Local,
+        span: Span.Local,
         call: ApplicationCall,
         cause: Throwable,
     ) {

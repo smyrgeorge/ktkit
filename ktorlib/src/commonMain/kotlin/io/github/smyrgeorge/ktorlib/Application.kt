@@ -202,5 +202,6 @@ class Application(
 
     companion object {
         lateinit var INSTANCE: Application
+        val di: KoinApplication get() = INSTANCE.di
     }
 }

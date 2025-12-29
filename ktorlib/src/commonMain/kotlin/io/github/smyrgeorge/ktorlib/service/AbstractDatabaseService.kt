@@ -35,10 +35,5 @@ interface AbstractDatabaseService : AbstractService {
                 else -> result
             }
         }
-
-        context(tc: TracingContext)
-        suspend inline fun <R> AbstractDatabaseService.withTransactionCatching(
-            noinline f: suspend context(TracingContext, Transaction)() -> R
-        ): EitherThrowable<R> = Either.catch { withTransaction(f) }
     }
 }

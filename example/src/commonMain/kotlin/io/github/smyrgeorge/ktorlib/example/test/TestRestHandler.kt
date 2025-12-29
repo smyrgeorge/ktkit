@@ -11,7 +11,7 @@ class TestRestHandler(
 
     override fun Route.routes() {
         GET("") {
-            log.info("Hello, ${user.username}!")
+            log.info { "Hello, ${user.username}!" }
             testService.withTransaction {
                 testService.findAll()
             }

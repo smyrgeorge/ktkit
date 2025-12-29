@@ -26,9 +26,10 @@ kotlin {
                 api(libs.log4k)
                 api(libs.koin.core)
                 api(libs.ktoml.core)
+                api(libs.arrow.core)
                 api(libs.sqlx4k)
                 api(libs.sqlx4k.arrow)
-                api(libs.arrow.core)
+                api(libs.sqlx4k.postgres.pgmq)
             }
         }
         jvmMain {

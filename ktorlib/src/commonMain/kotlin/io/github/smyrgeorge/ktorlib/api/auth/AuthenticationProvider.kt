@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.api.rest.auth
+package io.github.smyrgeorge.ktorlib.api.auth
 
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.ktor.server.application.Application

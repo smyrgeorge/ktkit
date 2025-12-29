@@ -76,7 +76,9 @@ abstract class AbstractRestHandler(
      * @param f A lambda function to be executed within the tracing context. It takes a `Span`
      *          as a parameter and performs tracing-related logic.
      */
-    private inline fun ApplicationCall.handleWithTracing(f: TracingContext.(Span) -> Unit) {
+    private inline fun ApplicationCall.handleWithTracing(
+        f: TracingContext.(Span) -> Unit
+    ) {
         // Create the logging-context.
         val tracing = TracingContext.builder()
 //            .with(parent) // TODO: create the remote span.

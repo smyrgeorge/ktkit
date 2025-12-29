@@ -1,8 +1,8 @@
 package io.github.smyrgeorge.ktorlib
 
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktorlib.api.rest.auth.AuthenticationProvider.Companion.installAuthenticationProvider
-import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
+import io.github.smyrgeorge.ktorlib.api.auth.AuthenticationProvider.Companion.installAuthenticationProvider
+import io.github.smyrgeorge.ktorlib.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.util.ANONYMOUS_USER
 import io.github.smyrgeorge.ktorlib.util.SYSTEM_USER

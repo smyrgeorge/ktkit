@@ -1,6 +1,6 @@
-package io.github.smyrgeorge.ktorlib.api.rest.auth.impl
+package io.github.smyrgeorge.ktorlib.api.auth.impl
 
-import io.github.smyrgeorge.ktorlib.api.rest.auth.PrincipalExtractor
+import io.github.smyrgeorge.ktorlib.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.ktor.server.application.ApplicationCall
@@ -24,21 +24,24 @@ import kotlin.io.encoding.Base64
  * @see UserToken
  */
 class XRealNamePrincipalExtractor : PrincipalExtractor {
-    private val headerName: String = "x-real-name"
-
     override suspend fun extract(call: ApplicationCall): Result<UserToken?> {
         return runCatching {
-            val header = call.request.headers[headerName] ?: return@runCatching null
-            try {
-                val json = Base64.decode(header).decodeToString()
-                serde.decodeFromString<UserToken>(json)
-            } catch (e: Exception) {
-                UnauthorizedImpl("Cannot extract $headerName header: ${e.message}").ex(e)
-            }
+            val header = call.request.headers[HEADER_NAME] ?: return@runCatching null
+            extract(header)
+        }
+    }
+
+    fun extract(header: String): UserToken {
+        return try {
+            val json = Base64.decode(header).decodeToString()
+            serde.decodeFromString<UserToken>(json)
+        } catch (e: Exception) {
+            UnauthorizedImpl("Cannot extract $HEADER_NAME header: ${e.message}").ex(e)
         }
     }
 
     companion object {
+        const val HEADER_NAME: String = "x-real-name"
         private val serde: Json = Json { ignoreUnknownKeys = true }
         fun UserToken.toXRealName(): String {
             return Base64.encode(serde.encodeToString(this).toByteArray())

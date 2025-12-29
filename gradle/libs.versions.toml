@@ -52,6 +52,7 @@ sqlx4k = { module = "io.github.smyrgeorge:sqlx4k", version.ref = "sqlx4k" }
 sqlx4k-arrow = { module = "io.github.smyrgeorge:sqlx4k-arrow", version.ref = "sqlx4k" }
 sqlx4k-codegen = { module = "io.github.smyrgeorge:sqlx4k-codegen", version.ref = "sqlx4k" }
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
+sqlx4k-postgres-pgmq = { module = "io.github.smyrgeorge:sqlx4k-postgres-pgmq", version.ref = "sqlx4k" }
 ktoml-core = { module = "com.akuleshov7:ktoml-core", version.ref = "ktoml" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 

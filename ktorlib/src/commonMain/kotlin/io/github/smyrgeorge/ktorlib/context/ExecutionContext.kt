@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktorlib.context
 
+import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktorlib.api.rest.HttpContext
 import io.github.smyrgeorge.log4k.TracingContext
 import kotlin.coroutines.CoroutineContext
@@ -25,16 +26,16 @@ class ExecutionContext(
     val attributes: Map<String, Any> = emptyMap(),
     tracingContext: TracingContext? = null,
     httpContext: HttpContext? = null,
-) : CoroutineContext.Element {
+) : CoroutineContext.Element, Raise<Throwable> {
     private val _tracingContext: TracingContext? = tracingContext
     private val _http: HttpContext? = httpContext
 
     val tracingContext = _tracingContext ?: error("TracingContext is null.")
     val httpContext: HttpContext = _http ?: error("HttpContext is null.")
 
-    override fun toString(): String {
-        return "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$user, attributes=$attributes)"
-    }
+    override fun raise(r: Throwable): Nothing = throw r
+    override val key: CoroutineContext.Key<ExecutionContext> get() = ExecutionContext
+    override fun toString() = "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$user, attributes=$attributes)"
 
     companion object : CoroutineContext.Key<ExecutionContext> {
         /**
@@ -60,7 +61,4 @@ class ExecutionContext(
             httpContext = httpContext,
         )
     }
-
-    override val key: CoroutineContext.Key<ExecutionContext>
-        get() = ExecutionContext
 }

@@ -1,5 +1,7 @@
 package io.github.smyrgeorge.ktorlib.example.test
 
+import arrow.core.Either
+import arrow.core.raise.context.bind
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService
 import io.github.smyrgeorge.ktorlib.util.EitherThrowable
@@ -14,10 +16,15 @@ class TestService(
 ) : AbstractDatabaseService {
     val log = Logger.of(this::class)
 
-    context(_: ExecutionContext, tc: TracingContext, t: Transaction)
+    context(_: ExecutionContext, _: TracingContext, _: Transaction)
     suspend fun findAll(): EitherThrowable<List<Test>> {
         log.info { "Fetching all tests" }
+        val test = test().bind()
         return testRepository.findAll()
+    }
+
+    fun test(): EitherThrowable<Unit> {
+        return Either.Left(RuntimeException("Test exception"))
     }
 }
 

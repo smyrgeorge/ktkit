@@ -18,7 +18,6 @@ import kotlin.uuid.Uuid
  * @property iat Issued at timestamp in milliseconds (optional)
  * @property exp Expiration timestamp in milliseconds (optional)
  * @property authTime Authentication timestamp in milliseconds (optional)
- * @property jwt JWT token string
  * @property attributes Custom token claims/attributes as a JSON object
  */
 @Serializable
@@ -53,10 +52,10 @@ data class UserToken(
     fun hasAnyRole(vararg roles: String): Boolean = roles.any { this.roles.contains(it) }
 
     /**
-     * Checks if the user has all of the specified roles.
+     * Checks if the user has all the specified roles.
      *
      * @param roles The role names to check
-     * @return true if the user has all of the roles, false otherwise
+     * @return true if the user has all the roles, false otherwise
      */
     fun hasAllRoles(vararg roles: String): Boolean = roles.all { this.roles.contains(it) }
 
@@ -82,11 +81,11 @@ data class UserToken(
     }
 
     /**
-     * Ensures that the user possesses all of the specified roles.
+     * Ensures that the user possesses all the specified roles.
      * Throws an error if the user does not have all the required roles.
      *
      * @param roles The role names that the user must have. One or more roles to check.
-     * @throws ForbiddenImpl If the user does not have all of the specified roles.
+     * @throws ForbiddenImpl If the user does not have all the specified roles.
      */
     fun requireAllRoles(vararg roles: String) {
         if (!hasAllRoles(*roles)) ForbiddenImpl("User does not have authorities: ${roles.joinToString()}").ex()

@@ -76,8 +76,8 @@ class Application(
     )
 
     fun start(wait: Boolean = true) {
-        log.info("PWD: ${pwd()}")
-        log.info("Starting $name...")
+        log.info { "PWD: ${pwd()}" }
+        log.info { "Starting $name..." }
         makeServer().apply {
             _server = this
             INSTANCE = this@Application
@@ -86,7 +86,7 @@ class Application(
     }
 
     fun shutdown(gracePeriod: Duration = 1.seconds, timeout: Duration = 5.seconds) {
-        log.info("Shutting down...")
+        log.info { "Shutting down..." }
         di.close()
         server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)
     }

@@ -33,6 +33,7 @@ import io.ktor.server.routing.put
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
+import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * Abstract base class for creating REST API endpoints with built-in request handling and security.
@@ -114,16 +115,23 @@ abstract class AbstractRestHandler(
                 ?: this@AbstractRestHandler.defaultUser
                 ?: UnauthorizedImpl("User is not authenticated").ex()
 
+            // Create the execution-context for the request.
+            val httpContext = HttpContext(user, call)
+            val executionContext = ExecutionContext.fromHttp(span.context.spanId, user, httpContext, this)
+
             // Role-based authorization.
             hasRole?.let { role -> user.requireRole(role) }
             hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
             hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
 
-            // Create the execution-context for the request.
-            val httpContext = HttpContext(user, call)
-            val executionContext = ExecutionContext.fromHttp(span.context.spanId, user, httpContext, this)
+            // Add user tags to the span.
+            span.tags.apply {
+                @OptIn(ExperimentalUuidApi::class)
+                put(OpenTelemetry.USER_ID, user.uuid)
+                put(OpenTelemetry.USER_NAME, user.username)
+            }
 
-            // Check that the user has access to the corresponding resources.
+            // Check for permissions.
             val hasAccess = this@AbstractRestHandler.permissions(httpContext) && permissions(httpContext)
             if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpContext.uri()}'").ex()
 
@@ -139,7 +147,13 @@ abstract class AbstractRestHandler(
                     .onSuccess { value -> respond(span, call, onSuccessHttpStatusCode, value) }
 
                 is Either<*, *> -> result.fold(
-                    ifLeft = { throw (it as? Throwable ?: IllegalStateException(it.toString())) },
+                    ifLeft = { error ->
+                        when (error) {
+                            is Error -> throw error.toThrowable()
+                            is InternalError -> throw error
+                            else -> throw IllegalStateException("Unexpected error type: $error")
+                        }
+                    },
                     ifRight = { value -> respond(span, call, onSuccessHttpStatusCode, value) }
                 )
 
@@ -164,18 +178,18 @@ abstract class AbstractRestHandler(
      * @param status The HTTP status code indicating a successful response.
      * @param result The response body or stream to return to the client.
      */
-    private suspend inline fun <T> respond(
+    private suspend inline fun respond(
         span: Span,
         call: ApplicationCall,
         status: HttpStatusCode,
-        result: T
+        result: Any?
     ) {
         // Set the HTTP status code and tags on the span.
-        span.tags[OpenTelemetry.HTTP_STATUS_CODE] = status.value
+        span.tags[OpenTelemetry.HTTP_RESPONSE_STATUS_CODE] = status.value
         when (result) {
             is Flow<*> -> call.respond(status, result.filterNotNull())
             is Unit -> call.respond(status)
-            else -> call.respond(status, result as Any)
+            else -> call.respond(status, result ?: Unit)
         }
     }
 
@@ -202,7 +216,7 @@ abstract class AbstractRestHandler(
         }
 
         // Set the HTTP status code and tags on the span.
-        span.tags[OpenTelemetry.HTTP_STATUS_CODE] = error.http.code
+        span.tags[OpenTelemetry.HTTP_REQUEST_METHOD] = error.http.code
 
         val res = ApiError(
             code = error.type,

@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktorlib.example.test
 
-import arrow.core.Either
+import arrow.core.left
 import arrow.core.raise.context.bind
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService
@@ -19,12 +19,31 @@ class TestService(
     context(_: ExecutionContext, _: TracingContext, _: Transaction)
     suspend fun findAll(): EitherThrowable<List<Test>> {
         log.info { "Fetching all tests" }
-        val test = test().bind()
+        test().bind()
+//        return either {
+//            testRepository.findAll().bind()
+//        }
+//        test2().bind()
+
         return testRepository.findAll()
     }
 
     fun test(): EitherThrowable<Unit> {
-        return Either.Left(RuntimeException("Test exception"))
+        return IllegalStateException("An error occurred").left()
+    }
+
+//    fun test2(): Either<String, Unit> {
+//        return "test".left()
+//    }
+
+    companion object {
+//        context(raise: Raise<Throwable>)
+//        @RaiseDSL fun <E, A> Either<E, A>.bind(): A {
+//            return when (this) {
+//                is Either.Left -> raise.raise(RuntimeException(value.toString()))
+//                is Either.Right -> value
+//            }
+//        }
     }
 }
 

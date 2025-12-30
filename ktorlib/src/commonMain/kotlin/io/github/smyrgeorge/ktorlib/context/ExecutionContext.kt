@@ -17,7 +17,7 @@ import kotlin.time.Instant
  * @property reqTs Request timestamp
  * @property user User token containing authentication/authorization information
  * @property attributes Custom attributes map for storing request-scoped data
- * @property tracingContext Optional TracingContext for logging purposes
+ * @property tracingContext TracingContext for logging purposes
  * @property httpContext Optional HttpContext for accessing request data
  * @property eventContext Optional EventContext for accessing event data
  */
@@ -26,15 +26,13 @@ class ExecutionContext(
     val reqTs: Instant = Clock.System.now(),
     val user: UserToken,
     val attributes: Map<String, Any> = emptyMap(),
-    tracingContext: TracingContext? = null,
+    val tracingContext: TracingContext,
     httpContext: HttpContext? = null,
     eventContext: EventContext? = null,
-) : CoroutineContext.Element, Raise<Throwable> {
-    private val _tracingContext: TracingContext? = tracingContext
+) : Raise<Throwable>, TracingContext by tracingContext, CoroutineContext.Element {
     private val _http: HttpContext? = httpContext
     private val _event: EventContext? = eventContext
 
-    val tracingContext = _tracingContext ?: error("TracingContext is null.")
     val httpContext: HttpContext get() = _http ?: error("HttpContext is null.")
     val eventContext: EventContext get() = _event ?: error("EventContext is null.")
 
@@ -50,13 +48,13 @@ class ExecutionContext(
          * @param user The user token
          * @param httpContext The HttpContext
          * @param attributes Custom attributes map
-         * @param tracingContext Optional TracingContext for logging purposes
+         * @param tracingContext TracingContext for logging purposes
          */
         fun fromHttp(
             reqId: String,
             user: UserToken,
             httpContext: HttpContext,
-            tracingContext: TracingContext? = null,
+            tracingContext: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
         ): ExecutionContext = ExecutionContext(
             user = user,
@@ -72,7 +70,7 @@ class ExecutionContext(
          * @param reqId The unique identifier for the request.
          * @param user The user authentication token associated with the request.
          * @param eventContext The event context that contains event-specific details.
-         * @param tracingContext Optional tracing context for distributed tracing, default is null.
+         * @param tracingContext Tracing context for distributed tracing.
          * @param attributes Additional attributes or metadata to include in the execution context, default is an empty map.
          * @return A new [ExecutionContext] instance populated with the provided inputs.
          */
@@ -80,7 +78,7 @@ class ExecutionContext(
             reqId: String,
             user: UserToken,
             eventContext: EventContext,
-            tracingContext: TracingContext? = null,
+            tracingContext: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
         ): ExecutionContext = ExecutionContext(
             user = user,

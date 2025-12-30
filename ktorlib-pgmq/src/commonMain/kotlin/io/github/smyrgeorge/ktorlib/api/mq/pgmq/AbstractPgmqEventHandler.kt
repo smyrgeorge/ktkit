@@ -11,8 +11,10 @@ import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
+import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.TracingEvent.Span
-import io.github.smyrgeorge.log4k.impl.OpenTelemetry
+import io.github.smyrgeorge.log4k.impl.CoroutinesTracingContext
+import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.Message
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.Metrics
@@ -78,7 +80,7 @@ abstract class AbstractPgmqEventHandler(
             extractOpenTelemetryTraceParent(h)?.let { trace.span(it.spanId, it.traceId) }
         }
         // Create the logging-context.
-        val tracing = TracingContext(trace, parent)
+        val tracing = CoroutinesTracingContext(trace, parent)
 
         // Create the handler span.
         runCatching { tracing.span(spanName, spanTags()) { tracing.f(this) } }
@@ -96,8 +98,8 @@ abstract class AbstractPgmqEventHandler(
         // Add user tags to the span.
         span.tags.apply {
             @OptIn(ExperimentalUuidApi::class)
-            put(OpenTelemetry.USER_ID, user.uuid)
-            put(OpenTelemetry.USER_NAME, user.username)
+            put(OpenTelemetryAttributes.USER_ID, user.uuid)
+            put(OpenTelemetryAttributes.USER_NAME, user.username)
         }
 
         val eventContext = EventContext(user, message.headers)
@@ -127,7 +129,7 @@ abstract class AbstractPgmqEventHandler(
         supplier: () -> String,
     ): Result<Long> = pgmq.client.send(options.queue, supplier(), headers, delay)
 
-    context(_: ExecutionContext, _: TracingContext)
+    context(_: ExecutionContext)
     abstract suspend fun EventContext.handler(message: Message)
 
     open suspend fun onFailToRead(e: Throwable) {

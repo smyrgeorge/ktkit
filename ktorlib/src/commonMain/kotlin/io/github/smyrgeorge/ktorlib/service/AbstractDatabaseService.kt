@@ -4,7 +4,6 @@ import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.error.Error
 import io.github.smyrgeorge.ktorlib.error.InternalError
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService.Companion.withTransaction
-import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
 
@@ -21,9 +20,8 @@ interface AbstractDatabaseService : AbstractService {
     val db: Driver
 
     companion object {
-        context(tc: TracingContext)
         suspend inline fun <R> AbstractDatabaseService.withTransaction(
-            crossinline f: suspend context(TracingContext, Transaction)() -> R
+            crossinline f: suspend context(Transaction)() -> R
         ): R = db.transaction {
             when (val result = f()) {
                 // Ensure that in case of an error, the transaction is rolled back.

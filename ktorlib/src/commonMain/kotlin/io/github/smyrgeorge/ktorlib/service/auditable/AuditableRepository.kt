@@ -1,7 +1,8 @@
 package io.github.smyrgeorge.ktorlib.service.auditable
 
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
-import io.github.smyrgeorge.log4k.impl.OpenTelemetry
+import io.github.smyrgeorge.log4k.TracingContext.Companion.span
+import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.Statement
 import io.github.smyrgeorge.sqlx4k.arrow.ArrowContextCrudRepository
 import kotlinx.coroutines.currentCoroutineContext
@@ -30,10 +31,10 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
         return ctx().tracingContext.span(
             name = operation,
             tags = mapOf(
-//                OpenTelemetry.DB_SYSTEM to "sqlx4k",
-//                OpenTelemetry.DB_STATEMENT to statement.toString(),
-                OpenTelemetry.DB_OPERATION to operation,
-                OpenTelemetry.DB_DRIVER_NAME to "sqlx4k"
+//                OpenTelemetryAttributes.DB_SYSTEM to "sqlx4k",
+//                OpenTelemetryAttributes.DB_STATEMENT to statement.toString(),
+                OpenTelemetryAttributes.DB_OPERATION to operation,
+                OpenTelemetryAttributes.DB_DRIVER_NAME to "sqlx4k"
             )
         ) { block() }
     }

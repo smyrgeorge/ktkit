@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktorlib.util
 
-import io.github.smyrgeorge.log4k.impl.OpenTelemetry
+import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.log4k.impl.Tags
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.httpMethod
@@ -12,10 +12,10 @@ fun ApplicationCall.spanName(): String =
 
 fun ApplicationCall.spanTags(): Tags =
     mapOf(
-        OpenTelemetry.HTTP_REQUEST_METHOD to request.httpMethod.value,
-        OpenTelemetry.URL_PATH to request.path(),
-        OpenTelemetry.URL_QUERY to request.queryString(),
-        OpenTelemetry.URL_SCHEME to request.local.scheme,
+        OpenTelemetryAttributes.HTTP_REQUEST_METHOD to request.httpMethod.value,
+        OpenTelemetryAttributes.URL_PATH to request.path(),
+        OpenTelemetryAttributes.URL_QUERY to request.queryString(),
+        OpenTelemetryAttributes.URL_SCHEME to request.local.scheme,
     )
 
 fun ApplicationCall.extractOpenTelemetryTraceParent(): TraceParent? =

@@ -1,11 +1,9 @@
 package io.github.smyrgeorge.ktorlib.api.mq.pgmq
 
-import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.api.auth.impl.XRealNamePrincipalExtractor
+import io.github.smyrgeorge.ktorlib.api.mq.EventContext
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
-import io.github.smyrgeorge.ktorlib.error.Error
-import io.github.smyrgeorge.ktorlib.error.InternalError
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
 import io.github.smyrgeorge.log4k.Logger
@@ -39,7 +37,7 @@ abstract class AbstractPgmqEventHandler(
         pgmq = pgmq.client,
         options = options.copy(queue = queue.name, autoStart = false),
         onMessage = ::handle,
-        onFaiToRead = ::onFaiToRead,
+        onFaiToRead = ::onFailToRead,
         onFailToProcess = ::onFailToProcess,
         onFaiToAck = ::onFailToAck,
         onFaiToNack = ::onFailToNack,
@@ -61,30 +59,15 @@ abstract class AbstractPgmqEventHandler(
 
     fun stop(): Unit = consumer.stop()
 
-    context(db: QueryExecutor)
-    suspend fun send(
-        message: String,
-        headers: Map<String, String> = emptyMap(),
-        delay: Duration = 0.seconds
-    ): Result<Long> = pgmq.client.send(options.queue, message, headers, delay)
-
-    context(db: QueryExecutor)
-    suspend fun send(
-        messages: List<String>,
-        headers: Map<String, String> = emptyMap(),
-        delay: Duration = 0.seconds
-    ): Result<List<Long>> = pgmq.client.send(options.queue, messages, headers, delay)
-
     suspend fun metrics(): Result<Metrics> = pgmq.client.metrics(options.queue)
 
-    private inline fun handleWithTracing(
+    private inline fun Message.trace(
         f: TracingContext.(Span) -> Unit
     ) {
+        // Extract the parent span from the OpenTelemetry trace header.
+        val parent: Span.Remote? = null // TODO: Extract from message headers.
         // Create the logging-context.
-        val tracing = TracingContext.builder()
-//            .with(parent) // TODO: create the remote span.
-            .with(trace)
-            .build()
+        val tracing = TracingContext(trace, parent)
 
         // Create the handler span.
         runCatching { tracing.span("CHANGE", emptyMap()) { tracing.f(this) } }
@@ -92,7 +75,7 @@ abstract class AbstractPgmqEventHandler(
 
     private suspend fun handle(
         message: Message
-    ) = handleWithTracing { span ->
+    ) = message.trace { span ->
         // Find the header that contains user information.
         val user = message.headers[userHeaderName]
             ?.let { principal.extract(it) } // Convert header to [UserToken]
@@ -102,6 +85,9 @@ abstract class AbstractPgmqEventHandler(
         val eventContext = EventContext(user)
         val executionContext = ExecutionContext.fromEvent(span.context.spanId, user, eventContext, this)
 
+        val rc = message.readCt
+        if (rc > 10) log.warn("Retry-count '$rc > 10' was reached on queue='${queue.name}'.")
+
         // Add user tags to the span.
         span.tags.apply {
             @OptIn(ExperimentalUuidApi::class)
@@ -110,27 +96,30 @@ abstract class AbstractPgmqEventHandler(
         }
 
         // Load the execution context into the coroutine context.
-        val result: Any = withContext(executionContext) {
+        withContext(executionContext) {
             // Execute the handler.
             context(executionContext) { eventContext.handler(message) }
         }
-
-        when (result) {
-            is Result<*> if result.isFailure -> throw result.exceptionOrNull()!!
-            is Either<*, *> if result.isLeft() -> {
-                when (val error = result.leftOrNull() ?: throw IllegalStateException("Unexpected null error")) {
-                    is Error -> throw error.toThrowable()
-                    is InternalError -> throw error
-                    else -> throw IllegalStateException("Unexpected error type: $error")
-                }
-            }
-        }
     }
 
-    context(_: ExecutionContext, _: TracingContext)
-    abstract suspend fun <T : Any> EventContext.handler(message: Message): T
+    context(db: QueryExecutor)
+    suspend fun send(
+        message: String,
+        headers: Map<String, String> = emptyMap(),
+        delay: Duration = 0.seconds
+    ): Result<Long> = pgmq.client.send(options.queue, message, headers, delay)
 
-    open suspend fun onFaiToRead(e: Throwable) {
+    context(db: QueryExecutor)
+    suspend fun send(
+        headers: Map<String, String> = emptyMap(),
+        delay: Duration = 0.seconds,
+        supplier: () -> String,
+    ): Result<Long> = pgmq.client.send(options.queue, supplier(), headers, delay)
+
+    context(_: ExecutionContext, _: TracingContext)
+    abstract suspend fun EventContext.handler(message: Message)
+
+    open suspend fun onFailToRead(e: Throwable) {
         log.warn { "Failed to read from the queue: ${e.message}" }
     }
 
@@ -150,7 +139,7 @@ abstract class AbstractPgmqEventHandler(
         private val DEFAULT_OPTIONS = PgMqConsumer.Options(
             queue = "DEFAULT",
             prefetch = 250,
-            vt = 5.seconds,
+            vt = 30.seconds,
             autoStart = false,
             enableNotifyInsert = false,
             queueMinPullDelay = 50.milliseconds,

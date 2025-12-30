@@ -11,6 +11,7 @@ import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.github.smyrgeorge.ktorlib.error.types.UnknownError
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
+import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
 import io.github.smyrgeorge.ktorlib.util.spanName
 import io.github.smyrgeorge.ktorlib.util.spanTags
 import io.github.smyrgeorge.log4k.Logger
@@ -76,15 +77,13 @@ abstract class AbstractRestHandler(
      * @param f A lambda function to be executed within the tracing context. It takes a `Span`
      *          as a parameter and performs tracing-related logic.
      */
-    private inline fun ApplicationCall.handleWithTracing(
+    private inline fun ApplicationCall.trace(
         f: TracingContext.(Span) -> Unit
     ) {
+        // Extract the parent span from the OpenTelemetry trace header.
+        val parent = extractOpenTelemetryTraceParent()?.let { trace.span(it.spanId, it.traceId) }
         // Create the logging-context.
-        val tracing = TracingContext.builder()
-//            .with(parent) // TODO: create the remote span.
-            .with(trace)
-            .build()
-
+        val tracing = TracingContext(trace, parent)
         // Create the handler span.
         runCatching { tracing.span(spanName(), spanTags()) { tracing.f(this) } }
     }
@@ -109,7 +108,7 @@ abstract class AbstractRestHandler(
         permissions: HttpContext.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
         crossinline handler: suspend context(ExecutionContext, TracingContext) HttpContext.() -> T
-    ): Unit = call.handleWithTracing { span ->
+    ): Unit = call.trace { span ->
         try {
             // Get the authenticated user from the call (set by Ktor's Authentication plugin)
             val user = call.principal<UserToken>()

@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktorlib.context
 
 import arrow.core.raise.context.Raise
-import io.github.smyrgeorge.ktorlib.api.mq.pgmq.EventContext
+import io.github.smyrgeorge.ktorlib.api.mq.EventContext
 import io.github.smyrgeorge.ktorlib.api.rest.HttpContext
 import io.github.smyrgeorge.log4k.TracingContext
 import kotlin.coroutines.CoroutineContext

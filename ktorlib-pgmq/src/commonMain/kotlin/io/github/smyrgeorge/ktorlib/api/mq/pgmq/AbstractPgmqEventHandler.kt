@@ -69,10 +69,10 @@ abstract class AbstractPgmqEventHandler(
 //        "messaging.destination.name" to options.queue,
         "messaging.system" to "pgmq",
     )
+
     private inline fun Message.trace(
         f: TracingContext.(Span) -> Unit
     ) {
-
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = headers[TRACE_PARENT_HEADER]?.let { h ->
             extractOpenTelemetryTraceParent(h)?.let { trace.span(it.spanId, it.traceId) }

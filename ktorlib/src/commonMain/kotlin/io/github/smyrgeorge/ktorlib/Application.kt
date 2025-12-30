@@ -105,7 +105,6 @@ class Application(
             module.config()
         }
 
-
         fun withSystemUser(user: UserToken) {
             SYSTEM_USER = user
         }
@@ -186,7 +185,7 @@ class Application(
                         }
                     }
 
-                    // If authentication is configured, wrap routes in authenticate block
+                    // If authentication is configured, wrap routes in an authenticated block
                     if (authenticationExtractor != null) {
                         authenticate(authenticationExtractor!!.name(), optional = false, build = routes)
                     } else {

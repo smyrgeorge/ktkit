@@ -4,12 +4,12 @@ import arrow.core.Either
 import arrow.core.NonEmptySet
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
-import io.github.smyrgeorge.ktorlib.error.ApiError
-import io.github.smyrgeorge.ktorlib.error.Error
-import io.github.smyrgeorge.ktorlib.error.InternalError
-import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
-import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
-import io.github.smyrgeorge.ktorlib.error.types.UnknownError
+import io.github.smyrgeorge.ktorlib.api.rest.ApiError
+import io.github.smyrgeorge.ktorlib.error.ErrorSpec
+import io.github.smyrgeorge.ktorlib.error.RuntimeError
+import io.github.smyrgeorge.ktorlib.error.system.Forbidden
+import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
+import io.github.smyrgeorge.ktorlib.error.system.UnknownError
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
 import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
 import io.github.smyrgeorge.ktorlib.util.spanName
@@ -116,7 +116,7 @@ abstract class AbstractRestHandler(
             val user = call.principal<UserToken>()
                 ?: defaultUser
                 ?: this@AbstractRestHandler.defaultUser
-                ?: UnauthorizedImpl("User is not authenticated").ex()
+                ?: Unauthorized("User is not authenticated").ex()
 
             // Add user tags to the span.
             span.tags.apply {
@@ -127,7 +127,7 @@ abstract class AbstractRestHandler(
 
             // Create the execution-context for the request.
             val httpContext = HttpContext(user, call)
-            val executionContext = ExecutionContext.fromHttp(span.context.spanId, user, httpContext, this)
+            val executionContext = ExecutionContext.fromHttp(user, httpContext, this)
 
             // Role-based authorization.
             hasRole?.let { role -> user.requireRole(role) }
@@ -136,7 +136,7 @@ abstract class AbstractRestHandler(
 
             // Check for permissions.
             val hasAccess = this@AbstractRestHandler.permissions(httpContext) && permissions(httpContext)
-            if (!hasAccess) ForbiddenImpl("User does not have the required permissions to access uri='${httpContext.uri()}'").ex()
+            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${httpContext.uri()}'").ex()
 
             // Load the execution context into the coroutine context.
             val result = withContext(executionContext) {
@@ -152,10 +152,9 @@ abstract class AbstractRestHandler(
                 is Either<*, *> -> result.fold(
                     ifLeft = { error ->
                         when (error) {
-                            is Error -> throw error.toThrowable()
-                            is InternalError -> throw error
+                            is ErrorSpec -> throw error.toThrowable()
                             is Throwable -> throw error
-                            else -> throw IllegalStateException("Unexpected error type: $error")
+                            else -> error("Unexpected error type: $error")
                         }
                     },
                     ifRight = { value -> respond(span, call, onSuccessHttpStatusCode, value) }
@@ -211,28 +210,26 @@ abstract class AbstractRestHandler(
         call: ApplicationCall,
         cause: Throwable,
     ) {
-        val error: Error = if (cause is InternalError) cause.error
+        val error: ErrorSpec = if (cause is RuntimeError) cause.error
         else UnknownError(cause.message ?: "An unknown error occurred")
 
         // Only log server errors (5xx)
-        if (error.http.code >= 500) {
+        if (error.httpStatus.code >= 500) {
             log.error(cause) { cause.message ?: "null" }
         }
 
         // Set the HTTP status code and tags on the span.
-        span.tags[OpenTelemetryAttributes.HTTP_REQUEST_METHOD] = error.http.code
+        span.tags[OpenTelemetryAttributes.HTTP_REQUEST_METHOD] = error.httpStatus.code
 
         val res = ApiError(
-            code = error.type,
+            type = error::class.simpleName ?: "AnonymousError",
+            status = error.httpStatus.code,
             requestId = span.context.spanId,
-            details = ApiError.Details(
-                type = error.type,
-                message = error.message,
-                http = error.http
-            )
+            detail = error.message,
+            error = error
         )
 
-        val status = HttpStatusCode.fromValue(error.http.code)
+        val status = HttpStatusCode.fromValue(error.httpStatus.code)
         call.respond(status, res)
     }
 

@@ -1,8 +1,8 @@
 package io.github.smyrgeorge.ktorlib.example
 
 import io.github.smyrgeorge.ktorlib.Application
-import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.api.auth.impl.XRealNamePrincipalExtractor
+import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.api.rest.impl.ApplicationStatusRestHandler
 import io.github.smyrgeorge.ktorlib.example.generated.TestRepositoryImpl
 import io.github.smyrgeorge.ktorlib.example.test.TestRepository

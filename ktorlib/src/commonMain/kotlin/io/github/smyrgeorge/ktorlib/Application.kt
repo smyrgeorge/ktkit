@@ -1,9 +1,18 @@
 package io.github.smyrgeorge.ktorlib
 
-import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.api.auth.AuthenticationProvider.Companion.installAuthenticationProvider
 import io.github.smyrgeorge.ktorlib.api.auth.PrincipalExtractor
+import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.context.UserToken
+import io.github.smyrgeorge.ktorlib.error.ErrorSpec
+import io.github.smyrgeorge.ktorlib.error.system.BadRequest
+import io.github.smyrgeorge.ktorlib.error.system.Forbidden
+import io.github.smyrgeorge.ktorlib.error.system.InternalServerError
+import io.github.smyrgeorge.ktorlib.error.system.MissingParameter
+import io.github.smyrgeorge.ktorlib.error.system.NotFound
+import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
+import io.github.smyrgeorge.ktorlib.error.system.UnknownError
+import io.github.smyrgeorge.ktorlib.error.system.UnsupportedEnumValue
 import io.github.smyrgeorge.ktorlib.util.ANONYMOUS_USER
 import io.github.smyrgeorge.ktorlib.util.SYSTEM_USER
 import io.github.smyrgeorge.ktorlib.util.applicationLogger
@@ -27,6 +36,10 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -146,12 +159,19 @@ class Application(
             prettyPrint = false
             ignoreUnknownKeys = true
             explicitNulls = false
+            classDiscriminator = "@type"
+            serializersModule = defaultSerializersModule
         }
 
         fun json(config: JsonBuilder.() -> Unit) {
             json = Json {
+                // Apply default configuration.
                 default()
+                // Apply custom configuration.
                 config()
+                // Override default configuration.
+                classDiscriminator = "@type"
+                serializersModule += defaultSerializersModule
             }
         }
 
@@ -202,5 +222,17 @@ class Application(
     companion object {
         lateinit var INSTANCE: Application
         val di: KoinApplication get() = INSTANCE.di
+        private val defaultSerializersModule = SerializersModule {
+            polymorphic(ErrorSpec::class) {
+                subclass(BadRequest::class)
+                subclass(Forbidden::class)
+                subclass(InternalServerError::class)
+                subclass(MissingParameter::class)
+                subclass(NotFound::class)
+                subclass(Unauthorized::class)
+                subclass(UnknownError::class)
+                subclass(UnsupportedEnumValue::class)
+            }
+        }
     }
 }

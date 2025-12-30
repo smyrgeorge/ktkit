@@ -4,7 +4,7 @@ import io.github.smyrgeorge.ktorlib.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktorlib.api.mq.EventContext
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
-import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
+import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
 import io.github.smyrgeorge.ktorlib.util.TRACE_PARENT_HEADER
 import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
@@ -93,7 +93,7 @@ abstract class AbstractPgmqEventHandler(
         val user = message.headers[userHeaderName]
             ?.let { principal.extract(it) } // Convert header to [UserToken]
             ?: defaultUser
-            ?: UnauthorizedImpl("Request does not contain user data.").ex()
+            ?: Unauthorized("Request does not contain user data.").ex()
 
         // Add user tags to the span.
         span.tags.apply {
@@ -103,7 +103,7 @@ abstract class AbstractPgmqEventHandler(
         }
 
         val eventContext = EventContext(user, message.headers)
-        val executionContext = ExecutionContext.fromEvent(span.context.spanId, user, eventContext, this)
+        val executionContext = ExecutionContext.fromEvent(user, eventContext, this)
 
         val rc = message.readCt
         if (rc > 10) log.warn("Retry-count '$rc > 10' was reached on queue='${queue.name}'.")

@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktorlib.context
 
-import io.github.smyrgeorge.ktorlib.error.types.ForbiddenImpl
+import io.github.smyrgeorge.ktorlib.error.system.Forbidden
 import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -63,10 +63,10 @@ data class UserToken(
      * Ensures that the user possesses the specified role. Throws an error if the role is not assigned to the user.
      *
      * @param role The name of the role required for the operation.
-     * @throws ForbiddenImpl If the user does not have the specified role.
+     * @throws Forbidden If the user does not have the specified role.
      */
     fun requireRole(role: String) {
-        if (!hasRole(role)) ForbiddenImpl("User does not have authority $role").ex()
+        if (!hasRole(role)) Forbidden("User does not have authority $role").ex()
     }
 
     /**
@@ -74,10 +74,10 @@ data class UserToken(
      * Throws an error if the user does not have any of the roles.
      *
      * @param roles The role names to check. One or more roles that the user must have at least one of.
-     * @throws ForbiddenImpl If the user does not have any of the specified roles.
+     * @throws Forbidden If the user does not have any of the specified roles.
      */
     fun requireAnyRole(vararg roles: String) {
-        if (!hasAnyRole(*roles)) ForbiddenImpl("User does not have authorities: ${roles.joinToString()}").ex()
+        if (!hasAnyRole(*roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").ex()
     }
 
     /**
@@ -85,9 +85,9 @@ data class UserToken(
      * Throws an error if the user does not have all the required roles.
      *
      * @param roles The role names that the user must have. One or more roles to check.
-     * @throws ForbiddenImpl If the user does not have all the specified roles.
+     * @throws Forbidden If the user does not have all the specified roles.
      */
     fun requireAllRoles(vararg roles: String) {
-        if (!hasAllRoles(*roles)) ForbiddenImpl("User does not have authorities: ${roles.joinToString()}").ex()
+        if (!hasAllRoles(*roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").ex()
     }
 }

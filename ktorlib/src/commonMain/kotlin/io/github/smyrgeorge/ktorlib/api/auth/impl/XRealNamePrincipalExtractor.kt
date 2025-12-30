@@ -2,7 +2,7 @@ package io.github.smyrgeorge.ktorlib.api.auth.impl
 
 import io.github.smyrgeorge.ktorlib.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.context.UserToken
-import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
+import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
 import io.ktor.server.application.ApplicationCall
 import io.ktor.utils.io.core.toByteArray
 import kotlinx.serialization.json.Json
@@ -36,7 +36,7 @@ class XRealNamePrincipalExtractor : PrincipalExtractor {
             val json = Base64.decode(header).decodeToString()
             serde.decodeFromString<UserToken>(json)
         } catch (e: Exception) {
-            UnauthorizedImpl("Cannot extract $HEADER_NAME header: ${e.message}").ex(e)
+            Unauthorized("Cannot extract $HEADER_NAME header: ${e.message}").ex(e)
         }
     }
 

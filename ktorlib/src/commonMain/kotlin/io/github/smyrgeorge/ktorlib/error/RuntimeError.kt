@@ -1,14 +1,14 @@
 package io.github.smyrgeorge.ktorlib.error
 
 /**
- * Exception wrapper for [Error] instances.
+ * Exception wrapper for [io.github.smyrgeorge.ktorlib.error.system.SystemError] instances.
  *
  * Used to convert structured errors into throwable exceptions.
  *
  * @property error The structured error being wrapped
  */
-class InternalError(
-    val error: Error,
+class RuntimeError(
+    val error: ErrorSpec,
     message: String,
     cause: Throwable? = null
-) : Exception(message, cause)
+) : RuntimeException(message, cause)

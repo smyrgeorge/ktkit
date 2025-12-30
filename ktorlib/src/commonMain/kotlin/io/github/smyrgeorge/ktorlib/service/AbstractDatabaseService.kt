@@ -1,8 +1,7 @@
 package io.github.smyrgeorge.ktorlib.service
 
 import arrow.core.Either
-import io.github.smyrgeorge.ktorlib.error.Error
-import io.github.smyrgeorge.ktorlib.error.InternalError
+import io.github.smyrgeorge.ktorlib.error.ErrorSpec
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
@@ -27,11 +26,10 @@ interface AbstractDatabaseService : AbstractService {
                 // Ensure that in case of an error, the transaction is rolled back.
                 is Result<*> if result.isFailure -> throw result.exceptionOrNull()!!
                 is Either<*, *> if result.isLeft() -> {
-                    when (val error = result.leftOrNull() ?: throw IllegalStateException("Unexpected null error")) {
-                        is Error -> throw error.toThrowable()
-                        is InternalError -> throw error
+                    when (val error = result.leftOrNull() ?: error("Unexpected null error")) {
+                        is ErrorSpec -> throw error.toThrowable()
                         is Throwable -> throw error
-                        else -> throw IllegalStateException("Unexpected error type: $error")
+                        else -> error("Unexpected error type: $error")
                     }
                 }
 

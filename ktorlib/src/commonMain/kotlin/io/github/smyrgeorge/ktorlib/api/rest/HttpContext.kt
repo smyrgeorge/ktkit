@@ -1,8 +1,8 @@
 package io.github.smyrgeorge.ktorlib.api.rest
 
 import io.github.smyrgeorge.ktorlib.context.UserToken
-import io.github.smyrgeorge.ktorlib.error.types.MissingParameter
-import io.github.smyrgeorge.ktorlib.error.types.UnsupportedEnumValue
+import io.github.smyrgeorge.ktorlib.error.system.MissingParameter
+import io.github.smyrgeorge.ktorlib.error.system.UnsupportedEnumValue
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.receive

@@ -44,21 +44,19 @@ class ExecutionContext(
         /**
          * Creates a Context from an ApplicationCall with a user token.
          *
-         * @param reqId Request ID
          * @param user The user token
          * @param httpContext The HttpContext
          * @param attributes Custom attributes map
          * @param tracingContext TracingContext for logging purposes
          */
         fun fromHttp(
-            reqId: String,
             user: UserToken,
             httpContext: HttpContext,
             tracingContext: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
         ): ExecutionContext = ExecutionContext(
             user = user,
-            reqId = reqId,
+            reqId = tracingContext.current().id,
             attributes = attributes,
             tracingContext = tracingContext,
             httpContext = httpContext,
@@ -67,7 +65,6 @@ class ExecutionContext(
         /**
          * Creates an [ExecutionContext] by extracting relevant information from the given event.
          *
-         * @param reqId The unique identifier for the request.
          * @param user The user authentication token associated with the request.
          * @param eventContext The event context that contains event-specific details.
          * @param tracingContext Tracing context for distributed tracing.
@@ -75,14 +72,13 @@ class ExecutionContext(
          * @return A new [ExecutionContext] instance populated with the provided inputs.
          */
         fun fromEvent(
-            reqId: String,
             user: UserToken,
             eventContext: EventContext,
             tracingContext: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
         ): ExecutionContext = ExecutionContext(
             user = user,
-            reqId = reqId,
+            reqId = tracingContext.current().id,
             attributes = attributes,
             tracingContext = tracingContext,
             eventContext = eventContext,

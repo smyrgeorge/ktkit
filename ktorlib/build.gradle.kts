@@ -15,18 +15,18 @@ kotlin {
         }
         commonMain {
             dependencies {
+                api(libs.log4k)
+                api(libs.koin.core)
+                api(libs.arrow.core)
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
                 api(libs.kotlinx.serialization.json)
                 api(libs.kotlinx.serialization.properties)
+                api(libs.ktoml.core)
                 api(libs.ktor.server.core)
                 api(libs.ktor.server.auth)
                 api(libs.ktor.server.content.negotiation)
                 api(libs.ktor.serialization.kotlinx.json)
-                api(libs.log4k)
-                api(libs.koin.core)
-                api(libs.ktoml.core)
-                api(libs.arrow.core)
                 api(libs.sqlx4k)
                 api(libs.sqlx4k.arrow)
             }

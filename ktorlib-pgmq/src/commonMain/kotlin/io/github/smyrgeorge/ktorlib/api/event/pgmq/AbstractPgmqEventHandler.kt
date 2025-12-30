@@ -1,7 +1,7 @@
-package io.github.smyrgeorge.ktorlib.api.mq.pgmq
+package io.github.smyrgeorge.ktorlib.api.event.pgmq
 
 import io.github.smyrgeorge.ktorlib.api.auth.impl.XRealNamePrincipalExtractor
-import io.github.smyrgeorge.ktorlib.api.mq.EventContext
+import io.github.smyrgeorge.ktorlib.api.event.EventContext
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
@@ -28,7 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.ExperimentalUuidApi
 
 abstract class AbstractPgmqEventHandler(
-    private val pgmq: PgMq,
+    private val pgmq: Pgmq,
     private val queue: PgMqClient.Queue,
     private val options: PgMqConsumer.Options = DEFAULT_OPTIONS,
     private val userHeaderName: String = XRealNamePrincipalExtractor.HEADER_NAME,

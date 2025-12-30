@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktorlib.api.mq
+package io.github.smyrgeorge.ktorlib.api.event
 
 import io.github.smyrgeorge.ktorlib.context.UserToken
 

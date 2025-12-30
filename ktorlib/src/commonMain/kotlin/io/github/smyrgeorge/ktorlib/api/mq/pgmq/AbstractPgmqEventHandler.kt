@@ -6,6 +6,8 @@ import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.types.UnauthorizedImpl
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
+import io.github.smyrgeorge.ktorlib.util.TRACE_PARENT_HEADER
+import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
@@ -32,6 +34,7 @@ abstract class AbstractPgmqEventHandler(
 ) : AbstractComponent {
     val log = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
+    private val spanName = "${this::class.simpleName}.handle"
 
     private val consumer = PgMqConsumer(
         pgmq = pgmq.client,
@@ -61,16 +64,24 @@ abstract class AbstractPgmqEventHandler(
 
     suspend fun metrics(): Result<Metrics> = pgmq.client.metrics(options.queue)
 
+    private fun Message.spanTags(): Map<String, String> = mapOf(
+//        "messaging.message.id" to msgId.toString(),
+//        "messaging.destination.name" to options.queue,
+        "messaging.system" to "pgmq",
+    )
     private inline fun Message.trace(
         f: TracingContext.(Span) -> Unit
     ) {
+
         // Extract the parent span from the OpenTelemetry trace header.
-        val parent: Span.Remote? = null // TODO: Extract from message headers.
+        val parent = headers[TRACE_PARENT_HEADER]?.let { h ->
+            extractOpenTelemetryTraceParent(h)?.let { trace.span(it.spanId, it.traceId) }
+        }
         // Create the logging-context.
         val tracing = TracingContext(trace, parent)
 
         // Create the handler span.
-        runCatching { tracing.span("CHANGE", emptyMap()) { tracing.f(this) } }
+        runCatching { tracing.span(spanName, spanTags()) { tracing.f(this) } }
     }
 
     private suspend fun handle(

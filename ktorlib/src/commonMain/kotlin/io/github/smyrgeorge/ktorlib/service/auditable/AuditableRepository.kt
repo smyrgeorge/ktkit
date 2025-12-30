@@ -40,6 +40,8 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
             )
         ) {
             when (val res = block()) {
+                // Normally, we don't expect Result<*> to be returned from the repository (ArrowContextCrudRepository).
+                // However, we do it just in case this will change in the future.
                 is Result<*> if res.isFailure -> {
                     // Early close the span if the query failed.
                     exception(res.exceptionOrNull()!!, true)
@@ -47,6 +49,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
                     res
                 }
 
+                // Normally, we expect DbResult<*> to be returned from the repository (ArrowContextCrudRepository).
                 is Either<*, *> if res.isLeft() -> {
                     val e = when (val e = res.leftOrNull()!!) {
                         is SQLError -> e

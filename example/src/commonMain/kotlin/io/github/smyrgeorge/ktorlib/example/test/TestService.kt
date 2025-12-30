@@ -1,7 +1,6 @@
 package io.github.smyrgeorge.ktorlib.example.test
 
 import arrow.core.left
-import arrow.core.raise.context.bind
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService
 import io.github.smyrgeorge.ktorlib.util.EitherThrowable
@@ -19,7 +18,7 @@ class TestService(
     context(_: ExecutionContext, _: TracingContext, _: Transaction)
     suspend fun findAll(): EitherThrowable<List<Test>> {
         log.info { "Fetching all tests" }
-        test().bind()
+//        test().bind()
 //        return either {
 //            testRepository.findAll().bind()
 //        }

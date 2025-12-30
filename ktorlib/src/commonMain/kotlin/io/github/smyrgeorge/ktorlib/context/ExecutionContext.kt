@@ -35,8 +35,8 @@ class ExecutionContext(
     private val _event: EventContext? = eventContext
 
     val tracingContext = _tracingContext ?: error("TracingContext is null.")
-    val httpContext: HttpContext = _http ?: error("HttpContext is null.")
-    val eventContext: EventContext = _event ?: error("EventContext is null.")
+    val httpContext: HttpContext get() = _http ?: error("HttpContext is null.")
+    val eventContext: EventContext get() = _event ?: error("EventContext is null.")
 
     override fun raise(r: Throwable): Nothing = throw r
     override val key: CoroutineContext.Key<ExecutionContext> get() = ExecutionContext

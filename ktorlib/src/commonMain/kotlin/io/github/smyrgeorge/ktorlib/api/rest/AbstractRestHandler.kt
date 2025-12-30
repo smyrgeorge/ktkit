@@ -152,6 +152,7 @@ abstract class AbstractRestHandler(
                         when (error) {
                             is Error -> throw error.toThrowable()
                             is InternalError -> throw error
+                            is Throwable -> throw error
                             else -> throw IllegalStateException("Unexpected error type: $error")
                         }
                     },

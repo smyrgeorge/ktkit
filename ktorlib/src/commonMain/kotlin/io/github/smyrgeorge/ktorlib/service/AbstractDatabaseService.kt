@@ -32,6 +32,7 @@ interface AbstractDatabaseService : AbstractService {
                     when (val error = result.leftOrNull() ?: throw IllegalStateException("Unexpected null error")) {
                         is Error -> throw error.toThrowable()
                         is InternalError -> throw error
+                        is Throwable -> throw error
                         else -> throw IllegalStateException("Unexpected error type: $error")
                     }
                 }

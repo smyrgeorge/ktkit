@@ -11,4 +11,5 @@ pluginManagement {
 
 //include("dokka")
 include("ktorlib")
+include("ktorlib-pgmq")
 include("example")

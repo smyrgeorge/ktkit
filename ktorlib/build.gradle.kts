@@ -29,7 +29,6 @@ kotlin {
                 api(libs.arrow.core)
                 api(libs.sqlx4k)
                 api(libs.sqlx4k.arrow)
-                api(libs.sqlx4k.postgres.pgmq)
             }
         }
         jvmMain {

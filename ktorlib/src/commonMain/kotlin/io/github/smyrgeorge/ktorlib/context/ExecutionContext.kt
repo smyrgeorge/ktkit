@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktorlib.context
 import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktorlib.api.event.EventContext
 import io.github.smyrgeorge.ktorlib.api.rest.HttpContext
+import io.github.smyrgeorge.ktorlib.error.ErrorSpec
 import io.github.smyrgeorge.log4k.TracingContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
@@ -29,14 +30,14 @@ class ExecutionContext(
     val tracingContext: TracingContext,
     httpContext: HttpContext? = null,
     eventContext: EventContext? = null,
-) : Raise<Throwable>, TracingContext by tracingContext, CoroutineContext.Element {
+) : Raise<ErrorSpec>, TracingContext by tracingContext, CoroutineContext.Element {
     private val _http: HttpContext? = httpContext
     private val _event: EventContext? = eventContext
 
     val httpContext: HttpContext get() = _http ?: error("HttpContext is null.")
     val eventContext: EventContext get() = _event ?: error("EventContext is null.")
 
-    override fun raise(r: Throwable): Nothing = throw r
+    override fun raise(r: ErrorSpec): Nothing = throw r.toThrowable()
     override val key: CoroutineContext.Key<ExecutionContext> get() = ExecutionContext
     override fun toString() = "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$user, attributes=$attributes)"
 

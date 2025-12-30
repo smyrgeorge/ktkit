@@ -13,7 +13,7 @@ class TestRestHandler(
         GET("") {
             log.info { "Hello, ${user.username}!" }
             testService.withTransaction {
-                testService.findAll()
+                testService.test()
             }
         }
     }

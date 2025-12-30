@@ -1,9 +1,8 @@
 package io.github.smyrgeorge.ktorlib.service
 
-import arrow.core.Either
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
-import io.github.smyrgeorge.ktorlib.error.ErrorSpec
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService.Companion.withTransaction
+import io.github.smyrgeorge.ktorlib.util.MyResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
@@ -23,21 +22,9 @@ interface AbstractDatabaseService : AbstractService {
     companion object {
         context(c: ExecutionContext)
         suspend inline fun <R> AbstractDatabaseService.withTransaction(
-            crossinline f: suspend context(Transaction)() -> R
-        ): R = db.transaction {
-            when (val result = c.span("db.transaction") { f() }) {
-                // Ensure that in case of an error, the transaction is rolled back.
-                is Result<*> if result.isFailure -> throw result.exceptionOrNull()!!
-                is Either<*, *> if result.isLeft() -> {
-                    when (val error = result.leftOrNull() ?: error("Unexpected null error")) {
-                        is ErrorSpec -> throw error.toThrowable()
-                        is Throwable -> throw error
-                        else -> error("Unexpected error type: $error")
-                    }
-                }
-
-                else -> result
-            }
+            crossinline f: suspend context(Transaction)() -> MyResult<R>
+        ): MyResult<R> = db.transaction {
+            c.span("db.transaction") { f() }.onLeft { throw it.toThrowable() }
         }
     }
 }

@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktorlib.error
 
+import io.github.smyrgeorge.ktorlib.error.system.UnknownError
 import kotlinx.serialization.Serializable
 
 /**
@@ -54,5 +55,10 @@ interface ErrorSpec {
 
         // --- 5xx Server Error ---
         INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
+    }
+
+    companion object {
+        fun fromThrowable(throwable: Throwable): ErrorSpec =
+            UnknownError(throwable.message ?: "An unknown error occurred")
     }
 }

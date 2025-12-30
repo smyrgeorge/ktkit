@@ -6,6 +6,7 @@ import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.ErrorSpec
 import io.github.smyrgeorge.ktorlib.error.system.BadRequest
+import io.github.smyrgeorge.ktorlib.error.system.DatabaseError
 import io.github.smyrgeorge.ktorlib.error.system.Forbidden
 import io.github.smyrgeorge.ktorlib.error.system.InternalServerError
 import io.github.smyrgeorge.ktorlib.error.system.MissingParameter
@@ -225,6 +226,7 @@ class Application(
         private val defaultSerializersModule = SerializersModule {
             polymorphic(ErrorSpec::class) {
                 subclass(BadRequest::class)
+                subclass(DatabaseError::class)
                 subclass(Forbidden::class)
                 subclass(InternalServerError::class)
                 subclass(MissingParameter::class)

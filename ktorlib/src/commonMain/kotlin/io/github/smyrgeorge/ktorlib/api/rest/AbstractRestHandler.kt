@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.NonEmptySet
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
-import io.github.smyrgeorge.ktorlib.api.rest.ApiError
 import io.github.smyrgeorge.ktorlib.error.ErrorSpec
 import io.github.smyrgeorge.ktorlib.error.RuntimeError
 import io.github.smyrgeorge.ktorlib.error.system.Forbidden

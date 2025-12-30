@@ -82,18 +82,18 @@ abstract class AbstractPgmqEventHandler(
             ?: defaultUser
             ?: UnauthorizedImpl("Request does not contain user data.").ex()
 
-        val eventContext = EventContext(user)
-        val executionContext = ExecutionContext.fromEvent(span.context.spanId, user, eventContext, this)
-
-        val rc = message.readCt
-        if (rc > 10) log.warn("Retry-count '$rc > 10' was reached on queue='${queue.name}'.")
-
         // Add user tags to the span.
         span.tags.apply {
             @OptIn(ExperimentalUuidApi::class)
             put(OpenTelemetry.USER_ID, user.uuid)
             put(OpenTelemetry.USER_NAME, user.username)
         }
+
+        val eventContext = EventContext(user, message.headers)
+        val executionContext = ExecutionContext.fromEvent(span.context.spanId, user, eventContext, this)
+
+        val rc = message.readCt
+        if (rc > 10) log.warn("Retry-count '$rc > 10' was reached on queue='${queue.name}'.")
 
         // Load the execution context into the coroutine context.
         withContext(executionContext) {

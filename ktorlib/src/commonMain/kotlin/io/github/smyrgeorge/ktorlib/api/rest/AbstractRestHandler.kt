@@ -116,6 +116,13 @@ abstract class AbstractRestHandler(
                 ?: this@AbstractRestHandler.defaultUser
                 ?: UnauthorizedImpl("User is not authenticated").ex()
 
+            // Add user tags to the span.
+            span.tags.apply {
+                @OptIn(ExperimentalUuidApi::class)
+                put(OpenTelemetry.USER_ID, user.uuid)
+                put(OpenTelemetry.USER_NAME, user.username)
+            }
+
             // Create the execution-context for the request.
             val httpContext = HttpContext(user, call)
             val executionContext = ExecutionContext.fromHttp(span.context.spanId, user, httpContext, this)
@@ -124,13 +131,6 @@ abstract class AbstractRestHandler(
             hasRole?.let { role -> user.requireRole(role) }
             hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
             hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
-
-            // Add user tags to the span.
-            span.tags.apply {
-                @OptIn(ExperimentalUuidApi::class)
-                put(OpenTelemetry.USER_ID, user.uuid)
-                put(OpenTelemetry.USER_NAME, user.username)
-            }
 
             // Check for permissions.
             val hasAccess = this@AbstractRestHandler.permissions(httpContext) && permissions(httpContext)

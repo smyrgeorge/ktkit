@@ -1,7 +1,5 @@
 package io.github.smyrgeorge.ktorlib
 
-import io.github.smyrgeorge.ktorlib.api.auth.AuthenticationProvider.Companion.installAuthenticationProvider
-import io.github.smyrgeorge.ktorlib.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.ErrorSpec
@@ -26,14 +24,12 @@ import io.github.smyrgeorge.log4k.RootLogger
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.application.log
-import io.ktor.server.auth.authenticate
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.EngineConnectorBuilder
 import io.ktor.server.engine.applicationEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.routing.Route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
@@ -111,7 +107,6 @@ class Application(
     ) {
         private var module: Module = Module()
         private var json: Json = Json { default() }
-        private var authenticationExtractor: PrincipalExtractor? = null
         private var routes: MutableList<AbstractRestHandler> = mutableListOf()
         private var other: KtorApplication.() -> Unit = {}
 
@@ -125,10 +120,6 @@ class Application(
 
         fun withAnonymousUser(user: UserToken) {
             ANONYMOUS_USER = user
-        }
-
-        fun withAuthenticationExtractor(extractor: PrincipalExtractor) {
-            authenticationExtractor = extractor
         }
 
         internal fun <T : AbstractRestHandler> withRestHandler(handler: T) {
@@ -194,23 +185,11 @@ class Application(
                     json(json)
                 }
 
-                // Install authentication.
-                authenticationExtractor?.let { installAuthenticationProvider { extractor = it } }
-
                 // Register routes.
                 routing {
-                    val routes: Route.() -> Unit = {
-                        this@Configurer.routes.forEach {
-                            log.info("Registering REST Handler: ${it::class.simpleName}")
-                            with(it) { routes() }
-                        }
-                    }
-
-                    // If authentication is configured, wrap routes in an authenticated block
-                    if (authenticationExtractor != null) {
-                        authenticate(authenticationExtractor!!.name(), optional = false, build = routes)
-                    } else {
-                        routes()
+                    routes.forEach {
+                        log.info("Registering REST Handler: ${it::class.simpleName}")
+                        with(it) { routes() }
                     }
                 }
 

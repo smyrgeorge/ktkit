@@ -2,6 +2,7 @@ package io.github.smyrgeorge.ktorlib.api.rest
 
 import arrow.core.Either
 import arrow.core.NonEmptySet
+import io.github.smyrgeorge.ktorlib.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.ErrorSpec
@@ -22,7 +23,6 @@ import io.github.smyrgeorge.log4k.impl.CoroutinesTracingContext
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.principal
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
@@ -48,6 +48,7 @@ import kotlin.uuid.ExperimentalUuidApi
  * @param hasAnyRole A set of roles, of which at least one is required for authorization.
  * @param hasAllRoles A set of roles, all of which are required for authorization.
  * @param permissions Additional permission checks to be enforced during request processing.
+ * @param principalExtractor Custom principal extractor for user authentication.
  */
 @Suppress("FunctionName", "unused")
 abstract class AbstractRestHandler(
@@ -55,7 +56,8 @@ abstract class AbstractRestHandler(
     private val hasRole: String? = null,
     hasAnyRole: NonEmptySet<String>? = null,
     hasAllRoles: NonEmptySet<String>? = null,
-    private val permissions: HttpContext.() -> Boolean = { true }
+    private val permissions: HttpContext.() -> Boolean = { true },
+    private val principalExtractor: PrincipalExtractor? = null
 ) : AbstractComponent {
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
@@ -112,7 +114,7 @@ abstract class AbstractRestHandler(
     ): Unit = call.trace { span ->
         try {
             // Get the authenticated user from the call (set by Ktor's Authentication plugin)
-            val user = call.principal<UserToken>()
+            val user = principalExtractor?.extract(call)?.getOrThrow()
                 ?: defaultUser
                 ?: this@AbstractRestHandler.defaultUser
                 ?: Unauthorized("User is not authenticated").ex()

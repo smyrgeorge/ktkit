@@ -48,7 +48,7 @@ abstract class AbstractPgmqEventHandler(
         onFaiToNack = ::onFailToNack,
     )
 
-    private val principal: XRealNamePrincipalExtractor = XRealNamePrincipalExtractor()
+    private val principal: XRealNamePrincipalExtractor = XRealNamePrincipalExtractor
 
     init {
         if (options.autoStart) start()

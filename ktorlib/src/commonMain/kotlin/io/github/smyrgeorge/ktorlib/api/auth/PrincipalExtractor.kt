@@ -35,6 +35,19 @@ interface PrincipalExtractor {
     suspend fun extract(call: ApplicationCall): Result<UserToken?>
 
     /**
+     * Extracts a [UserToken] based on the specified authentication header.
+     *
+     * This method processes the provided header to extract user authentication
+     * information encapsulated within a [UserToken]. It assumes the header contains
+     * the necessary details for identifying and validating the user.
+     *
+     * @param header The authentication header containing encoded user information.
+     * @return The extracted [UserToken] if the header is valid and successfully processed.
+     * @throws Exception If the header format is invalid.
+     */
+    fun extract(header: String): UserToken
+
+    /**
      * Provides the name of the implementing class or a unique identifier if the class name
      * cannot be resolved.
      *

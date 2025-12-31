@@ -1,7 +1,6 @@
 package io.github.smyrgeorge.ktorlib.example
 
 import io.github.smyrgeorge.ktorlib.Application
-import io.github.smyrgeorge.ktorlib.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktorlib.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktorlib.api.rest.impl.ApplicationStatusRestHandler
 import io.github.smyrgeorge.ktorlib.example.generated.TestRepositoryImpl
@@ -32,8 +31,6 @@ fun start() {
         host = "localhost",
         port = 8080,
         configure = {
-            withAuthenticationExtractor(XRealNamePrincipalExtractor())
-
             tracing {
                 appenders.register(SimpleConsoleTracingAppender())
             }

@@ -24,7 +24,6 @@ kotlin {
                 api(libs.kotlinx.serialization.properties)
                 api(libs.ktoml.core)
                 api(libs.ktor.server.core)
-                api(libs.ktor.server.auth)
                 api(libs.ktor.server.content.negotiation)
                 api(libs.ktor.serialization.kotlinx.json)
                 api(libs.sqlx4k)

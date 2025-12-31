@@ -6,8 +6,10 @@ import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
 import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
+import io.github.smyrgeorge.ktorlib.util.EitherThrowable
 import io.github.smyrgeorge.ktorlib.util.TRACE_PARENT_HEADER
 import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
+import io.github.smyrgeorge.ktorlib.util.toEither
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
@@ -17,7 +19,6 @@ import io.github.smyrgeorge.log4k.impl.CoroutinesTracingContext
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.Message
-import io.github.smyrgeorge.sqlx4k.postgres.pgmq.Metrics
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgMqClient
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgMqConsumer
 import kotlinx.coroutines.runBlocking
@@ -31,10 +32,9 @@ abstract class AbstractPgmqEventHandler(
     private val pgmq: Pgmq,
     private val queue: PgMqClient.Queue,
     private val options: PgMqConsumer.Options = DEFAULT_OPTIONS,
-    private val userHeaderName: String = XRealNamePrincipalExtractor.HEADER_NAME,
     private val defaultUser: UserToken? = null,
 ) : AbstractComponent {
-    val log = Logger.of(this::class)
+    val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
     private val spanName = "${this::class.simpleName}.handle"
 
@@ -62,18 +62,13 @@ abstract class AbstractPgmqEventHandler(
         consumer.start()
     }
 
-    fun stop(): Unit = consumer.stop()
-
-    suspend fun metrics(): Result<Metrics> = pgmq.client.metrics(options.queue)
-
-    private fun Message.spanTags(): Map<String, String> = mapOf(
-//        "messaging.message.id" to msgId.toString(),
-//        "messaging.destination.name" to options.queue,
-        "messaging.system" to "pgmq",
-    )
+    fun stop() {
+        log.info { "Stopping consumer for queue: $queue" }
+        consumer.stop()
+    }
 
     private inline fun Message.trace(
-        f: TracingContext.(Span) -> Unit
+        f: TracingContext.(Span.Local) -> Unit
     ) {
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = headers[TRACE_PARENT_HEADER]?.let { h ->
@@ -90,7 +85,7 @@ abstract class AbstractPgmqEventHandler(
         message: Message
     ) = message.trace { span ->
         // Find the header that contains user information.
-        val user = message.headers[userHeaderName]
+        val user = message.headers[XRealNamePrincipalExtractor.HEADER_NAME]
             ?.let { principal.extract(it) } // Convert header to [UserToken]
             ?: defaultUser
             ?: Unauthorized("Request does not contain user data.").ex()
@@ -106,7 +101,7 @@ abstract class AbstractPgmqEventHandler(
         val executionContext = ExecutionContext.fromEvent(user, eventContext, this)
 
         val rc = message.readCt
-        if (rc > 10) log.warn("Retry-count '$rc > 10' was reached on queue='${queue.name}'.")
+        if (rc > 10) log.warn { "Retry-count '$rc > 10' was reached on queue='${queue.name}'." }
 
         // Load the execution context into the coroutine context.
         withContext(executionContext) {
@@ -120,33 +115,39 @@ abstract class AbstractPgmqEventHandler(
         message: String,
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds
-    ): Result<Long> = pgmq.client.send(options.queue, message, headers, delay)
+    ): EitherThrowable<Long> = pgmq.client.send(options.queue, message, headers, delay).toEither()
 
     context(db: QueryExecutor)
     suspend fun send(
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds,
         supplier: () -> String,
-    ): Result<Long> = pgmq.client.send(options.queue, supplier(), headers, delay)
+    ): EitherThrowable<Long> = pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
 
     context(_: ExecutionContext)
     abstract suspend fun EventContext.handler(message: Message)
 
     open suspend fun onFailToRead(e: Throwable) {
-        log.warn { "Failed to read from the queue: ${e.message}" }
+        with(ctx()) { log.warn { "Failed to read from the queue: ${e.message}" } }
     }
 
     open suspend fun onFailToProcess(e: Throwable) {
-        log.warn { "Failed to process message: ${e.message}" }
+        with(ctx()) { log.warn { "Failed to process message: ${e.message}" } }
     }
 
     open suspend fun onFailToAck(e: Throwable) {
-        log.warn { "Failed to ack message: ${e.message}" }
+        with(ctx()) { log.warn { "Failed to ack message: ${e.message}" } }
     }
 
     open suspend fun onFailToNack(e: Throwable) {
-        log.warn { "Failed to nack message: ${e.message}" }
+        with(ctx()) { log.warn { "Failed to nack message: ${e.message}" } }
     }
+
+    private fun Message.spanTags(): Map<String, String> = mapOf(
+        OpenTelemetryAttributes.MESSAGING_SYSTEM to "pgmq",
+        OpenTelemetryAttributes.MESSAGING_DESTINATION_NAME to options.queue,
+        OpenTelemetryAttributes.MESSAGING_MESSAGE_ID to msgId.toString(),
+    )
 
     companion object {
         private val DEFAULT_OPTIONS = PgMqConsumer.Options(

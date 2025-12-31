@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.smyrgeorge.ktorlib.api.rest
 
 import io.github.smyrgeorge.ktorlib.context.UserToken
@@ -15,7 +17,6 @@ import io.ktor.server.request.uri
  * @property user The authenticated user's token containing user data and permissions
  * @property call The application call associated with this request
  */
-@Suppress("unused")
 class HttpContext(
     val user: UserToken,
     val call: ApplicationCall,

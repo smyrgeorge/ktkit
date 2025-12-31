@@ -17,7 +17,7 @@ import io.ktor.server.auth.AuthenticationProvider as KtorAuthenticationProvider
  * and provides functionality for validating and assigning authenticated principals.
  *
  * @constructor Creates an instance of the authentication provider using the given configuration.
- * @param config A configuration object containing the necessary components such as logger and principal extractor.
+ * @param config A configuration object containing the necessary parts such as logger and principal extractor.
  */
 class AuthenticationProvider(
     private val config: Config

@@ -24,7 +24,7 @@ interface AbstractDatabaseService : AbstractService {
         suspend inline fun <R> AbstractDatabaseService.withTransaction(
             crossinline f: suspend context(Transaction)() -> MyResult<R>
         ): MyResult<R> = db.transaction {
-            c.span("db.transaction") { f() }.onLeft { throw it.toThrowable() }
+            c.span("db.transaction") { f().onLeft { throw it.toThrowable() } }
         }
     }
 }

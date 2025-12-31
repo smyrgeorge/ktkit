@@ -75,11 +75,11 @@ abstract class AbstractRestHandler(
      * Handles the current application call within a tracing context by creating a handler span
      * and executing the provided function within that span.
      *
-     * @param f A lambda function to be executed within the tracing context. It takes a `Span`
+     * @param f A lambda function to be executed within the tracing context. It takes a `Span.Local`
      *          as a parameter and performs tracing-related logic.
      */
     private inline fun ApplicationCall.trace(
-        f: TracingContext.(Span) -> Unit
+        f: TracingContext.(Span.Local) -> Unit
     ) {
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = extractOpenTelemetryTraceParent()?.let { trace.span(it.spanId, it.traceId) }
@@ -153,7 +153,7 @@ abstract class AbstractRestHandler(
                         when (error) {
                             is ErrorSpec -> throw error.toThrowable()
                             is Throwable -> throw error
-                            else -> error("Unexpected error type: $error")
+                            else -> throw UnknownError("Unexpected error type: $error").toThrowable()
                         }
                     },
                     ifRight = { value -> respond(span, call, onSuccessHttpStatusCode, value) }
@@ -163,7 +163,9 @@ abstract class AbstractRestHandler(
             }
         } catch (e: Throwable) {
             respond(span, call, e)
-            throw e
+            // Forcefully close the span if an error occurred.
+            span.exception(e, false)
+            span.end(e)
         }
     }
 

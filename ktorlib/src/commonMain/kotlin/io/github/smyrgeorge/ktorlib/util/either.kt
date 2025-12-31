@@ -1,7 +1,19 @@
 package io.github.smyrgeorge.ktorlib.util
 
 import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import io.github.smyrgeorge.ktorlib.error.ErrorSpec
 
 typealias MyResult<T> = Either<ErrorSpec, T>
 typealias EitherThrowable<T> = Either<Throwable, T>
+
+fun <T> Result<T>.toEither(): EitherThrowable<T> = fold(
+    onSuccess = { it.right() },
+    onFailure = { it.left() }
+)
+
+fun <T> EitherThrowable<T>.toResult(): Result<T> = fold(
+    ifLeft = { Result.failure(it) },
+    ifRight = { Result.success(it) }
+)

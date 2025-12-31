@@ -11,7 +11,7 @@ import io.github.smyrgeorge.ktorlib.error.system.Forbidden
 import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
 import io.github.smyrgeorge.ktorlib.error.system.UnknownError
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
-import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
+import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryHeader
 import io.github.smyrgeorge.ktorlib.util.spanName
 import io.github.smyrgeorge.ktorlib.util.spanTags
 import io.github.smyrgeorge.log4k.Logger
@@ -84,7 +84,7 @@ abstract class AbstractRestHandler(
         f: TracingContext.(Span.Local) -> Unit
     ) {
         // Extract the parent span from the OpenTelemetry trace header.
-        val parent = extractOpenTelemetryTraceParent()?.let { trace.span(it.spanId, it.traceId) }
+        val parent = extractOpenTelemetryHeader()?.let { trace.span(it.spanId, it.traceId) }
         // Create the logging-context.
         val tracing = CoroutinesTracingContext(trace, parent)
         // Create the handler span.

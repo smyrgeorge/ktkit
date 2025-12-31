@@ -1,5 +1,7 @@
 package io.github.smyrgeorge.ktorlib.util
 
+import io.github.smyrgeorge.log4k.TracingEvent
+
 const val TRACE_PARENT_HEADER = "traceparent"
 
 data class TraceParent(
@@ -9,7 +11,7 @@ data class TraceParent(
     val sampled: Boolean
 )
 
-fun extractOpenTelemetryTraceParent(header: String): TraceParent? {
+fun extractOpenTelemetryHeader(header: String): TraceParent? {
     // Format: version-trace_id-span_id-flags
     val parts = header.split("-")
     if (parts.size != 4) return null
@@ -34,3 +36,13 @@ fun extractOpenTelemetryTraceParent(header: String): TraceParent? {
         sampled = sampled
     )
 }
+
+fun TracingEvent.Span.toOpenTelemetryHeader(): String {
+    // Format: version-trace_id-span_id-flags
+    val version = "00"
+    val traceId = context.traceId.padStart(32, '0')
+    val spanId = context.spanId.padStart(16, '0')
+    val flags = "00"
+    return "$version-$traceId-$spanId-$flags"
+}
+

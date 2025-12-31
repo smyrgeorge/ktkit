@@ -2,7 +2,7 @@ package io.github.smyrgeorge.ktorlib.service
 
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService.Companion.withTransaction
-import io.github.smyrgeorge.ktorlib.util.MyResult
+import io.github.smyrgeorge.ktorlib.util.DomainResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
@@ -22,8 +22,8 @@ interface AbstractDatabaseService : AbstractService {
     companion object {
         context(c: ExecutionContext)
         suspend inline fun <R> AbstractDatabaseService.withTransaction(
-            crossinline f: suspend context(Transaction)() -> MyResult<R>
-        ): MyResult<R> = db.transaction {
+            crossinline f: suspend context(Transaction)() -> DomainResult<R>
+        ): DomainResult<R> = db.transaction {
             c.span("db.transaction") { f().onLeft { throw it.toThrowable() } }
         }
     }

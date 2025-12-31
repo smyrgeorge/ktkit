@@ -18,5 +18,5 @@ fun ApplicationCall.spanTags(): Tags =
         OpenTelemetryAttributes.URL_SCHEME to request.local.scheme,
     )
 
-fun ApplicationCall.extractOpenTelemetryTraceParent(): TraceParent? =
-    request.headers[TRACE_PARENT_HEADER]?.let { extractOpenTelemetryTraceParent(it) }
+fun ApplicationCall.extractOpenTelemetryHeader(): TraceParent? =
+    request.headers[TRACE_PARENT_HEADER]?.let { extractOpenTelemetryHeader(it) }

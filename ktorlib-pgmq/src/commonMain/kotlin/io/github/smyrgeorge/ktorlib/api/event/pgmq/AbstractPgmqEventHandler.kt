@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktorlib.api.event.pgmq
 
 import io.github.smyrgeorge.ktorlib.api.auth.impl.XRealNamePrincipalExtractor
+import io.github.smyrgeorge.ktorlib.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
 import io.github.smyrgeorge.ktorlib.api.event.EventContext
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
 import io.github.smyrgeorge.ktorlib.context.UserToken
@@ -8,8 +9,9 @@ import io.github.smyrgeorge.ktorlib.error.system.Unauthorized
 import io.github.smyrgeorge.ktorlib.service.AbstractComponent
 import io.github.smyrgeorge.ktorlib.util.EitherThrowable
 import io.github.smyrgeorge.ktorlib.util.TRACE_PARENT_HEADER
-import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryTraceParent
+import io.github.smyrgeorge.ktorlib.util.extractOpenTelemetryHeader
 import io.github.smyrgeorge.ktorlib.util.toEither
+import io.github.smyrgeorge.ktorlib.util.toOpenTelemetryHeader
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
@@ -72,7 +74,7 @@ abstract class AbstractPgmqEventHandler(
     ) {
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = headers[TRACE_PARENT_HEADER]?.let { h ->
-            extractOpenTelemetryTraceParent(h)?.let { trace.span(it.spanId, it.traceId) }
+            extractOpenTelemetryHeader(h)?.let { trace.span(it.spanId, it.traceId) }
         }
         // Create the logging-context.
         val tracing = CoroutinesTracingContext(trace, parent)
@@ -110,19 +112,33 @@ abstract class AbstractPgmqEventHandler(
         }
     }
 
-    context(db: QueryExecutor)
+    context(c: ExecutionContext, db: QueryExecutor)
     suspend fun send(
         message: String,
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds
-    ): EitherThrowable<Long> = pgmq.client.send(options.queue, message, headers, delay).toEither()
+    ): EitherThrowable<Long> {
+        val span = c.currentOrNull()
+        val headers = listOfNotNull(
+            if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
+            XRealNamePrincipalExtractor.HEADER_NAME to c.user.toXRealName(),
+        ).toMap() + headers
+        return pgmq.client.send(options.queue, message, headers, delay).toEither()
+    }
 
-    context(db: QueryExecutor)
+    context(c: ExecutionContext, db: QueryExecutor)
     suspend fun send(
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds,
         supplier: () -> String,
-    ): EitherThrowable<Long> = pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
+    ): EitherThrowable<Long> {
+        val span = c.currentOrNull()
+        val headers = listOfNotNull(
+            if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
+            XRealNamePrincipalExtractor.HEADER_NAME to c.user.toXRealName(),
+        ).toMap() + headers
+        return pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
+    }
 
     context(_: ExecutionContext)
     abstract suspend fun EventContext.handler(message: Message)

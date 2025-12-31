@@ -5,7 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import io.github.smyrgeorge.ktorlib.error.ErrorSpec
 
-typealias MyResult<T> = Either<ErrorSpec, T>
+typealias DomainResult<T> = Either<ErrorSpec, T>
 typealias EitherThrowable<T> = Either<Throwable, T>
 
 fun <T> Result<T>.toEither(): EitherThrowable<T> = fold(

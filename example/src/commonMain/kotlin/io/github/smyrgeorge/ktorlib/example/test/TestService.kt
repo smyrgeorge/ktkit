@@ -2,8 +2,8 @@ package io.github.smyrgeorge.ktorlib.example.test
 
 import arrow.core.raise.context.bind
 import io.github.smyrgeorge.ktorlib.context.ExecutionContext
-import io.github.smyrgeorge.ktorlib.error.system.DatabaseError.Companion.toDomainResult
 import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService
+import io.github.smyrgeorge.ktorlib.service.AbstractDatabaseService.Companion.toDomainResult
 import io.github.smyrgeorge.ktorlib.util.DomainResult
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.sqlx4k.Driver

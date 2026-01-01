@@ -1,4 +1,4 @@
-import io.github.smyrgeorge.ktorlib.example.start
+import io.github.smyrgeorge.ktkit.example.start
 
 
 fun main() {

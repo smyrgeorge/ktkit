@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-    id("io.github.smyrgeorge.ktorlib.multiplatform.binaries")
+    id("io.github.smyrgeorge.ktkit.multiplatform.binaries")
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -22,7 +22,7 @@ kotlin {
         }
         commonMain {
             dependencies {
-                implementation(project(":ktorlib"))
+                implementation(project(":ktkit"))
                 implementation(libs.arrow.core)
                 implementation(libs.sqlx4k.arrow)
                 implementation(libs.sqlx4k.postgres)
@@ -37,7 +37,7 @@ tasks.named<Jar>("jvmJar") {
 
     manifest {
         attributes(
-            "Main-Class" to "io.github.smyrgeorge.ktorlib.example.MainKt"
+            "Main-Class" to "io.github.smyrgeorge.ktkit.example.MainKt"
         )
     }
 
@@ -50,7 +50,7 @@ tasks.named<Jar>("jvmJar") {
 }
 
 ksp {
-    arg("output-package", "io.github.smyrgeorge.ktorlib.example.generated")
+    arg("output-package", "io.github.smyrgeorge.ktkit.example.generated")
 }
 
 //dependencies {

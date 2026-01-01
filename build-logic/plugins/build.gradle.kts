@@ -5,20 +5,20 @@ plugins {
 gradlePlugin {
     plugins {
         create("multiplatform") {
-            id = "io.github.smyrgeorge.ktorlib.multiplatform"
-            implementationClass = "io.github.smyrgeorge.ktorlib.multiplatform.MultiplatformConventions"
+            id = "io.github.smyrgeorge.ktkit.multiplatform"
+            implementationClass = "io.github.smyrgeorge.ktkit.multiplatform.MultiplatformConventions"
         }
         create("multiplatform.binaries") {
-            id = "io.github.smyrgeorge.ktorlib.multiplatform.binaries"
-            implementationClass = "io.github.smyrgeorge.ktorlib.multiplatform.MultiplatformBinariesConventions"
+            id = "io.github.smyrgeorge.ktkit.multiplatform.binaries"
+            implementationClass = "io.github.smyrgeorge.ktkit.multiplatform.MultiplatformBinariesConventions"
         }
         create("publish") {
-            id = "io.github.smyrgeorge.ktorlib.publish"
-            implementationClass = "io.github.smyrgeorge.ktorlib.publish.PublishConventions"
+            id = "io.github.smyrgeorge.ktkit.publish"
+            implementationClass = "io.github.smyrgeorge.ktkit.publish.PublishConventions"
         }
         create("dokka") {
-            id = "io.github.smyrgeorge.ktorlib.dokka"
-            implementationClass = "io.github.smyrgeorge.ktorlib.dokka.DokkaConventions"
+            id = "io.github.smyrgeorge.ktkit.dokka"
+            implementationClass = "io.github.smyrgeorge.ktkit.dokka.DokkaConventions"
         }
     }
 }

@@ -1,9 +1,9 @@
 plugins {
-    id("io.github.smyrgeorge.ktorlib.dokka")
+    id("io.github.smyrgeorge.ktkit.dokka")
 }
 
 dependencies {
-//    dokka(project(":ktorlib"))
+//    dokka(project(":ktkit"))
 }
 
 dokka {

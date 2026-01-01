@@ -1,4 +1,4 @@
-rootProject.name = "ktorlib"
+rootProject.name = "ktkit"
 
 pluginManagement {
     repositories {
@@ -10,6 +10,6 @@ pluginManagement {
 }
 
 //include("dokka")
-include("ktorlib")
-include("ktorlib-pgmq")
+include("ktkit")
+include("ktkit-pgmq")
 include("example")

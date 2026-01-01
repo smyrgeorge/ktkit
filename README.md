@@ -11,6 +11,7 @@
 ![](https://img.shields.io/static/v1?label=&message=Jvm&color=blue)
 ![](https://img.shields.io/static/v1?label=&message=Linux&color=blue)
 ![](https://img.shields.io/static/v1?label=&message=macOS&color=blue)
+![](https://img.shields.io/static/v1?label=&message=Windows&color=blue)
 
 A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.
 

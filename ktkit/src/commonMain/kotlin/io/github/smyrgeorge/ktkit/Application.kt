@@ -17,7 +17,6 @@ import io.github.smyrgeorge.ktkit.util.SYSTEM_USER
 import io.github.smyrgeorge.ktkit.util.applicationLogger
 import io.github.smyrgeorge.ktkit.util.getAll
 import io.github.smyrgeorge.ktkit.util.httpEngine
-import io.github.smyrgeorge.ktkit.util.pwd
 import io.github.smyrgeorge.ktkit.util.registerShutdownHook
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.RootLogger
@@ -86,7 +85,6 @@ class Application(
     )
 
     fun start(wait: Boolean = true) {
-        log.info { "PWD: ${pwd()}" }
         log.info { "Starting $name..." }
         makeServer().apply {
             _server = this

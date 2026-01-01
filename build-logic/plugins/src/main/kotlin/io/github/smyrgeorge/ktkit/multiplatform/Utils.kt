@@ -67,7 +67,7 @@ object Utils {
                     "macosX64",
                     "linuxArm64",
                     "linuxX64",
-//                    "mingwX64",
+                    "mingwX64",
                     "jvm",
                 )
 

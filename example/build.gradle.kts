@@ -95,7 +95,7 @@ fun targetsOf(project: Project): List<String> {
                 "MacosX64",
                 "LinuxArm64",
                 "LinuxX64",
-//                "MingwX64"
+                "MingwX64"
             )
 
             else -> it.split(",").map { t -> t.trim().capitalized() }

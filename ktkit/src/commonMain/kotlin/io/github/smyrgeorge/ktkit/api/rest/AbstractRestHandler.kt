@@ -147,27 +147,25 @@ abstract class AbstractRestHandler(
 
             when (result) {
                 is Result<*> -> result
-                    .onFailure { throw it }
+                    .onFailure { error -> respond(span, call, error) }
                     .onSuccess { value -> respond(span, call, onSuccessHttpStatusCode, value) }
 
                 is Either<*, *> -> result.fold(
-                    ifLeft = { error ->
-                        when (error) {
-                            is ErrorSpec -> throw error.toThrowable()
-                            is Throwable -> throw error
-                            else -> throw UnknownError("Unexpected error type: $error").toThrowable()
+                    ifLeft = { left ->
+                        val error = when (left) {
+                            is ErrorSpec -> left.toThrowable()
+                            is Throwable -> left
+                            else -> UnknownError("Unexpected error type: $left").toThrowable()
                         }
+                        respond(span, call, error)
                     },
                     ifRight = { value -> respond(span, call, onSuccessHttpStatusCode, value) }
                 )
 
                 else -> respond(span, call, onSuccessHttpStatusCode, result)
             }
-        } catch (e: Throwable) {
-            respond(span, call, e)
-            // Forcefully close the span if an error occurred.
-            span.exception(e, false)
-            span.end(e)
+        } catch (error: Throwable) {
+            respond(span, call, error)
         }
     }
 
@@ -185,7 +183,7 @@ abstract class AbstractRestHandler(
      * @param result The response body or stream to return to the client.
      */
     private suspend inline fun respond(
-        span: Span,
+        span: Span.Local,
         call: ApplicationCall,
         status: HttpStatusCode,
         result: Any?
@@ -206,33 +204,37 @@ abstract class AbstractRestHandler(
      *
      * @param span The tracing span associated with the current context to assist with observability.
      * @param call The application call representing the HTTP request and response context.
-     * @param cause The throwable that triggered the error response handling.
+     * @param error The throwable that triggered the error response handling.
      */
     private suspend fun respond(
-        span: Span,
+        span: Span.Local,
         call: ApplicationCall,
-        cause: Throwable,
+        error: Throwable,
     ) {
-        val error: ErrorSpec = if (cause is RuntimeError) cause.error
-        else UnknownError(cause.message ?: "An unknown error occurred")
+        val cause: ErrorSpec = if (error is RuntimeError) error.error
+        else UnknownError(error.message ?: "An unknown error occurred")
 
         // Only log server errors (5xx)
-        if (error.httpStatus.code >= 500) {
-            log.error(cause) { cause.message ?: "null" }
+        if (cause.httpStatus.code >= 500) {
+            log.error(error) { error.message ?: "null" }
         }
 
         // Set the HTTP status code and tags on the span.
-        span.tags[OpenTelemetryAttributes.HTTP_REQUEST_METHOD] = error.httpStatus.code
+        span.tags[OpenTelemetryAttributes.HTTP_REQUEST_METHOD] = cause.httpStatus.code
+
+        // Forcefully close the span if an error occurred.
+        span.exception(error, false)
+        span.end(error)
 
         val res = ApiError(
-            type = error::class.simpleName ?: "AnonymousError",
-            status = error.httpStatus.code,
+            type = cause::class.simpleName ?: "AnonymousError",
+            status = cause.httpStatus.code,
             requestId = span.context.spanId,
-            detail = error.message,
-            error = error
+            detail = cause.message,
+            error = cause
         )
 
-        val status = HttpStatusCode.fromValue(error.httpStatus.code)
+        val status = HttpStatusCode.fromValue(cause.httpStatus.code)
         call.respond(status, res)
     }
 

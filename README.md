@@ -60,7 +60,7 @@ across services, and ship faster.
 
 ## Example
 
-Check an example application [here](example/src/commonMain/kotlin/io/github/smyrgeorge/ktkit).
+Check an example application [here](example/src/commonMain/kotlin/io/github/smyrgeorge/ktkit/example).
 
 ## Building & Development
 

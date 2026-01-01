@@ -58,7 +58,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
                     } as Throwable
 
                     // Early close the span if the query failed.
-                    exception(e, false)
+                    exception(e, true)
                     end(e)
                     res
                 }

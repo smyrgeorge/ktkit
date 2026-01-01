@@ -3,7 +3,8 @@ plugins {
 }
 
 dependencies {
-//    dokka(project(":ktkit"))
+    dokka(project(":ktkit"))
+    dokka(project(":ktkit-pgmq"))
 }
 
 dokka {

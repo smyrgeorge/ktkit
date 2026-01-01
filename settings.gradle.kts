@@ -9,7 +9,7 @@ pluginManagement {
     includeBuild("build-logic")
 }
 
-//include("dokka")
+include("dokka")
 include("ktkit")
 include("ktkit-pgmq")
 include("example")

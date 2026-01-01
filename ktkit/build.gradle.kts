@@ -1,8 +1,8 @@
 plugins {
     id("io.github.smyrgeorge.ktkit.multiplatform")
+    id("io.github.smyrgeorge.ktkit.dokka")
     alias(libs.plugins.kotlin.serialization)
 //    id("io.github.smyrgeorge.ktkit.publish")
-//    id("io.github.smyrgeorge.ktkit.dokka")
 }
 
 kotlin {

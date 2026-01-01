@@ -63,18 +63,12 @@ object Utils {
         (project.properties["targets"] as? String)?.let {
             when (it) {
                 "all" -> listOf(
-//                    "iosArm64",
-//                    "androidNativeX64",
-//                    "androidNativeArm64",
                     "macosArm64",
-//                    "macosX64",
+                    "macosX64",
                     "linuxArm64",
                     "linuxX64",
 //                    "mingwX64",
                     "jvm",
-//                    "js",
-//                    "wasmJs",
-//                    "wasmWasi",
                 )
 
                 else -> it.split(",").map { t -> t.trim() }

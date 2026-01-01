@@ -28,4 +28,4 @@ actual fun registerShutdownHook() {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun pwd(): String = ByteArray(1024).usePinned { getcwd(it.addressOf(0), 1024u) }!!.toKString()
+actual fun pwd(): String = ByteArray(1024).usePinned { getcwd(it.addressOf(0), 1024.toULong()) }!!.toKString()

@@ -91,14 +91,11 @@ fun targetsOf(project: Project): List<String> {
     return (project.properties["targets"] as? String)?.let {
         when (it) {
             "all" -> listOf(
-                "IosArm64",
-                "AndroidNativeX64",
-                "AndroidNativeArm64",
                 "MacosArm64",
                 "MacosX64",
                 "LinuxArm64",
                 "LinuxX64",
-                "MingwX64"
+//                "MingwX64"
             )
 
             else -> it.split(",").map { t -> t.trim().capitalized() }

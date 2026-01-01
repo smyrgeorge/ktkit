@@ -1,0 +1,101 @@
+# KtKit
+
+![Build](https://github.com/smyrgeorge/ktkit/actions/workflows/ci.yml/badge.svg)
+![Maven Central](https://img.shields.io/maven-central/v/io.github.smyrgeorge/ktkit)
+![GitHub License](https://img.shields.io/github/license/smyrgeorge/ktkit)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/smyrgeorge/ktkit)
+![GitHub issues](https://img.shields.io/github/issues/smyrgeorge/ktkit)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.3.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+
+![](https://img.shields.io/static/v1?label=&message=Platforms&color=grey)
+![](https://img.shields.io/static/v1?label=&message=Jvm&color=blue)
+![](https://img.shields.io/static/v1?label=&message=Linux&color=blue)
+![](https://img.shields.io/static/v1?label=&message=macOS&color=blue)
+
+A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.
+
+📖 [Documentation](https://smyrgeorge.github.io/ktkit/)
+
+🏠 [Homepage](https://smyrgeorge.github.io/) (under construction)
+
+## Usage
+
+```kotlin
+implementation("io.github.smyrgeorge:ktkit:x.y.z")
+```
+
+## Overview
+
+KtKit is a Kotlin multiplatform toolkit designed to accelerate server-side application development with Ktor. It brings
+together several libraries and patterns into a cohesive set of tools that handle the repetitive aspects of backend
+development, letting you focus on your business logic.
+
+> [!NOTE]
+> **Early Stage Project**: KtKit is actively evolving. APIs may change between versions as we refine the abstractions
+> based on real-world usage. Production use is possible but expect some breaking changes. Feedback and contributions are
+> highly appreciated!
+
+**What it does:**
+
+- Provides type-safe abstractions for REST APIs, database operations, and message queuing
+- Integrates observability from the ground up with structured logging and OpenTelemetry tracing
+- Manages dependency injection, configuration, and request context propagation automatically
+- Enables functional error handling patterns with Arrow's Either monad
+- Supports multiple platforms (JVM, Linux, macOS) through Kotlin Multiplatform
+
+**Why KtKit:**
+Instead of wiring together Ktor, Koin, database clients, logging, and tracing yourself for every project, KtKit delivers
+opinionated but flexible building blocks that work together seamlessly. Write less boilerplate, maintain consistency
+across services, and ship faster.
+
+## Features
+
+### Key Technologies
+
+- **Ktor**: HTTP server framework
+- **Koin**: Dependency injection
+- **log4k**: Structured logging with tracing
+- **sqlx4k**: Multiplatform database access
+- **Arrow**: Functional error handling with Either monad
+
+## Example
+
+Check an example application [here](example/src/commonMain/kotlin/io/github/smyrgeorge/ktkit).
+
+## Building & Development
+
+### Build
+
+```bash
+# Build all modules, for Jvm and your current platform
+./gradlew build
+
+# Build all modules for all supported platforms
+./gradlew build -Ptargets=all
+#
+```
+
+### Docker Setup
+
+The project includes a `docker-compose.yml` for PostgreSQL:
+
+```bash
+docker-compose up -d
+```
+
+## Contributing
+
+This is an open-source project. Contributions are welcome!
+
+## License
+
+Check the repository for license information.
+
+## Related Projects
+
+- [log4k](https://github.com/smyrgeorge/log4k) - Multiplatform logging with tracing
+- [sqlx4k](https://github.com/smyrgeorge/sqlx4k) - Multiplatform database access
+
+## Author
+
+Yorgos S. ([@smyrgeorge](https://github.com/smyrgeorge))

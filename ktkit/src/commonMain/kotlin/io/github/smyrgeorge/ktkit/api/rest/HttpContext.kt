@@ -29,16 +29,16 @@ class HttpContext(
      * or as an enum value.
      *
      * @constructor Creates an instance of Var with a specified type, name, and optional value.
-     * @param type The type of the variable. It can be one of the values from [Type].
+     * @param kind The type of the variable. It can be one of the values from [Kind].
      * @param name The name of the variable.
      * @param value The optional value of the variable.
      */
     class Var(
-        private val type: Type,
+        private val kind: Kind,
         private val name: String,
         private val value: String?
     ) {
-        fun asString(): String = value ?: MissingParameter(type.name, name).ex()
+        fun asString(): String = value ?: MissingParameter(kind.name, name).ex()
         fun asStringOrNull(): String? = value
 
         fun asLong(): Long = asString().toLong()
@@ -84,7 +84,7 @@ class HttpContext(
          * - `PATH_VARIABLE`: Represents a variable that is part of the URI path in an HTTP request.
          * - `QUERY_PARAM`: Represents a variable that is used as a query parameter in an HTTP request.
          */
-        enum class Type {
+        enum class Kind {
             HEADER,
             PATH_VARIABLE,
             QUERY_PARAM
@@ -99,12 +99,12 @@ class HttpContext(
     /**
      * Gets a path parameter by name.
      */
-    fun pathVariable(name: String): Var = Var(Var.Type.PATH_VARIABLE, name, call.parameters[name])
+    fun pathVariable(name: String): Var = Var(Var.Kind.PATH_VARIABLE, name, call.parameters[name])
 
     /**
      * Gets a query parameter by name.
      */
-    fun queryParam(name: String): Var = Var(Var.Type.QUERY_PARAM, name, request.queryParameters[name])
+    fun queryParam(name: String): Var = Var(Var.Kind.QUERY_PARAM, name, request.queryParameters[name])
 
     /**
      * Gets all query parameters with the given name.
@@ -114,7 +114,7 @@ class HttpContext(
     /**
      * Gets a header by name.
      */
-    fun header(name: String): Var = Var(Var.Type.HEADER, name, request.headers[name])
+    fun header(name: String): Var = Var(Var.Kind.HEADER, name, request.headers[name])
 
     /**
      * Gets all headers with the given name.

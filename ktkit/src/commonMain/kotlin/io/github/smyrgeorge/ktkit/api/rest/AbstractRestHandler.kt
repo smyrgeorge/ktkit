@@ -52,16 +52,13 @@ import kotlin.uuid.ExperimentalUuidApi
 abstract class AbstractRestHandler(
     private val defaultUser: Principal? = null,
     private val hasRole: String? = null,
-    hasAnyRole: NonEmptySet<String>? = null,
-    hasAllRoles: NonEmptySet<String>? = null,
+    private val hasAnyRole: NonEmptySet<String>? = null,
+    private val hasAllRoles: NonEmptySet<String>? = null,
     private val permissions: HttpContext.() -> Boolean = { true },
     private val principalExtractor: PrincipalExtractor? = null
 ) : AbstractComponent {
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
-
-    private val hasAnyRole: Array<String>? = hasAnyRole?.toTypedArray()
-    private val hasAllRoles: Array<String>? = hasAllRoles?.toTypedArray()
 
     /**
      * Helper method used to build the base path.
@@ -130,8 +127,8 @@ abstract class AbstractRestHandler(
 
             // Role-based authorization.
             hasRole?.let { role -> user.requireRole(role) }
-            hasAnyRole?.let { anyRole -> user.requireAnyRole(*anyRole) }
-            hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
+            hasAnyRole?.let { anyRole -> user.requireAnyRole(anyRole) }
+            hasAllRoles?.let { allRoles -> user.requireAllRoles(allRoles) }
 
             // Check for permissions.
             val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)

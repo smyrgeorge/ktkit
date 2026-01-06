@@ -11,8 +11,8 @@ class PublishConventions : Plugin<Project> {
 
     private val descriptions: Map<String, String> = mapOf(
         "ktkit" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
-        "ktkit-pgmq" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
         "ktkit-sqlx4k" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
+        "ktkit-sqlx4k-pgmq" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
     )
 
     override fun apply(project: Project) {

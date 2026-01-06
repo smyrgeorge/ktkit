@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.pgmq
+package io.github.smyrgeorge.ktkit.sqlx4k.pgmq
 
 import arrow.core.left
 import io.github.smyrgeorge.ktkit.Application

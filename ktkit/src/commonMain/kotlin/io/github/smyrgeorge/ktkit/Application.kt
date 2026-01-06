@@ -85,6 +85,14 @@ class Application(
         }
     )
 
+    /**
+     * Starts the application by initializing and configuring the server and associated modules.
+     * This method sets up the server, applies configurations, and optionally waits for the server
+     * to terminate if the `wait` parameter is set to `true`.
+     *
+     * @param wait Specifies whether the method should block and wait for the server to terminate.
+     *             If `true`, the method blocks until the server is stopped. Default is `true`.
+     */
     fun start(wait: Boolean = true) {
         log.info { "Starting $name..." }
         makeServer().apply {
@@ -94,6 +102,15 @@ class Application(
         }.start(wait)
     }
 
+    /**
+     * Shuts down the application by performing necessary cleanup tasks, invoking registered shutdown hooks,
+     * closing the dependency injection context, and stopping the server gracefully.
+     *
+     * @param gracePeriod Duration to wait for ongoing requests to complete before forcefully stopping the server.
+     *                    Default is 1 second.
+     * @param timeout Duration to wait for the server to shut down completely after the grace period.
+     *                Default is 5 seconds.
+     */
     fun shutdown(gracePeriod: Duration = 1.seconds, timeout: Duration = 5.seconds) {
         log.info { "Shutting down..." }
         shutdownHooks.forEach { it() }
@@ -101,6 +118,11 @@ class Application(
         server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)
     }
 
+    /**
+     * Registers a shutdown hook that will be invoked when the application is shutting down.
+     *
+     * @param hook A lambda function to be executed during the shutdown process.
+     */
     fun onShutdown(hook: () -> Unit) {
         shutdownHooks.add(hook)
     }
@@ -155,7 +177,6 @@ class Application(
             prettyPrint = false
             ignoreUnknownKeys = true
             explicitNulls = false
-            classDiscriminator = "@type"
             serializersModule = defaultSerializersModule
         }
 
@@ -165,8 +186,6 @@ class Application(
                 default()
                 // Apply custom configuration.
                 config()
-                // Override default configuration.
-                classDiscriminator = "@type"
                 serializersModule += defaultSerializersModule
             }
         }
@@ -204,9 +223,64 @@ class Application(
     }
 
     companion object {
+        /**
+         * A nullable instance holder for the [Application] class, which is used to track the currently
+         * running application instance, if any.
+         *
+         * This variable is set when the application is started and cleared when the application shuts down.
+         *
+         * It is primarily used for accessing the `Application` instance to perform actions like shutdown
+         * or manage lifecycle events. If no `Application` instance is running, this variable will be `null`.
+         */
         var INSTANCE_OR_NULL: Application? = null
+
+        /**
+         * Provides a singleton instance of the `Application` class.
+         *
+         * This property is used to retrieve the globally accessible `Application` instance.
+         * It ensures that the application is properly initialized before it can be accessed.
+         * If the application has not been initialized, an exception is thrown.
+         *
+         * @throws IllegalStateException when the application has not been initialized.
+         * To initialize the application, the `start()` method must be invoked first.
+         */
         val INSTANCE: Application get() = INSTANCE_OR_NULL ?: error("Application not initialized. Run start() first.")
+
+        /**
+         * Provides the instance of the application's Dependency Injection container, powered by Koin.
+         * This is used to manage application-wide dependencies, including services and components.
+         *
+         * The `di` property is initialized within the application's setup process and is used to
+         * retrieve or configure dependencies for use throughout the application.
+         *
+         * @return The KoinApplication instance representing the Dependency Injection container.
+         */
         val di: KoinApplication get() = INSTANCE.di
+
+        /**
+         * Represents a system-level user in the application, typically used for operations
+         * or processes that are executed without a specific authenticated user context.
+         *
+         * This variable holds a default implementation of the `Principal` interface,
+         * initialized with a system-defined user identity. It can be reassigned to represent
+         * a different system user if required, such as for testing purposes or specific configurations.
+         */
+        var SYSTEM_USER: Principal = UserToken.DEFAULT_SYSTEM_USER
+
+        /**
+         * A globally accessible variable representing the default anonymous user context within the application.
+         *
+         * This variable holds a `Principal` instance intended for scenarios where user authentication
+         * is not required or an anonymous context is sufficient. It is utilized as the default user
+         * in various configurations, such as in REST handlers that operate without requiring user
+         * authentication.
+         *
+         * By default, it is initialized with `UserToken.DEFAULT_ANONYMOUS_USER`.
+         * However, it can be reassigned to a custom `Principal` instance to adapt the anonymous user behavior
+         * according to specific application requirements.
+         */
+        var ANONYMOUS_USER: Principal = UserToken.DEFAULT_ANONYMOUS_USER
+
         private val defaultSerializersModule = SerializersModule {
             polymorphic(ErrorSpec::class) {
                 subclass(BadRequest::class)
@@ -220,8 +294,5 @@ class Application(
                 subclass(UnsupportedEnumValue::class)
             }
         }
-
-        var SYSTEM_USER: Principal = UserToken.DEFAULT_SYSTEM_USER
-        var ANONYMOUS_USER: Principal = UserToken.DEFAULT_ANONYMOUS_USER
     }
 }

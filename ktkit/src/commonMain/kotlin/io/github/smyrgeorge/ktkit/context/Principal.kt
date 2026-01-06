@@ -24,7 +24,7 @@ interface Principal {
      * @param roles The role names to check
      * @return true if the user has at least one of the roles, false otherwise
      */
-    fun hasAnyRole(vararg roles: String): Boolean = roles.any { this.roles.contains(it) }
+    fun hasAnyRole(roles: Set<String>): Boolean = roles.any { this.roles.contains(it) }
 
     /**
      * Checks if the user has all the specified roles.
@@ -32,7 +32,7 @@ interface Principal {
      * @param roles The role names to check
      * @return true if the user has all the roles, false otherwise
      */
-    fun hasAllRoles(vararg roles: String): Boolean = roles.all { this.roles.contains(it) }
+    fun hasAllRoles(roles: Set<String>): Boolean = roles.all { this.roles.contains(it) }
 
     /**
      * Ensures that the user possesses the specified role. Throws an error if the role is not assigned to the user.
@@ -51,8 +51,8 @@ interface Principal {
      * @param roles The role names to check. One or more roles that the user must have at least one of.
      * @throws Forbidden If the user does not have any of the specified roles.
      */
-    fun requireAnyRole(vararg roles: String) {
-        if (!hasAnyRole(*roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").ex()
+    fun requireAnyRole(roles: Set<String>) {
+        if (!hasAnyRole(roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").ex()
     }
 
     /**
@@ -62,8 +62,8 @@ interface Principal {
      * @param roles The role names that the user must have. One or more roles to check.
      * @throws Forbidden If the user does not have all the specified roles.
      */
-    fun requireAllRoles(vararg roles: String) {
-        if (!hasAllRoles(*roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").ex()
+    fun requireAllRoles(roles: Set<String>) {
+        if (!hasAllRoles(roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").ex()
     }
 
     companion object {

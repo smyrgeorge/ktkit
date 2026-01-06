@@ -59,4 +59,4 @@ suspend fun <T> retryCatching(
     factor: Double = 2.0,
     log: Logger = io.github.smyrgeorge.ktkit.util.log,
     block: suspend () -> T
-): Result<T> = runCatching { retry(block = block) }
+): Result<T> = runCatching { retry(times, initialDelay, maxDelay, factor, log, block) }

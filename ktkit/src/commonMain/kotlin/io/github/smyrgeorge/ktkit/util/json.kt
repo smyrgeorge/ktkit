@@ -1,38 +1,35 @@
 package io.github.smyrgeorge.ktkit.util
 
-import io.github.smyrgeorge.ktkit.error.ErrorSpec
-import io.github.smyrgeorge.ktkit.error.system.BadRequest
-import io.github.smyrgeorge.ktkit.error.system.DatabaseError
-import io.github.smyrgeorge.ktkit.error.system.Forbidden
-import io.github.smyrgeorge.ktkit.error.system.InternalServerError
-import io.github.smyrgeorge.ktkit.error.system.MissingParameter
-import io.github.smyrgeorge.ktkit.error.system.NotFound
-import io.github.smyrgeorge.ktkit.error.system.Unauthorized
-import io.github.smyrgeorge.ktkit.error.system.UnknownError
-import io.github.smyrgeorge.ktkit.error.system.UnsupportedEnumValue
+import io.github.smyrgeorge.ktkit.error.ErrorSpecData
+import io.github.smyrgeorge.ktkit.error.system.details.DatabaseErrorData
+import io.github.smyrgeorge.ktkit.error.system.details.EmptyErrorData
+import io.github.smyrgeorge.ktkit.error.system.details.MissingParameterErrorData
+import io.github.smyrgeorge.ktkit.error.system.details.UnsupportedEnumValueErrorData
 import kotlinx.serialization.json.JsonBuilder
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-internal fun JsonBuilder.default() {
-    isLenient = true
-    prettyPrint = false
-    ignoreUnknownKeys = true
-    explicitNulls = false
+internal fun JsonBuilder.defaultWithErrors() {
+    default()
     serializersModule = defaultSerializersModule
 }
 
 internal val defaultSerializersModule = SerializersModule {
-    polymorphic(ErrorSpec::class) {
-        subclass(BadRequest::class)
-        subclass(DatabaseError::class)
-        subclass(Forbidden::class)
-        subclass(InternalServerError::class)
-        subclass(MissingParameter::class)
-        subclass(NotFound::class)
-        subclass(Unauthorized::class)
-        subclass(UnknownError::class)
-        subclass(UnsupportedEnumValue::class)
+    polymorphic(ErrorSpecData::class) {
+        subclass(DatabaseErrorData::class)
+        subclass(EmptyErrorData::class)
+        subclass(MissingParameterErrorData::class)
+        subclass(UnsupportedEnumValueErrorData::class)
     }
+}
+
+fun JsonBuilder.default() {
+    encodeDefaults = true
+    ignoreUnknownKeys = true
+    isLenient = true
+    prettyPrint = false
+    coerceInputValues = false
+    explicitNulls = false
+    serializersModule = defaultSerializersModule
 }

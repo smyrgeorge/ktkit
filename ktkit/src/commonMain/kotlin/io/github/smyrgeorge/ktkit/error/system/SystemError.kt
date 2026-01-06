@@ -1,7 +1,6 @@
 package io.github.smyrgeorge.ktkit.error.system
 
 import io.github.smyrgeorge.ktkit.error.ErrorSpec
-import kotlinx.serialization.Serializable
 
 /**
  * Abstract base class for all errors in the system.
@@ -11,7 +10,6 @@ import kotlinx.serialization.Serializable
  * @property message Error message describing what went wrong
  * @property httpStatus HTTP status associated with this error
  */
-@Serializable
 sealed interface SystemError : ErrorSpec {
     override val message: String
     override val httpStatus: ErrorSpec.HttpStatus

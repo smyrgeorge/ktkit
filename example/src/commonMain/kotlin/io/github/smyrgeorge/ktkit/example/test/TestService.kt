@@ -25,6 +25,7 @@ class TestService(
         log.info { "Fetching all tests" }
         return findAll().also {
             log.info { "Fetched ${it.bind().size} tests" }
+            error("Booom!")
         }
     }
 }

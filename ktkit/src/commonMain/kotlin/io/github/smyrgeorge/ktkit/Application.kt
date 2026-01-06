@@ -5,8 +5,8 @@ import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktkit.api.rest.impl.ApplicationStatusRestHandler
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.util.applicationLogger
-import io.github.smyrgeorge.ktkit.util.default
 import io.github.smyrgeorge.ktkit.util.defaultSerializersModule
+import io.github.smyrgeorge.ktkit.util.defaultWithErrors
 import io.github.smyrgeorge.ktkit.util.getAll
 import io.github.smyrgeorge.ktkit.util.httpEngine
 import io.github.smyrgeorge.ktkit.util.registerShutdownHook
@@ -167,7 +167,7 @@ class Application(
         private val ktor: KtorApplication,
     ) {
         private var module: Module = Module()
-        private var json: Json = Json { default() }
+        private var json: Json = Json { defaultWithErrors() }
         private var other: KtorApplication.() -> Unit = {}
 
         fun di(config: Module.() -> Unit) {
@@ -197,7 +197,7 @@ class Application(
         fun json(config: JsonBuilder.() -> Unit) {
             json = Json {
                 // Apply default configuration.
-                default()
+                defaultWithErrors()
                 // Apply custom configuration.
                 config()
                 serializersModule += defaultSerializersModule

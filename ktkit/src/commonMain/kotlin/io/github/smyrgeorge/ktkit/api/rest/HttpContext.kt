@@ -38,7 +38,7 @@ class HttpContext(
         private val name: String,
         private val value: String?
     ) {
-        fun asString(): String = value ?: MissingParameter(kind.name, name).ex()
+        fun asString(): String = value ?: MissingParameter(kind.name, name).raise()
         fun asStringOrNull(): String? = value
 
         fun asLong(): Long = asString().toLong()
@@ -63,7 +63,7 @@ class HttpContext(
             try {
                 enumValueOf<T>(this)
             } catch (_: Exception) {
-                UnsupportedEnumValue(T::class.simpleName ?: "Unknown", this).ex()
+                UnsupportedEnumValue(T::class.simpleName ?: "Unknown", this).raise()
             }
 
         inline fun <reified T : Enum<T>> String.toEnumOrNull(): T? =

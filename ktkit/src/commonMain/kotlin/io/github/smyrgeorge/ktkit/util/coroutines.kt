@@ -57,7 +57,7 @@ object GlobalCoroutineScope : CoroutineScope {
  * @param f The suspending function to be executed within the CoroutineScope.
  * @return The result of the function executed within the IO context.
  */
-suspend fun <T> io(f: suspend CoroutineScope.() -> T): T =
+suspend inline fun <T> io(crossinline f: suspend CoroutineScope.() -> T): T =
     withContext(Dispatchers.IO_DISPATCHER) { f() }
 
 /**

@@ -10,6 +10,7 @@ import io.github.smyrgeorge.ktkit.error.RuntimeError
 import io.github.smyrgeorge.ktkit.error.system.Forbidden
 import io.github.smyrgeorge.ktkit.error.system.Unauthorized
 import io.github.smyrgeorge.ktkit.error.system.UnknownError
+import io.github.smyrgeorge.ktkit.error.system.details.EmptyErrorData
 import io.github.smyrgeorge.ktkit.service.AbstractComponent
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
 import io.github.smyrgeorge.ktkit.util.spanName
@@ -112,7 +113,7 @@ abstract class AbstractRestHandler(
             val user = principalExtractor?.extract(call)?.getOrThrow()
                 ?: defaultUser
                 ?: this@AbstractRestHandler.defaultUser
-                ?: Unauthorized("User is not authenticated").ex()
+                ?: Unauthorized("User is not authenticated").raise()
 
             // Add user tags to the span.
             span.tags.apply {
@@ -132,7 +133,7 @@ abstract class AbstractRestHandler(
 
             // Check for permissions.
             val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)
-            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").ex()
+            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").raise()
 
             // Load the execution context into the coroutine context.
             val result = withContext(execution) {
@@ -220,12 +221,13 @@ abstract class AbstractRestHandler(
         span.exception(error)
         span.end(error)
 
+        val data = cause.toErrorSpecData()
         val res = ApiError(
-            type = cause::class.simpleName ?: "AnonymousError",
+            title = cause::class.simpleName ?: "AnonymousError",
             status = cause.httpStatus.code,
             requestId = span.context.spanId,
             detail = cause.message,
-            error = cause
+            data = if (data is EmptyErrorData) null else data
         )
 
         val status = HttpStatusCode.fromValue(cause.httpStatus.code)

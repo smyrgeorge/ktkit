@@ -105,7 +105,7 @@ abstract class AbstractPgmqEventHandler(
         val user = message.headers[XRealNamePrincipalExtractor.HEADER_NAME]
             ?.let { principal.extract(it).getOrNull() } // Convert header to [Principal]
             ?: defaultUser
-            ?: Unauthorized("Request does not contain user data.").ex()
+            ?: Unauthorized("Request does not contain user data.").raise()
 
         // Add user tags to the span.
         span.tags.apply {

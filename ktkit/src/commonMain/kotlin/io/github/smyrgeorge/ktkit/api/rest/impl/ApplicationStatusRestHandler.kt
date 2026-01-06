@@ -10,6 +10,9 @@ class ApplicationStatusRestHandler : AnonymousRestHandler() {
         GET("/health") {
             Health(Health.Status.UP)
         }
+        GET("/metrics") {
+            app.metrics.toOpenMetricsLineFormatString()
+        }
     }
 
     @Serializable

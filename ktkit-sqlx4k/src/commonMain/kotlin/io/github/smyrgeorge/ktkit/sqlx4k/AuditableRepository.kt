@@ -6,6 +6,7 @@ import io.github.smyrgeorge.ktkit.service.AbstractComponent
 import io.github.smyrgeorge.ktkit.service.auditable.Auditable
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
+import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.Statement
 import io.github.smyrgeorge.sqlx4k.arrow.ArrowContextCrudRepository
@@ -14,7 +15,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
 interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>, AbstractComponent {
-    override suspend fun preInsertHook(entity: T): T {
+    override suspend fun preInsertHook(context: QueryExecutor, entity: T): T {
         val user = ctx().principal
         entity.createdAt = Clock.System.now()
         entity.createdBy = user.id
@@ -23,7 +24,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>,
         return entity
     }
 
-    override suspend fun preUpdateHook(entity: T): T {
+    override suspend fun preUpdateHook(context: QueryExecutor, entity: T): T {
         entity.updatedAt = Clock.System.now()
         entity.updatedBy = ctx().principal.id
         return entity

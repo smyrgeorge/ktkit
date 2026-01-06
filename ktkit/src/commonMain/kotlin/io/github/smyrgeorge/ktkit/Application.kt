@@ -17,8 +17,11 @@ import io.github.smyrgeorge.ktkit.util.applicationLogger
 import io.github.smyrgeorge.ktkit.util.getAll
 import io.github.smyrgeorge.ktkit.util.httpEngine
 import io.github.smyrgeorge.ktkit.util.registerShutdownHook
+import io.github.smyrgeorge.log4k.Appender
 import io.github.smyrgeorge.log4k.Logger
+import io.github.smyrgeorge.log4k.MeteringEvent
 import io.github.smyrgeorge.log4k.RootLogger
+import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleMeteringCollectorAppender
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.application.log
@@ -56,7 +59,8 @@ class Application(
     private var _ktor: KtorApplication? = null
     private var _server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>? = null
 
-    private val shutdownHooks = mutableListOf<() -> Unit>()
+    internal val shutdownHooks = mutableListOf<() -> Unit>()
+    internal val metrics = SimpleMeteringCollectorAppender()
 
     val di: KoinApplication
         get() = _di ?: error("Koin Application not initialized. Run start() first.")
@@ -64,6 +68,10 @@ class Application(
         get() = _ktor ?: error("Ktor Application not initialized. Run start() first.")
     val server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>
         get() = _server ?: error("Ktor Server not initialized. Run start() first.")
+
+    init {
+        INSTANCE_OR_NULL = this
+    }
 
     private fun makeServer() = embeddedServer(
         factory = httpEngine(),
@@ -80,7 +88,7 @@ class Application(
         },
         module = {
             _ktor = this
-            Configurer(this@Application, this).apply(configure).configure()
+            Configurer(this@Application, this, metrics).apply(configure).configure()
             postConfigure()
         }
     )
@@ -97,7 +105,6 @@ class Application(
         log.info { "Starting $name..." }
         makeServer().apply {
             _server = this
-            INSTANCE_OR_NULL = this@Application
             registerShutdownHook()
         }.start(wait)
     }
@@ -129,7 +136,8 @@ class Application(
 
     class Configurer(
         private val app: Application,
-        private val ktor: KtorApplication
+        private val ktor: KtorApplication,
+        private val metrics: Appender<MeteringEvent>,
     ) {
         private var module: Module = Module()
         private var json: Json = Json { default() }
@@ -195,6 +203,10 @@ class Application(
         }
 
         internal fun configure() {
+            metering {
+                appenders.register(metrics)
+            }
+
             // Start Koin.
             startKoin { modules(module) }.apply {
                 app._di = this

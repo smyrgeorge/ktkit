@@ -21,7 +21,6 @@ kotlin {
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
                 api(libs.kotlinx.serialization.json)
-                api(libs.kotlinx.serialization.properties)
                 api(libs.ktoml.core)
                 api(libs.ktor.server.core)
                 api(libs.ktor.server.content.negotiation)

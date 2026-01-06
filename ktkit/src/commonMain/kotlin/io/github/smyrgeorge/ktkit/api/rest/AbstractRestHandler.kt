@@ -83,6 +83,7 @@ abstract class AbstractRestHandler(
         val tracing = TracingContext.builder().with(trace).with(parent).build()
         // Create the handler span.
         runCatching { tracing.span(spanName(), spanTags()) { tracing.f(this) } }
+            .onFailure { error -> log.error(error) { "Unexpected error while handling request: ${error.message}" } }
     }
 
     /**
@@ -209,7 +210,7 @@ abstract class AbstractRestHandler(
 
         // Only log server errors (5xx)
         if (cause.httpStatus.code >= 500) {
-            log.error(error) { error.message ?: "null" }
+            log.error(span, error) { error.message ?: "null" }
         }
 
         // Set the HTTP status code and tags on the span.

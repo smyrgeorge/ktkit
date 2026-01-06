@@ -11,7 +11,7 @@ import io.github.smyrgeorge.ktkit.error.impl.Forbidden
 import io.github.smyrgeorge.ktkit.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.error.impl.UnknownError
 import io.github.smyrgeorge.ktkit.error.impl.details.EmptyErrorData
-import io.github.smyrgeorge.ktkit.service.AbstractComponent
+import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.util.camelCaseToKebabCase
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
 import io.github.smyrgeorge.ktkit.util.spanName
@@ -57,7 +57,7 @@ abstract class AbstractRestHandler(
     private val hasAllRoles: NonEmptySet<String>? = null,
     private val permissions: HttpContext.() -> Boolean = { true },
     private val principalExtractor: PrincipalExtractor? = null
-) : AbstractComponent {
+) : Component {
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
 

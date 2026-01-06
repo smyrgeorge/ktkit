@@ -2,8 +2,8 @@ package io.github.smyrgeorge.ktkit.sqlx4k
 
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.error.impl.DatabaseError
-import io.github.smyrgeorge.ktkit.service.AbstractService
-import io.github.smyrgeorge.ktkit.sqlx4k.AbstractDatabaseService.Companion.withTransaction
+import io.github.smyrgeorge.ktkit.service.Service
+import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.sqlx4k.Driver
@@ -11,7 +11,7 @@ import io.github.smyrgeorge.sqlx4k.Transaction
 import io.github.smyrgeorge.sqlx4k.arrow.impl.extensions.DbResult
 
 /**
- * Represents an abstract interface for database services, extending [AbstractService]
+ * Represents an abstract interface for database services, extending [Service]
  * and defining a contract for handling database transactions through a [Driver] instance.
  *
  * This interface provides a foundation for database-related service abstractions. It includes:
@@ -19,7 +19,7 @@ import io.github.smyrgeorge.sqlx4k.arrow.impl.extensions.DbResult
  * - A utility companion object function [withTransaction], enabling scoped execution of
  *   operations within a database transaction.
  */
-interface AbstractDatabaseService : AbstractService {
+interface DatabaseService : Service {
     val db: Driver
 
     companion object {
@@ -37,7 +37,7 @@ interface AbstractDatabaseService : AbstractService {
          *         If the operation fails, the error is handled and transformed into a throwable.
          */
         context(c: ExecContext)
-        suspend inline fun <R> AbstractDatabaseService.withTransaction(
+        suspend inline fun <R> DatabaseService.withTransaction(
             crossinline f: suspend context(Transaction)() -> AppResult<R>
         ): AppResult<R> = db.transaction {
             c.span("db.transaction") { f().onLeft { throw it.toThrowable() } }

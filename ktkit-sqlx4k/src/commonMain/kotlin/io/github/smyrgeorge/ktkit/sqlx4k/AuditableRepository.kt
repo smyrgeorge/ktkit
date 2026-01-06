@@ -2,8 +2,8 @@ package io.github.smyrgeorge.ktkit.sqlx4k
 
 import arrow.core.Either
 import io.github.smyrgeorge.ktkit.error.impl.DatabaseError
-import io.github.smyrgeorge.ktkit.service.AbstractComponent
-import io.github.smyrgeorge.ktkit.service.auditable.Auditable
+import io.github.smyrgeorge.ktkit.service.Component
+import io.github.smyrgeorge.ktkit.service.Auditable
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
@@ -14,7 +14,7 @@ import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
-interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>, AbstractComponent {
+interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>, Component {
     override suspend fun preInsertHook(context: QueryExecutor, entity: T): T {
         val user = ctx().principal
         entity.createdAt = Clock.System.now()

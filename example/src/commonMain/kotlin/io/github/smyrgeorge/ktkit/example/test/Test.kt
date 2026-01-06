@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.example.test
 
 import io.github.smyrgeorge.ktkit.Application.Companion.SYSTEM_USER
-import io.github.smyrgeorge.ktkit.service.auditable.Auditable
+import io.github.smyrgeorge.ktkit.service.Auditable
 import io.github.smyrgeorge.sqlx4k.annotation.Id
 import io.github.smyrgeorge.sqlx4k.annotation.Table
 import kotlin.time.Clock

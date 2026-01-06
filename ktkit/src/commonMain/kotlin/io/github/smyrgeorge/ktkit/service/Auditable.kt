@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.service.auditable
+package io.github.smyrgeorge.ktkit.service
 
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi

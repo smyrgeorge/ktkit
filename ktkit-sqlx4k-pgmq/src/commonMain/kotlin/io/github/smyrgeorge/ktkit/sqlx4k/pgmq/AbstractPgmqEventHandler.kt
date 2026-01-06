@@ -9,7 +9,7 @@ import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.context.Principal.Companion.cast
 import io.github.smyrgeorge.ktkit.error.impl.Unauthorized
-import io.github.smyrgeorge.ktkit.service.AbstractComponent
+import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.util.EitherThrowable
 import io.github.smyrgeorge.ktkit.util.TRACE_PARENT_HEADER
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
@@ -39,7 +39,7 @@ abstract class AbstractPgmqEventHandler(
     private val queue: PgmqClient.Queue,
     private val options: PgmqConsumer.Options = DEFAULT_OPTIONS,
     private val defaultUser: Principal? = null,
-) : AbstractComponent {
+) : Component {
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
 

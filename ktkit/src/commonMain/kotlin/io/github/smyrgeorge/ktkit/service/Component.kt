@@ -16,7 +16,7 @@ import org.koin.mp.KoinPlatformTools
  * Implementing classes can rely on this abstraction to access and validate the presence of
  * an [ExecContext] within the current coroutine context.
  */
-interface AbstractComponent {
+interface Component {
     /**
      * Provides access to the default application instance managed by the Koin dependency injection framework.
      *

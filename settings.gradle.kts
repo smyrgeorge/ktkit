@@ -12,4 +12,5 @@ pluginManagement {
 include("dokka")
 include("ktkit")
 include("ktkit-pgmq")
+include("ktkit-sqlx4k")
 include("example")

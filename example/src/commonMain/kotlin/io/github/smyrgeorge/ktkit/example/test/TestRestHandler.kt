@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.example.test
 
 import io.github.smyrgeorge.ktkit.api.rest.impl.XRealNameRestHandler
-import io.github.smyrgeorge.ktkit.service.AbstractDatabaseService.Companion.withTransaction
+import io.github.smyrgeorge.ktkit.sqlx4k.AbstractDatabaseService.Companion.withTransaction
 import io.ktor.server.routing.Route
 
 class TestRestHandler(

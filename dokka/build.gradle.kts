@@ -5,6 +5,7 @@ plugins {
 dependencies {
     dokka(project(":ktkit"))
     dokka(project(":ktkit-pgmq"))
+    dokka(project(":ktkit-sqlx4k"))
 }
 
 dokka {

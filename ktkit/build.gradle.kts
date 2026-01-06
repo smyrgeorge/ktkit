@@ -26,8 +26,6 @@ kotlin {
                 api(libs.ktor.server.core)
                 api(libs.ktor.server.content.negotiation)
                 api(libs.ktor.serialization.kotlinx.json)
-                api(libs.sqlx4k)
-                api(libs.sqlx4k.arrow)
             }
         }
         jvmMain {

@@ -1,5 +1,3 @@
-import org.gradle.internal.extensions.stdlib.capitalized
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
@@ -11,7 +9,6 @@ plugins {
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
-        freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalContextParameters")
     }
     sourceSets {
         all {
@@ -23,10 +20,10 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":ktkit"))
-                implementation(libs.arrow.core)
-                implementation(libs.sqlx4k.arrow)
+                implementation(project(":ktkit-sqlx4k"))
                 implementation(libs.sqlx4k.postgres)
             }
+            // Config if your code is under the commonMain module.
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }
     }
@@ -58,47 +55,11 @@ ksp {
 //    add("kspMacosArm64", libs.sqlx4k.codegen)
 //}
 
+// Config if your code is under the commonMain module.
 dependencies {
     add("kspCommonMainMetadata", libs.sqlx4k.codegen)
 }
 
-targetsOf(project).forEach {
-    project.tasks.getByName("compileKotlin$it") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
-}
-
 tasks.withType<KotlinCompilationTask<*>> {
     dependsOn("kspCommonMainKotlinMetadata")
-}
-
-fun targetsOf(project: Project): List<String> {
-    val os = DefaultNativePlatform.getCurrentOperatingSystem()
-    val arch = DefaultNativePlatform.getCurrentArchitecture()
-
-    val osString = when {
-        os.isLinux -> "Linux"
-        os.isMacOsX -> "Macos"
-        os.isWindows -> "Mingw"
-        else -> throw GradleException("Unsupported operating system: $os")
-    }
-    val archString = when {
-        arch.isArm64 -> "Arm64"
-        arch.isAmd64 -> "X64"
-        else -> throw GradleException("Unsupported architecture: $arch")
-    }
-    val defaultTarget = "$osString$archString"
-    return (project.properties["targets"] as? String)?.let {
-        when (it) {
-            "all" -> listOf(
-                "MacosArm64",
-                "MacosX64",
-                "LinuxArm64",
-                "LinuxX64",
-                "MingwX64"
-            )
-
-            else -> it.split(",").map { t -> t.trim().capitalized() }
-        }
-    } ?: listOf(defaultTarget) // Default for local development.
 }

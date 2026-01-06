@@ -1,8 +1,9 @@
-package io.github.smyrgeorge.ktkit.service.auditable
+package io.github.smyrgeorge.ktkit.sqlx4k
 
 import arrow.core.Either
 import io.github.smyrgeorge.ktkit.error.system.DatabaseError
 import io.github.smyrgeorge.ktkit.service.AbstractComponent
+import io.github.smyrgeorge.ktkit.service.auditable.Auditable
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.SQLError

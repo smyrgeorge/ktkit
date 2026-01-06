@@ -2,8 +2,8 @@ package io.github.smyrgeorge.ktkit.example.test
 
 import arrow.core.raise.context.bind
 import io.github.smyrgeorge.ktkit.context.ExecutionContext
-import io.github.smyrgeorge.ktkit.service.AbstractDatabaseService
-import io.github.smyrgeorge.ktkit.service.AbstractDatabaseService.Companion.toDomainResult
+import io.github.smyrgeorge.ktkit.sqlx4k.AbstractDatabaseService
+import io.github.smyrgeorge.ktkit.sqlx4k.AbstractDatabaseService.Companion.toDomainResult
 import io.github.smyrgeorge.ktkit.util.DomainResult
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.sqlx4k.Driver

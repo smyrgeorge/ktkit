@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktkit.example.test
 
-import io.github.smyrgeorge.ktkit.service.auditable.AuditableRepository
+import io.github.smyrgeorge.ktkit.sqlx4k.AuditableRepository
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.annotation.Query
 import io.github.smyrgeorge.sqlx4k.annotation.Repository

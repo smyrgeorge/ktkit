@@ -1,8 +1,9 @@
-package io.github.smyrgeorge.ktkit.service
+package io.github.smyrgeorge.ktkit.sqlx4k
 
 import io.github.smyrgeorge.ktkit.context.ExecutionContext
 import io.github.smyrgeorge.ktkit.error.system.DatabaseError
-import io.github.smyrgeorge.ktkit.service.AbstractDatabaseService.Companion.withTransaction
+import io.github.smyrgeorge.ktkit.service.AbstractService
+import io.github.smyrgeorge.ktkit.sqlx4k.AbstractDatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.ktkit.util.DomainResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.sqlx4k.Driver

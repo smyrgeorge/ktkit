@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.api.event.pgmq
+package io.github.smyrgeorge.ktkit.pgmq
 
 import io.github.smyrgeorge.sqlx4k.postgres.IPostgresSQL
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgMqClient

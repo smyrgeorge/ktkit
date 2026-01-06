@@ -90,7 +90,7 @@ abstract class AbstractPgmqEventHandler(
     ) = message.trace { span ->
         // Find the header that contains user information.
         val user = message.headers[XRealNamePrincipalExtractor.HEADER_NAME]
-            ?.let { principal.extract(it) } // Convert header to [Principal]
+            ?.let { principal.extract(it).getOrNull() } // Convert header to [Principal]
             ?: defaultUser
             ?: Unauthorized("Request does not contain user data.").ex()
 

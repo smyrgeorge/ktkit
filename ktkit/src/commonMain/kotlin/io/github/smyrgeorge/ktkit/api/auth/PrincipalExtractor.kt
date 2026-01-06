@@ -35,17 +35,17 @@ interface PrincipalExtractor {
     suspend fun extract(call: ApplicationCall): Result<Principal?>
 
     /**
-     * Extracts a [Principal] based on the specified authentication header.
+     * Extracts a [Principal] from the given header string.
      *
-     * This method processes the provided header to extract user authentication
-     * information encapsulated within a [Principal]. It assumes the header contains
-     * the necessary details for identifying and validating the user.
+     * This method is responsible for parsing the specified HTTP header to extract
+     * authentication information. The result of this operation is encapsulated
+     * in a [Result] which may contain a [Principal] if extraction is successful,
+     * or an error if the process encounters any issue.
      *
-     * @param header The authentication header containing encoded user information.
-     * @return The extracted [Principal] if the header is valid and successfully processed.
-     * @throws Exception If the header format is invalid.
+     * @param header The HTTP header string to be parsed for extracting the [Principal].
+     * @return A [Result] containing a [Principal] if extraction succeeds, or an error if extraction fails.
      */
-    fun extract(header: String): Principal
+    fun extract(header: String): Result<Principal>
 
     /**
      * Provides the name of the implementing class or a unique identifier if the class name

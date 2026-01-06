@@ -1,17 +1,21 @@
 package io.github.smyrgeorge.ktkit.pgmq
 
+import arrow.core.left
+import io.github.smyrgeorge.ktkit.Application
+import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
 import io.github.smyrgeorge.ktkit.api.event.EventContext
 import io.github.smyrgeorge.ktkit.context.ExecutionContext
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.context.Principal.Companion.cast
-import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.error.system.Unauthorized
 import io.github.smyrgeorge.ktkit.service.AbstractComponent
 import io.github.smyrgeorge.ktkit.util.EitherThrowable
 import io.github.smyrgeorge.ktkit.util.TRACE_PARENT_HEADER
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
+import io.github.smyrgeorge.ktkit.util.launch
+import io.github.smyrgeorge.ktkit.util.retryCatching
 import io.github.smyrgeorge.ktkit.util.toEither
 import io.github.smyrgeorge.ktkit.util.toOpenTelemetryHeader
 import io.github.smyrgeorge.log4k.Logger
@@ -40,6 +44,8 @@ abstract class AbstractPgmqEventHandler(
 ) : AbstractComponent {
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
+
+    private var started: Boolean = false
     private val spanName = "${this::class.simpleName}.handle"
 
     private val consumer = PgMqConsumer(
@@ -56,6 +62,12 @@ abstract class AbstractPgmqEventHandler(
 
     init {
         if (options.autoStart) start()
+        launch {
+            retryCatching(times = 10) {
+                // Register shutdown handler.
+                Application.INSTANCE.onShutdown { stop() }
+            }
+        }
     }
 
     fun start() {
@@ -64,11 +76,13 @@ abstract class AbstractPgmqEventHandler(
         runBlocking { pgmq.client.create(queue) }.getOrThrow()
         // Start the consumer.
         consumer.start()
+        started = true
     }
 
     fun stop() {
         log.info { "Stopping consumer for queue: $queue" }
         consumer.stop()
+        started = false
     }
 
     private inline fun Message.trace(
@@ -114,17 +128,23 @@ abstract class AbstractPgmqEventHandler(
         }
     }
 
+    context(c: ExecutionContext)
+    private fun defaultSendHeaders(): Map<String, String> {
+        val span = c.currentOrNull()
+        return listOfNotNull(
+            if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
+            XRealNamePrincipalExtractor.HEADER_NAME to c.principal.cast<UserToken>().toXRealName(),
+        ).toMap()
+    }
+
     context(c: ExecutionContext, db: QueryExecutor)
     suspend fun send(
         message: String,
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds
     ): EitherThrowable<Long> {
-        val span = c.currentOrNull()
-        val headers = listOfNotNull(
-            if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
-            XRealNamePrincipalExtractor.HEADER_NAME to c.principal.cast<UserToken>().toXRealName(),
-        ).toMap() + headers
+        if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
+        val headers = defaultSendHeaders() + headers
         return pgmq.client.send(options.queue, message, headers, delay).toEither()
     }
 
@@ -134,11 +154,8 @@ abstract class AbstractPgmqEventHandler(
         delay: Duration = 0.seconds,
         supplier: () -> String,
     ): EitherThrowable<Long> {
-        val span = c.currentOrNull()
-        val headers = listOfNotNull(
-            if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
-            XRealNamePrincipalExtractor.HEADER_NAME to c.principal.cast<UserToken>().toXRealName(),
-        ).toMap() + headers
+        if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
+        val headers = defaultSendHeaders() + headers
         return pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
     }
 

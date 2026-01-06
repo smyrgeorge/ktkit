@@ -19,7 +19,7 @@ interface AbstractComponent {
     /**
      * Provides access to the singleton instance of the [Application].
      *
-     * This property is a global accessor to the application's main instance ([Application.INSTANCE]).
+     * This property is a global accessor to the application's main instance ([Application.INSTANCE_OR_NULL]).
      * It is used to interact with or retrieve the configuration, state, or other resources
      * managed by the [Application] class. By design, it ensures that only one instance of the
      * application exists during the runtime.

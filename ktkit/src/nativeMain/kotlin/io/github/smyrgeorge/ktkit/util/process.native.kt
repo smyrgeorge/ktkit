@@ -12,12 +12,12 @@ import platform.posix.signal
 actual fun registerShutdownHook() {
     atexit(staticCFunction<Unit> {
         runBlocking {
-            Application.INSTANCE.shutdown()
+            Application.INSTANCE_OR_NULL?.shutdown()
         }
     })
     signal(SIGINT, staticCFunction<Int, Unit> {
         runBlocking {
-            Application.INSTANCE.shutdown()
+            Application.INSTANCE_OR_NULL?.shutdown()
             println("Triggered shutdown hook.")
         }
     })

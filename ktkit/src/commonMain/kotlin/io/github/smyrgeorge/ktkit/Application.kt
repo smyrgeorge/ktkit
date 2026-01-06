@@ -56,6 +56,8 @@ class Application(
     private var _ktor: KtorApplication? = null
     private var _server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>? = null
 
+    private val shutdownHooks = mutableListOf<() -> Unit>()
+
     val di: KoinApplication
         get() = _di ?: error("Koin Application not initialized. Run start() first.")
     val ktor: KtorApplication
@@ -87,15 +89,20 @@ class Application(
         log.info { "Starting $name..." }
         makeServer().apply {
             _server = this
-            INSTANCE = this@Application
+            INSTANCE_OR_NULL = this@Application
             registerShutdownHook()
         }.start(wait)
     }
 
     fun shutdown(gracePeriod: Duration = 1.seconds, timeout: Duration = 5.seconds) {
         log.info { "Shutting down..." }
+        shutdownHooks.forEach { it() }
         di.close()
         server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)
+    }
+
+    fun onShutdown(hook: () -> Unit) {
+        shutdownHooks.add(hook)
     }
 
     class Configurer(
@@ -197,7 +204,8 @@ class Application(
     }
 
     companion object {
-        lateinit var INSTANCE: Application
+        var INSTANCE_OR_NULL: Application? = null
+        val INSTANCE: Application get() = INSTANCE_OR_NULL ?: error("Application not initialized. Run start() first.")
         val di: KoinApplication get() = INSTANCE.di
         private val defaultSerializersModule = SerializersModule {
             polymorphic(ErrorSpec::class) {

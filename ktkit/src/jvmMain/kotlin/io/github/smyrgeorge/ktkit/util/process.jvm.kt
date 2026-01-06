@@ -6,7 +6,7 @@ import kotlin.concurrent.thread
 actual fun registerShutdownHook() {
     Runtime.getRuntime().addShutdownHook(
         thread(name = "shutdown", start = false) {
-            Application.INSTANCE.shutdown()
+            Application.INSTANCE_OR_NULL?.shutdown()
         }
     )
 }

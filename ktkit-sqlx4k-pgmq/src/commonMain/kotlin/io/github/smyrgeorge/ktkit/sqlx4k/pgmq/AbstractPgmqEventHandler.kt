@@ -24,11 +24,10 @@ import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.TracingEvent.Span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
-import io.github.smyrgeorge.log4k.impl.SimpleCoroutinesTracingContext
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.Message
-import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgMqClient
-import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgMqConsumer
+import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgmqClient
+import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgmqConsumer
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration
@@ -38,8 +37,8 @@ import kotlin.uuid.ExperimentalUuidApi
 
 abstract class AbstractPgmqEventHandler(
     private val pgmq: Pgmq,
-    private val queue: PgMqClient.Queue,
-    private val options: PgMqConsumer.Options = DEFAULT_OPTIONS,
+    private val queue: PgmqClient.Queue,
+    private val options: PgmqConsumer.Options = DEFAULT_OPTIONS,
     private val defaultUser: Principal? = null,
 ) : AbstractComponent {
     val log: Logger = Logger.of(this::class)
@@ -48,14 +47,14 @@ abstract class AbstractPgmqEventHandler(
     private var started: Boolean = false
     private val spanName = "${this::class.simpleName}.handle"
 
-    private val consumer = PgMqConsumer(
+    private val consumer = PgmqConsumer(
         pgmq = pgmq.client,
         options = options.copy(queue = queue.name, autoStart = false),
         onMessage = ::handle,
-        onFaiToRead = ::onFailToRead,
+        onFailToRead = ::onFailToRead,
         onFailToProcess = ::onFailToProcess,
-        onFaiToAck = ::onFailToAck,
-        onFaiToNack = ::onFailToNack,
+        onFailToAck = ::onFailToAck,
+        onFailToNack = ::onFailToNack,
     )
 
     private val principal: XRealNamePrincipalExtractor = XRealNamePrincipalExtractor
@@ -63,7 +62,7 @@ abstract class AbstractPgmqEventHandler(
     init {
         if (options.autoStart) start()
         launch {
-            retryCatching(times = 10) {
+            retryCatching(times = 16) {
                 // Register shutdown handler.
                 Application.INSTANCE.onShutdown { stop() }
             }
@@ -93,7 +92,7 @@ abstract class AbstractPgmqEventHandler(
             extractOpenTelemetryHeader(h)?.let { trace.span(it.spanId, it.traceId) }
         }
         // Create the logging-context.
-        val tracing = SimpleCoroutinesTracingContext(trace, parent)
+        val tracing = TracingContext.builder().with(trace).with(parent).build()
 
         // Create the handler span.
         runCatching { tracing.span(spanName, spanTags()) { tracing.f(this) } }
@@ -185,7 +184,7 @@ abstract class AbstractPgmqEventHandler(
     )
 
     companion object {
-        private val DEFAULT_OPTIONS = PgMqConsumer.Options(
+        private val DEFAULT_OPTIONS = PgmqConsumer.Options(
             queue = "DEFAULT",
             prefetch = 250,
             vt = 30.seconds,

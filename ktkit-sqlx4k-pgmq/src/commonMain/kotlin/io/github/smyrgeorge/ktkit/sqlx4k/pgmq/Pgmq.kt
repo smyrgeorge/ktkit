@@ -1,8 +1,8 @@
 package io.github.smyrgeorge.ktkit.sqlx4k.pgmq
 
 import io.github.smyrgeorge.sqlx4k.postgres.IPostgresSQL
-import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgMqClient
-import io.github.smyrgeorge.sqlx4k.postgres.pgmq.impl.PgMqDbAdapterImpl
+import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgmqClient
+import io.github.smyrgeorge.sqlx4k.postgres.pgmq.impl.PgmqDbAdapterImpl
 
 /**
  * A wrapper class that provides access to PostgreSQL message queue (PGMQ) functionalities.
@@ -19,8 +19,8 @@ import io.github.smyrgeorge.sqlx4k.postgres.pgmq.impl.PgMqDbAdapterImpl
  */
 class Pgmq(
     pg: IPostgresSQL,
-    options: PgMqClient.Options = PgMqClient.Options()
+    options: PgmqClient.Options = PgmqClient.Options()
 ) {
-    private val adapter = PgMqDbAdapterImpl(pg)
-    val client: PgMqClient = PgMqClient(adapter, options)
+    private val adapter = PgmqDbAdapterImpl(pg)
+    val client: PgmqClient = PgmqClient(adapter, options)
 }

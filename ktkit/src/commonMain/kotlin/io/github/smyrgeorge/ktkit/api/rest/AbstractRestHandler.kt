@@ -20,7 +20,6 @@ import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.TracingEvent.Span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
-import io.github.smyrgeorge.log4k.impl.SimpleCoroutinesTracingContext
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
@@ -81,7 +80,7 @@ abstract class AbstractRestHandler(
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = extractOpenTelemetryHeader()?.let { trace.span(it.spanId, it.traceId) }
         // Create the logging-context.
-        val tracing = SimpleCoroutinesTracingContext(trace, parent)
+        val tracing = TracingContext.builder().with(trace).with(parent).build()
         // Create the handler span.
         runCatching { tracing.span(spanName(), spanTags()) { tracing.f(this) } }
     }

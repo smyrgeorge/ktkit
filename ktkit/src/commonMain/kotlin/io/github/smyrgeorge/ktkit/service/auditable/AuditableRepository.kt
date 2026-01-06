@@ -1,19 +1,18 @@
 package io.github.smyrgeorge.ktkit.service.auditable
 
 import arrow.core.Either
-import io.github.smyrgeorge.ktkit.context.ExecutionContext
 import io.github.smyrgeorge.ktkit.error.system.DatabaseError
+import io.github.smyrgeorge.ktkit.service.AbstractComponent
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.Statement
 import io.github.smyrgeorge.sqlx4k.arrow.ArrowContextCrudRepository
-import kotlinx.coroutines.currentCoroutineContext
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
-interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> {
+interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>, AbstractComponent {
     override suspend fun preInsertHook(entity: T): T {
         val user = ctx().user
         entity.createdAt = Clock.System.now()
@@ -31,7 +30,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
 
     override suspend fun <R> aroundQuery(method: String, statement: Statement, block: suspend () -> R): R {
         val operation = "db.${this::class.simpleName}.$method"
-        return ctx().tracingContext.span(
+        return ctx().tracing.span(
             name = operation,
             tags = mapOf(
                 OpenTelemetryAttributes.DB_STATEMENT to statement.toString(),
@@ -44,7 +43,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
                 // However, we do it just in case this will change in the future.
                 is Result<*> if res.isFailure -> {
                     // Early close the span if the query failed.
-                    exception(res.exceptionOrNull()!!, true)
+                    exception(res.exceptionOrNull()!!)
                     end(res.exceptionOrNull()!!)
                     res
                 }
@@ -58,7 +57,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
                     } as Throwable
 
                     // Early close the span if the query failed.
-                    exception(e, true)
+                    exception(e)
                     end(e)
                     res
                 }
@@ -67,7 +66,4 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T> 
             }
         }
     }
-
-    private suspend fun ctx(): ExecutionContext =
-        currentCoroutineContext()[ExecutionContext.Companion] ?: error("Sanity check :: could not extract Context.")
 }

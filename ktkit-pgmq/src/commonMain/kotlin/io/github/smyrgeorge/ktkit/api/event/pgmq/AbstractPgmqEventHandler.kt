@@ -17,8 +17,8 @@ import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.TracingEvent.Span
-import io.github.smyrgeorge.log4k.impl.CoroutinesTracingContext
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
+import io.github.smyrgeorge.log4k.impl.SimpleCoroutinesTracingContext
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.Message
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgMqClient
@@ -77,7 +77,7 @@ abstract class AbstractPgmqEventHandler(
             extractOpenTelemetryHeader(h)?.let { trace.span(it.spanId, it.traceId) }
         }
         // Create the logging-context.
-        val tracing = CoroutinesTracingContext(trace, parent)
+        val tracing = SimpleCoroutinesTracingContext(trace, parent)
 
         // Create the handler span.
         runCatching { tracing.span(spanName, spanTags()) { tracing.f(this) } }
@@ -99,16 +99,16 @@ abstract class AbstractPgmqEventHandler(
             put(OpenTelemetryAttributes.USER_NAME, user.username)
         }
 
-        val eventContext = EventContext(user, message.headers)
-        val executionContext = ExecutionContext.fromEvent(user, eventContext, this)
+        val event = EventContext(user, message.headers)
+        val execution = ExecutionContext.fromEvent(user, event, this)
 
         val rc = message.readCt
         if (rc > 10) log.warn { "Retry-count '$rc > 10' was reached on queue='${queue.name}'." }
 
         // Load the execution context into the coroutine context.
-        withContext(executionContext) {
+        withContext(execution) {
             // Execute the handler.
-            context(executionContext) { eventContext.handler(message) }
+            context(execution) { event.handler(message) }
         }
     }
 

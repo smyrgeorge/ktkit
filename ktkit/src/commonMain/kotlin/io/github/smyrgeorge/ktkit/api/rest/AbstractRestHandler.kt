@@ -19,8 +19,8 @@ import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.TracingEvent.Span
-import io.github.smyrgeorge.log4k.impl.CoroutinesTracingContext
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
+import io.github.smyrgeorge.log4k.impl.SimpleCoroutinesTracingContext
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
@@ -32,8 +32,6 @@ import io.ktor.server.routing.options
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -86,7 +84,7 @@ abstract class AbstractRestHandler(
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = extractOpenTelemetryHeader()?.let { trace.span(it.spanId, it.traceId) }
         // Create the logging-context.
-        val tracing = CoroutinesTracingContext(trace, parent)
+        val tracing = SimpleCoroutinesTracingContext(trace, parent)
         // Create the handler span.
         runCatching { tracing.span(spanName(), spanTags()) { tracing.f(this) } }
     }
@@ -127,8 +125,8 @@ abstract class AbstractRestHandler(
             }
 
             // Create the execution-context for the request.
-            val httpContext = HttpContext(user, call)
-            val executionContext = ExecutionContext.fromHttp(user, httpContext, this)
+            val http = HttpContext(user, call)
+            val execution = ExecutionContext.fromHttp(user, http, this)
 
             // Role-based authorization.
             hasRole?.let { role -> user.requireRole(role) }
@@ -136,13 +134,13 @@ abstract class AbstractRestHandler(
             hasAllRoles?.let { allRoles -> user.requireAllRoles(*allRoles) }
 
             // Check for permissions.
-            val hasAccess = this@AbstractRestHandler.permissions(httpContext) && permissions(httpContext)
-            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${httpContext.uri()}'").ex()
+            val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)
+            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").ex()
 
             // Load the execution context into the coroutine context.
-            val result = withContext(executionContext) {
+            val result = withContext(execution) {
                 // Execute the handler.
-                context(executionContext) { httpContext.handler() }
+                context(execution) { http.handler() }
             }
 
             when (result) {
@@ -191,7 +189,6 @@ abstract class AbstractRestHandler(
         // Set the HTTP status code and tags on the span.
         span.tags[OpenTelemetryAttributes.HTTP_RESPONSE_STATUS_CODE] = status.value
         when (result) {
-            is Flow<*> -> call.respond(status, result.filterNotNull())
             is Unit -> call.respond(status)
             else -> call.respond(status, result ?: Unit)
         }
@@ -223,7 +220,7 @@ abstract class AbstractRestHandler(
         span.tags[OpenTelemetryAttributes.HTTP_REQUEST_METHOD] = cause.httpStatus.code
 
         // Forcefully close the span if an error occurred.
-        span.exception(error, false)
+        span.exception(error)
         span.end(error)
 
         val res = ApiError(

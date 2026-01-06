@@ -1,8 +1,8 @@
-package io.github.smyrgeorge.ktkit.error.system
+package io.github.smyrgeorge.ktkit.error.impl
 
 import io.github.smyrgeorge.ktkit.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.error.ErrorSpecData
-import io.github.smyrgeorge.ktkit.error.system.details.UnsupportedEnumValueErrorData
+import io.github.smyrgeorge.ktkit.error.impl.details.UnsupportedEnumValueErrorData
 
 data class UnsupportedEnumValue(
     val kind: String,

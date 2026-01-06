@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktkit.context
 
-import io.github.smyrgeorge.ktkit.error.system.Forbidden
+import io.github.smyrgeorge.ktkit.error.impl.Forbidden
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

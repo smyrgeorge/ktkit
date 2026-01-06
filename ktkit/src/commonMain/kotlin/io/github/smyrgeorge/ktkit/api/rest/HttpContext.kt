@@ -3,8 +3,8 @@
 package io.github.smyrgeorge.ktkit.api.rest
 
 import io.github.smyrgeorge.ktkit.context.Principal
-import io.github.smyrgeorge.ktkit.error.system.MissingParameter
-import io.github.smyrgeorge.ktkit.error.system.UnsupportedEnumValue
+import io.github.smyrgeorge.ktkit.error.impl.MissingParameter
+import io.github.smyrgeorge.ktkit.error.impl.UnsupportedEnumValue
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.receive

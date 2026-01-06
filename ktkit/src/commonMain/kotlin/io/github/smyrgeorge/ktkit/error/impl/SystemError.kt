@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.error.system
+package io.github.smyrgeorge.ktkit.error.impl
 
 import io.github.smyrgeorge.ktkit.error.ErrorSpec
 

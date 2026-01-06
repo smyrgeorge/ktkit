@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktkit.error
 
-import io.github.smyrgeorge.ktkit.error.system.UnknownError
+import io.github.smyrgeorge.ktkit.error.impl.UnknownError
 
 /**
  * Represents a specification for errors used within the system.

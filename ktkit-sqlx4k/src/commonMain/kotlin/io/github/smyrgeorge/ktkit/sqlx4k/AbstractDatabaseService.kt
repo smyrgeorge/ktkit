@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.sqlx4k
 
 import io.github.smyrgeorge.ktkit.context.ExecutionContext
-import io.github.smyrgeorge.ktkit.error.system.DatabaseError
+import io.github.smyrgeorge.ktkit.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.service.AbstractService
 import io.github.smyrgeorge.ktkit.sqlx4k.AbstractDatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.ktkit.util.DomainResult

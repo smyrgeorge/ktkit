@@ -7,10 +7,10 @@ import io.github.smyrgeorge.ktkit.context.ExecutionContext
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.error.RuntimeError
-import io.github.smyrgeorge.ktkit.error.system.Forbidden
-import io.github.smyrgeorge.ktkit.error.system.Unauthorized
-import io.github.smyrgeorge.ktkit.error.system.UnknownError
-import io.github.smyrgeorge.ktkit.error.system.details.EmptyErrorData
+import io.github.smyrgeorge.ktkit.error.impl.Forbidden
+import io.github.smyrgeorge.ktkit.error.impl.Unauthorized
+import io.github.smyrgeorge.ktkit.error.impl.UnknownError
+import io.github.smyrgeorge.ktkit.error.impl.details.EmptyErrorData
 import io.github.smyrgeorge.ktkit.service.AbstractComponent
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
 import io.github.smyrgeorge.ktkit.util.spanName

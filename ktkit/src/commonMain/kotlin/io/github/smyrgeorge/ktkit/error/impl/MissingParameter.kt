@@ -1,8 +1,8 @@
-package io.github.smyrgeorge.ktkit.error.system
+package io.github.smyrgeorge.ktkit.error.impl
 
 import io.github.smyrgeorge.ktkit.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.error.ErrorSpecData
-import io.github.smyrgeorge.ktkit.error.system.details.MissingParameterErrorData
+import io.github.smyrgeorge.ktkit.error.impl.details.MissingParameterErrorData
 
 data class MissingParameter(
     val kind: String,

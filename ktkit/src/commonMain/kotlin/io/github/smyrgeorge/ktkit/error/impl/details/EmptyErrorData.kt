@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.error.system.details
+package io.github.smyrgeorge.ktkit.error.impl.details
 
 import kotlinx.serialization.Serializable
 

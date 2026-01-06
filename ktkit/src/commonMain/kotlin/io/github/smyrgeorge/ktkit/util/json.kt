@@ -1,10 +1,10 @@
 package io.github.smyrgeorge.ktkit.util
 
 import io.github.smyrgeorge.ktkit.error.ErrorSpecData
-import io.github.smyrgeorge.ktkit.error.system.details.DatabaseErrorData
-import io.github.smyrgeorge.ktkit.error.system.details.EmptyErrorData
-import io.github.smyrgeorge.ktkit.error.system.details.MissingParameterErrorData
-import io.github.smyrgeorge.ktkit.error.system.details.UnsupportedEnumValueErrorData
+import io.github.smyrgeorge.ktkit.error.impl.details.DatabaseErrorData
+import io.github.smyrgeorge.ktkit.error.impl.details.EmptyErrorData
+import io.github.smyrgeorge.ktkit.error.impl.details.MissingParameterErrorData
+import io.github.smyrgeorge.ktkit.error.impl.details.UnsupportedEnumValueErrorData
 import kotlinx.serialization.json.JsonBuilder
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic

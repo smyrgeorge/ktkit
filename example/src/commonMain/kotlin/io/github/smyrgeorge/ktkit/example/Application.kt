@@ -7,7 +7,6 @@ import io.github.smyrgeorge.ktkit.example.test.TestRepository
 import io.github.smyrgeorge.ktkit.example.test.TestRestHandler
 import io.github.smyrgeorge.ktkit.example.test.TestService
 import io.github.smyrgeorge.ktkit.util.get
-import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleConsoleTracingAppender
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
@@ -27,16 +26,17 @@ fun start() {
 
     Application(
         name = "io.github.smyrgeorge.ktkit.example.Application",
-        host = "localhost",
-        port = 8080,
+        conf = Application.Conf(
+            host = "localhost",
+            port = 8080,
+        ),
         configure = {
             tracing {
-                appenders.register(SimpleConsoleTracingAppender())
+//                appenders.register(SimpleConsoleTracingAppender())
             }
 
             di {
                 single { db }.bind<Driver>()
-
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::TestService)
                 single { TestRepositoryImpl }.bind<TestRepository>()

@@ -38,9 +38,8 @@ import io.ktor.server.application.Application as KtorApplication
 
 @Suppress("unused")
 class Application(
-    private val name: String,
-    private val host: String = "localhost",
-    private val port: Int = 8080,
+    val name: String,
+    val conf: Conf,
     private val configure: Configurer.() -> Unit = {},
     private val postConfigure: suspend Application.() -> Unit = {}
 ) {
@@ -127,8 +126,8 @@ class Application(
         configure = {
             connectors.add(
                 EngineConnectorBuilder().apply {
-                    host = this@Application.host
-                    port = this@Application.port
+                    host = conf.host
+                    port = conf.port
                 }
             )
         },
@@ -152,6 +151,40 @@ class Application(
     enum class Status {
         UP,
         DOWN
+    }
+
+    /**
+     * Represents the configuration for an application, including settings for the host, port,
+     * and error type host URL.
+     *
+     * @property host The hostname or IP address the application binds to. Defaults to "localhost".
+     * @property port The port number the application listens on. Must be between 1 and 65535.
+     *                Defaults to 8080.
+     * @property includeTypePropertyInApiError Whether to include the type property in ApiError responses.
+     * @property errorTypeHost The base URL used for errors, adhering to RFC 9457.
+     *                         It must start with "http://" or "https://" and end with "/errors".
+     *
+     * @constructor Ensures that:
+     * - The `port` is a valid number within the acceptable range (1 to 65535).
+     * - The `errorTypeHost` starts with a valid HTTP(S) protocol.
+     * - The `errorTypeHost` ends with the required path "/errors".
+     *
+     * Throws [IllegalArgumentException] if any of the validation requirements are not met.
+     */
+    @Suppress("HttpUrlsUsage")
+    data class Conf(
+        val host: String = "localhost",
+        val port: Int = 8080,
+        val includeTypePropertyInApiError: Boolean = true,
+        val errorTypeHost: String = "http://$host:$port/errors", // RFC 9457
+    ) {
+        init {
+            require(port in 1..65535) { "Port must be between 1 and 65535" }
+            require(errorTypeHost.startsWith("http://") || errorTypeHost.startsWith("https://")) {
+                "Error Type Host must start with http:// or https://"
+            }
+            require(errorTypeHost.endsWith("/errors")) { "Error Type Host must end with /errors" }
+        }
     }
 
     /**

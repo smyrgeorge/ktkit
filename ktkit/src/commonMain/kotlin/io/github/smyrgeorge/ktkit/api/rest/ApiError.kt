@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ApiError(
-//    val type: String = "/errors/error",
+    val type: String?,
     val title: String,
     val status: Int,
     val detail: String,

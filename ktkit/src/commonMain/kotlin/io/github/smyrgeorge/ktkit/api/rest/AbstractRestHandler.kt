@@ -12,6 +12,7 @@ import io.github.smyrgeorge.ktkit.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.error.impl.UnknownError
 import io.github.smyrgeorge.ktkit.error.impl.details.EmptyErrorData
 import io.github.smyrgeorge.ktkit.service.AbstractComponent
+import io.github.smyrgeorge.ktkit.util.camelCaseToKebabCase
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
 import io.github.smyrgeorge.ktkit.util.spanName
 import io.github.smyrgeorge.ktkit.util.spanTags
@@ -222,8 +223,13 @@ abstract class AbstractRestHandler(
         span.end(error)
 
         val data = cause.toErrorSpecData()
+        val title = cause::class.simpleName ?: error("Could not determine error class name.")
         val res = ApiError(
-            title = cause::class.simpleName ?: "AnonymousError",
+            type =
+                if (app.conf.includeTypePropertyInApiError)
+                    "${app.conf.errorTypeHost}/${camelCaseToKebabCase(title)}"
+                else null,
+            title = title,
             status = cause.httpStatus.code,
             requestId = span.context.spanId,
             detail = cause.message,

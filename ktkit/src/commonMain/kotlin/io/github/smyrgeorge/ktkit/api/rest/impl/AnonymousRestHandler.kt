@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.rest.impl
 
+import io.github.smyrgeorge.ktkit.Application.Companion.ANONYMOUS_USER
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktkit.util.ANONYMOUS_USER
 
 /**
  * An abstract class representing a REST handler that operates with anonymous user context.
@@ -12,4 +12,4 @@ import io.github.smyrgeorge.ktkit.util.ANONYMOUS_USER
  * Classes inheriting from `AnonymousRestHandler` can implement specific behavior
  * for handling requests in anonymous contexts.
  */
-abstract class AnonymousRestHandler: AbstractRestHandler(defaultUser = ANONYMOUS_USER)
+abstract class AnonymousRestHandler : AbstractRestHandler(defaultUser = ANONYMOUS_USER)

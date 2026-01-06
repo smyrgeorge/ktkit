@@ -1,7 +1,8 @@
 package io.github.smyrgeorge.ktkit
 
+import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktkit.context.UserToken
+import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.error.system.BadRequest
 import io.github.smyrgeorge.ktkit.error.system.DatabaseError
@@ -12,8 +13,6 @@ import io.github.smyrgeorge.ktkit.error.system.NotFound
 import io.github.smyrgeorge.ktkit.error.system.Unauthorized
 import io.github.smyrgeorge.ktkit.error.system.UnknownError
 import io.github.smyrgeorge.ktkit.error.system.UnsupportedEnumValue
-import io.github.smyrgeorge.ktkit.util.ANONYMOUS_USER
-import io.github.smyrgeorge.ktkit.util.SYSTEM_USER
 import io.github.smyrgeorge.ktkit.util.applicationLogger
 import io.github.smyrgeorge.ktkit.util.getAll
 import io.github.smyrgeorge.ktkit.util.httpEngine
@@ -112,11 +111,11 @@ class Application(
             module.config()
         }
 
-        fun withSystemUser(user: UserToken) {
+        fun withSystemUser(user: Principal) {
             SYSTEM_USER = user
         }
 
-        fun withAnonymousUser(user: UserToken) {
+        fun withAnonymousUser(user: Principal) {
             ANONYMOUS_USER = user
         }
 
@@ -213,5 +212,8 @@ class Application(
                 subclass(UnsupportedEnumValue::class)
             }
         }
+
+        var SYSTEM_USER: Principal = UserToken.DEFAULT_SYSTEM_USER
+        var ANONYMOUS_USER: Principal = UserToken.DEFAULT_ANONYMOUS_USER
     }
 }

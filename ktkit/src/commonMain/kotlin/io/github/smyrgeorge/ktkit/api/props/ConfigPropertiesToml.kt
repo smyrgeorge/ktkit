@@ -12,6 +12,16 @@ import kotlinx.serialization.Serializable
  * using Kotlin serialization.
  */
 object ConfigPropertiesToml {
+    /**
+     * Loads and deserializes a file's contents into an object of type `T`.
+     *
+     * The file is read as UTF-8, and its contents are deserialized using the provided `deserializer`
+     * and `TOML` format.
+     *
+     * @param deserializer The deserialization strategy used to interpret the contents of the file.
+     * @param path The path to the file that will be read and deserialized.
+     * @return An instance of type `T` created from the file's contents.
+     */
     inline fun <reified T : @Serializable Any> loadFromFile(
         deserializer: DeserializationStrategy<T>,
         path: String

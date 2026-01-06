@@ -1,40 +1,15 @@
 package io.github.smyrgeorge.ktkit.context
 
 import io.github.smyrgeorge.ktkit.error.system.Forbidden
-import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-/**
- * Represents a user authentication token containing user information and metadata.
- *
- * @property uuid Unique identifier for the user
- * @property username User's username
- * @property email User's email address (optional)
- * @property name User's full name (optional)
- * @property firstName User's first name (optional)
- * @property lastName User's last name (optional)
- * @property roles Set of role names assigned to the user
- * @property iat Issued at timestamp in milliseconds (optional)
- * @property exp Expiration timestamp in milliseconds (optional)
- * @property authTime Authentication timestamp in milliseconds (optional)
- * @property attributes Custom token claims/attributes as a JSON object
- */
-@Serializable
 @OptIn(ExperimentalUuidApi::class)
-data class UserToken(
-    val uuid: Uuid,
-    val username: String,
-    val email: String? = null,
-    val name: String? = null,
-    val firstName: String? = null,
-    val lastName: String? = null,
-    val roles: Set<String> = emptySet(),
-    val iat: Long? = null,
-    val exp: Long? = null,
-    val authTime: Long? = null,
-    val attributes: Map<String, String> = emptyMap()
-) {
+interface Principal {
+    val id: Uuid
+    val username: String
+    val roles: Set<String>
+
     /**
      * Checks if the user has a specific role.
      *
@@ -89,5 +64,16 @@ data class UserToken(
      */
     fun requireAllRoles(vararg roles: String) {
         if (!hasAllRoles(*roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").ex()
+    }
+
+    companion object {
+        /**
+         * Casts the current [Principal] instance to the specified type [T].
+         *
+         * @return The casted instance of type [T] if the cast is successful.
+         * @throws IllegalStateException If the current instance cannot be cast to the specified type [T].
+         */
+        inline fun <reified T : Principal> Principal.cast(): T =
+            this as? T ?: error("Principal cannot be cast to ${T::class.simpleName}")
     }
 }

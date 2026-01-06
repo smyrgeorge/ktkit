@@ -16,7 +16,7 @@ import kotlin.time.Instant
  *
  * @property reqId Unique request identifier
  * @property reqTs Request timestamp
- * @property user User token containing authentication/authorization information
+ * @property principal The authenticated user's principal
  * @property attributes Custom attributes map for storing request-scoped data
  * @property tracing TracingContext for logging purposes
  * @property http Optional HttpContext for accessing request data
@@ -25,7 +25,7 @@ import kotlin.time.Instant
 class ExecutionContext(
     val reqId: String,
     val reqTs: Instant = Clock.System.now(),
-    val user: UserToken,
+    val principal: Principal,
     val attributes: Map<String, Any> = emptyMap(),
     val tracing: TracingContext,
     http: HttpContext? = null,
@@ -39,24 +39,24 @@ class ExecutionContext(
 
     override fun raise(r: ErrorSpec): Nothing = throw r.toThrowable()
     override val key: CoroutineContext.Key<ExecutionContext> get() = ExecutionContext
-    override fun toString() = "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$user, attributes=$attributes)"
+    override fun toString() = "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$principal, attributes=$attributes)"
 
     companion object : CoroutineContext.Key<ExecutionContext> {
         /**
-         * Creates a Context from an ApplicationCall with a user token.
+         * Creates a Context from an ApplicationCall with a user principal.
          *
-         * @param user The user token
+         * @param principal The user principal associated with the request.
          * @param http The HttpContext
          * @param attributes Custom attributes map
          * @param tracing TracingContext for logging purposes
          */
         fun fromHttp(
-            user: UserToken,
+            principal: Principal,
             http: HttpContext,
             tracing: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
         ): ExecutionContext = ExecutionContext(
-            user = user,
+            principal = principal,
             reqId = tracing.current().id,
             attributes = attributes,
             tracing = tracing,
@@ -66,19 +66,19 @@ class ExecutionContext(
         /**
          * Creates an [ExecutionContext] by extracting relevant information from the given event.
          *
-         * @param user The user authentication token associated with the request.
+         * @param principal The user principal associated with the request.
          * @param event The event context that contains event-specific details.
          * @param tracing Tracing context for distributed tracing.
          * @param attributes Additional attributes or metadata to include in the execution context, default is an empty map.
          * @return A new [ExecutionContext] instance populated with the provided inputs.
          */
         fun fromEvent(
-            user: UserToken,
+            principal: Principal,
             event: EventContext,
             tracing: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
         ): ExecutionContext = ExecutionContext(
-            user = user,
+            principal = principal,
             reqId = tracing.current().id,
             attributes = attributes,
             tracing = tracing,

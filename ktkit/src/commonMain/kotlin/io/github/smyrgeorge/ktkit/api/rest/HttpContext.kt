@@ -2,7 +2,7 @@
 
 package io.github.smyrgeorge.ktkit.api.rest
 
-import io.github.smyrgeorge.ktkit.context.UserToken
+import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.error.system.MissingParameter
 import io.github.smyrgeorge.ktkit.error.system.UnsupportedEnumValue
 import io.ktor.server.application.ApplicationCall
@@ -14,11 +14,11 @@ import io.ktor.server.request.uri
  * Represents an HTTP request, encapsulating user authentication information and
  * providing methods for retrieving various HTTP request parameters and headers.
  *
- * @property user The authenticated user's token containing user data and permissions
+ * @property user The authenticated user's principal containing user data and permissions
  * @property call The application call associated with this request
  */
 class HttpContext(
-    val user: UserToken,
+    val user: Principal,
     val call: ApplicationCall,
 ) {
     val request: ApplicationRequest get() = call.request

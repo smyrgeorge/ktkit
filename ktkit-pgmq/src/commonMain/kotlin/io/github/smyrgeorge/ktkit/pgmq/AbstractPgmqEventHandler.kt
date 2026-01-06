@@ -4,7 +4,9 @@ import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
 import io.github.smyrgeorge.ktkit.api.event.EventContext
 import io.github.smyrgeorge.ktkit.context.ExecutionContext
-import io.github.smyrgeorge.ktkit.context.UserToken
+import io.github.smyrgeorge.ktkit.context.Principal
+import io.github.smyrgeorge.ktkit.context.Principal.Companion.cast
+import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.error.system.Unauthorized
 import io.github.smyrgeorge.ktkit.service.AbstractComponent
 import io.github.smyrgeorge.ktkit.util.EitherThrowable
@@ -34,7 +36,7 @@ abstract class AbstractPgmqEventHandler(
     private val pgmq: Pgmq,
     private val queue: PgMqClient.Queue,
     private val options: PgMqConsumer.Options = DEFAULT_OPTIONS,
-    private val defaultUser: UserToken? = null,
+    private val defaultUser: Principal? = null,
 ) : AbstractComponent {
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
@@ -88,14 +90,14 @@ abstract class AbstractPgmqEventHandler(
     ) = message.trace { span ->
         // Find the header that contains user information.
         val user = message.headers[XRealNamePrincipalExtractor.HEADER_NAME]
-            ?.let { principal.extract(it) } // Convert header to [UserToken]
+            ?.let { principal.extract(it) } // Convert header to [Principal]
             ?: defaultUser
             ?: Unauthorized("Request does not contain user data.").ex()
 
         // Add user tags to the span.
         span.tags.apply {
             @OptIn(ExperimentalUuidApi::class)
-            put(OpenTelemetryAttributes.USER_ID, user.uuid)
+            put(OpenTelemetryAttributes.USER_ID, user.id)
             put(OpenTelemetryAttributes.USER_NAME, user.username)
         }
 
@@ -121,7 +123,7 @@ abstract class AbstractPgmqEventHandler(
         val span = c.currentOrNull()
         val headers = listOfNotNull(
             if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
-            XRealNamePrincipalExtractor.HEADER_NAME to c.user.toXRealName(),
+            XRealNamePrincipalExtractor.HEADER_NAME to c.principal.cast<UserToken>().toXRealName(),
         ).toMap() + headers
         return pgmq.client.send(options.queue, message, headers, delay).toEither()
     }
@@ -135,7 +137,7 @@ abstract class AbstractPgmqEventHandler(
         val span = c.currentOrNull()
         val headers = listOfNotNull(
             if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
-            XRealNamePrincipalExtractor.HEADER_NAME to c.user.toXRealName(),
+            XRealNamePrincipalExtractor.HEADER_NAME to c.principal.cast<UserToken>().toXRealName(),
         ).toMap() + headers
         return pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
     }

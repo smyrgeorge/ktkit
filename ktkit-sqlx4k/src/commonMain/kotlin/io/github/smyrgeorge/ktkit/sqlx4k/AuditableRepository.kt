@@ -15,9 +15,9 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
 interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>, AbstractComponent {
     override suspend fun preInsertHook(entity: T): T {
-        val user = ctx().user
+        val user = ctx().principal
         entity.createdAt = Clock.System.now()
-        entity.createdBy = user.uuid
+        entity.createdBy = user.id
         entity.updatedAt = entity.createdAt
         entity.updatedBy = entity.createdBy
         return entity
@@ -25,7 +25,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>,
 
     override suspend fun preUpdateHook(entity: T): T {
         entity.updatedAt = Clock.System.now()
-        entity.updatedBy = ctx().user.uuid
+        entity.updatedBy = ctx().principal.id
         return entity
     }
 

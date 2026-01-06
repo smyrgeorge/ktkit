@@ -45,4 +45,3 @@ fun TracingEvent.Span.toOpenTelemetryHeader(): String {
     val flags = "00"
     return "$version-$traceId-$spanId-$flags"
 }
-

@@ -1,7 +1,6 @@
 package io.github.smyrgeorge.ktkit.sqlx4k.pgmq
 
 import arrow.core.left
-import io.github.smyrgeorge.ktkit.Application
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
@@ -62,9 +61,9 @@ abstract class AbstractPgmqEventHandler(
     init {
         if (options.autoStart) start()
         launch {
-            retryCatching(times = 16) {
+            retryCatching(times = 8) {
                 // Register shutdown handler.
-                Application.INSTANCE.onShutdown { stop() }
+                app.onShutdown { stop() }
             }
         }
     }

@@ -32,8 +32,10 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import io.ktor.server.application.Application as KtorApplication
 
 @Suppress("unused")
@@ -46,6 +48,7 @@ class Application(
     val log: Logger = Logger.of(name)
 
     private var _status: Status = Status.DOWN
+    private var _startedAt: Instant? = null
     private var _json: Json? = null
     private var _di: KoinApplication? = null
     private var _ktor: KtorApplication? = null
@@ -55,6 +58,7 @@ class Application(
     internal val metrics = SimpleMeteringCollectorAppender()
 
     val status: Status get() = _status
+    val startedAt: Instant get() = _startedAt ?: error("Application not started yet. Run start() first.")
     val json: Json
         get() = _json ?: error("JSON Serializer not initialized. Run start() first.")
     val di: KoinApplication
@@ -89,6 +93,7 @@ class Application(
             _server = this
             registerShutdownHook()
             _status = Status.UP
+            _startedAt = Clock.System.now()
         }.start(wait = true)
     }
 
@@ -104,6 +109,7 @@ class Application(
     fun shutdown(gracePeriod: Duration = 1.seconds, timeout: Duration = 5.seconds) {
         log.info { "Shutting down..." }
         _status = Status.DOWN
+        _startedAt = null
         shutdownHooks.forEach { it() }
         di.close()
         server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)

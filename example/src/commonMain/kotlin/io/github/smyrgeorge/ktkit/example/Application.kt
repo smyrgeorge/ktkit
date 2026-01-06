@@ -54,5 +54,5 @@ fun start() {
                 }
             ).getOrThrow()
         }
-    ).start(wait = true)
+    ).start()
 }

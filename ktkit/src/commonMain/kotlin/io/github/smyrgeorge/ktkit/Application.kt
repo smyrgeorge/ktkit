@@ -55,6 +55,7 @@ class Application(
 ) {
     val log: Logger = Logger.of(name)
 
+    private var _status: Status = Status.DOWN
     private var _di: KoinApplication? = null
     private var _ktor: KtorApplication? = null
     private var _server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>? = null
@@ -62,6 +63,7 @@ class Application(
     internal val shutdownHooks = mutableListOf<() -> Unit>()
     internal val metrics = SimpleMeteringCollectorAppender()
 
+    val status: Status get() = _status
     val di: KoinApplication
         get() = _di ?: error("Koin Application not initialized. Run start() first.")
     val ktor: KtorApplication
@@ -71,6 +73,56 @@ class Application(
 
     init {
         INSTANCE_OR_NULL = this
+    }
+
+    /**
+     * Starts the application by initializing the server, configuring the environment,
+     * and registering a shutdown hook for graceful termination.
+     *
+     * This method logs the startup sequence and ensures that the server is set up
+     * with the application-specific configuration and modules provided during initialization.
+     * Once started, the server will begin listening for incoming requests and will block
+     * until explicitly stopped.
+     *
+     * The startup process includes:
+     * - Creating an embedded server instance with the configured HTTP engine and application environment.
+     * - Applying custom application configurations and modules, such as JSON serialization, routing, and dependency injection.
+     * - Registering a shutdown hook to handle cleanup tasks upon server termination.
+     * - Starting the server and blocking the current thread until shutdown.
+     */
+    fun start() {
+        log.info { "Starting $name..." }
+        makeServer().apply {
+            _server = this
+            registerShutdownHook()
+            _status = Status.UP
+        }.start(wait = true)
+    }
+
+    /**
+     * Shuts down the application by performing necessary cleanup tasks, invoking registered shutdown hooks,
+     * closing the dependency injection context, and stopping the server gracefully.
+     *
+     * @param gracePeriod Duration to wait for ongoing requests to complete before forcefully stopping the server.
+     *                    Default is 1 second.
+     * @param timeout Duration to wait for the server to shut down completely after the grace period.
+     *                Default is 5 seconds.
+     */
+    fun shutdown(gracePeriod: Duration = 1.seconds, timeout: Duration = 5.seconds) {
+        log.info { "Shutting down..." }
+        _status = Status.DOWN
+        shutdownHooks.forEach { it() }
+        di.close()
+        server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)
+    }
+
+    /**
+     * Registers a shutdown hook that will be invoked when the application is shutting down.
+     *
+     * @param hook A lambda function to be executed during the shutdown process.
+     */
+    fun onShutdown(hook: () -> Unit) {
+        shutdownHooks.add(hook)
     }
 
     private fun makeServer() = embeddedServer(
@@ -94,46 +146,29 @@ class Application(
     )
 
     /**
-     * Starts the application by initializing and configuring the server and associated modules.
-     * This method sets up the server, applies configurations, and optionally waits for the server
-     * to terminate if the `wait` parameter is set to `true`.
+     * Represents the operational status of the application.
      *
-     * @param wait Specifies whether the method should block and wait for the server to terminate.
-     *             If `true`, the method blocks until the server is stopped. Default is `true`.
+     * The `Status` enumeration defines two possible states for the application:
+     * - `UP`: Indicates that the application is operational and running.
+     * - `DOWN`: Indicates that the application is non-operational or has been shut down.
+     *
+     * This enum can be utilized to monitor and communicate the current state of the application,
+     * especially in health checks and logging.
      */
-    fun start(wait: Boolean = true) {
-        log.info { "Starting $name..." }
-        makeServer().apply {
-            _server = this
-            registerShutdownHook()
-        }.start(wait)
+    enum class Status {
+        UP,
+        DOWN
     }
 
     /**
-     * Shuts down the application by performing necessary cleanup tasks, invoking registered shutdown hooks,
-     * closing the dependency injection context, and stopping the server gracefully.
+     * Configurer is responsible for setting up and configuring various parts of an application,
+     * including dependency injection, JSON serialization, logging, tracing, and REST API routes.
+     * It provides a fluent builder-style interface for defining application configurations.
      *
-     * @param gracePeriod Duration to wait for ongoing requests to complete before forcefully stopping the server.
-     *                    Default is 1 second.
-     * @param timeout Duration to wait for the server to shut down completely after the grace period.
-     *                Default is 5 seconds.
+     * @property app The main application instance for which this Configurer is responsible.
+     * @property ktor The Ktor application instance.
+     * @property metrics A metrics appender used to process metering events.
      */
-    fun shutdown(gracePeriod: Duration = 1.seconds, timeout: Duration = 5.seconds) {
-        log.info { "Shutting down..." }
-        shutdownHooks.forEach { it() }
-        di.close()
-        server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)
-    }
-
-    /**
-     * Registers a shutdown hook that will be invoked when the application is shutting down.
-     *
-     * @param hook A lambda function to be executed during the shutdown process.
-     */
-    fun onShutdown(hook: () -> Unit) {
-        shutdownHooks.add(hook)
-    }
-
     class Configurer(
         private val app: Application,
         private val ktor: KtorApplication,

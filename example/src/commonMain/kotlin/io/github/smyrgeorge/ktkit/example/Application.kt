@@ -2,7 +2,6 @@ package io.github.smyrgeorge.ktkit.example
 
 import io.github.smyrgeorge.ktkit.Application
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
-import io.github.smyrgeorge.ktkit.api.rest.impl.ApplicationStatusRestHandler
 import io.github.smyrgeorge.ktkit.example.generated.TestRepositoryImpl
 import io.github.smyrgeorge.ktkit.example.test.TestRepository
 import io.github.smyrgeorge.ktkit.example.test.TestRestHandler
@@ -41,8 +40,6 @@ fun start() {
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::TestService)
                 single { TestRepositoryImpl }.bind<TestRepository>()
-
-                singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
             }
         },
         postConfigure = {

@@ -2,24 +2,15 @@ package io.github.smyrgeorge.ktkit
 
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
+import io.github.smyrgeorge.ktkit.api.rest.impl.ApplicationStatusRestHandler
 import io.github.smyrgeorge.ktkit.context.Principal
-import io.github.smyrgeorge.ktkit.error.ErrorSpec
-import io.github.smyrgeorge.ktkit.error.system.BadRequest
-import io.github.smyrgeorge.ktkit.error.system.DatabaseError
-import io.github.smyrgeorge.ktkit.error.system.Forbidden
-import io.github.smyrgeorge.ktkit.error.system.InternalServerError
-import io.github.smyrgeorge.ktkit.error.system.MissingParameter
-import io.github.smyrgeorge.ktkit.error.system.NotFound
-import io.github.smyrgeorge.ktkit.error.system.Unauthorized
-import io.github.smyrgeorge.ktkit.error.system.UnknownError
-import io.github.smyrgeorge.ktkit.error.system.UnsupportedEnumValue
 import io.github.smyrgeorge.ktkit.util.applicationLogger
+import io.github.smyrgeorge.ktkit.util.default
+import io.github.smyrgeorge.ktkit.util.defaultSerializersModule
 import io.github.smyrgeorge.ktkit.util.getAll
 import io.github.smyrgeorge.ktkit.util.httpEngine
 import io.github.smyrgeorge.ktkit.util.registerShutdownHook
-import io.github.smyrgeorge.log4k.Appender
 import io.github.smyrgeorge.log4k.Logger
-import io.github.smyrgeorge.log4k.MeteringEvent
 import io.github.smyrgeorge.log4k.RootLogger
 import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleMeteringCollectorAppender
 import io.ktor.serialization.kotlinx.json.json
@@ -34,13 +25,13 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
-import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import io.ktor.server.application.Application as KtorApplication
@@ -56,6 +47,7 @@ class Application(
     val log: Logger = Logger.of(name)
 
     private var _status: Status = Status.DOWN
+    private var _json: Json? = null
     private var _di: KoinApplication? = null
     private var _ktor: KtorApplication? = null
     private var _server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>? = null
@@ -64,6 +56,8 @@ class Application(
     internal val metrics = SimpleMeteringCollectorAppender()
 
     val status: Status get() = _status
+    val json: Json
+        get() = _json ?: error("JSON Serializer not initialized. Run start() first.")
     val di: KoinApplication
         get() = _di ?: error("Koin Application not initialized. Run start() first.")
     val ktor: KtorApplication
@@ -140,7 +134,7 @@ class Application(
         },
         module = {
             _ktor = this
-            Configurer(this@Application, this, metrics).apply(configure).configure()
+            Configurer(this@Application, this).apply(configure).configure()
             postConfigure()
         }
     )
@@ -167,12 +161,10 @@ class Application(
      *
      * @property app The main application instance for which this Configurer is responsible.
      * @property ktor The Ktor application instance.
-     * @property metrics A metrics appender used to process metering events.
      */
     class Configurer(
         private val app: Application,
         private val ktor: KtorApplication,
-        private val metrics: Appender<MeteringEvent>,
     ) {
         private var module: Module = Module()
         private var json: Json = Json { default() }
@@ -215,14 +207,6 @@ class Application(
             RootLogger.Metering.config()
         }
 
-        private fun JsonBuilder.default() {
-            isLenient = true
-            prettyPrint = false
-            ignoreUnknownKeys = true
-            explicitNulls = false
-            serializersModule = defaultSerializersModule
-        }
-
         fun json(config: JsonBuilder.() -> Unit) {
             json = Json {
                 // Apply default configuration.
@@ -238,8 +222,17 @@ class Application(
         }
 
         internal fun configure() {
+            app._json = json
+
             metering {
-                appenders.register(metrics)
+                appenders.register(app.metrics)
+            }
+
+            module.apply {
+                // Register the application instance as a singleton.
+                single { app }.bind<Application>()
+                single { app.json }.bind<Json>()
+                singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
             }
 
             // Start Koin.
@@ -327,19 +320,5 @@ class Application(
          * according to specific application requirements.
          */
         var ANONYMOUS_USER: Principal = UserToken.DEFAULT_ANONYMOUS_USER
-
-        private val defaultSerializersModule = SerializersModule {
-            polymorphic(ErrorSpec::class) {
-                subclass(BadRequest::class)
-                subclass(DatabaseError::class)
-                subclass(Forbidden::class)
-                subclass(InternalServerError::class)
-                subclass(MissingParameter::class)
-                subclass(NotFound::class)
-                subclass(Unauthorized::class)
-                subclass(UnknownError::class)
-                subclass(UnsupportedEnumValue::class)
-            }
-        }
     }
 }

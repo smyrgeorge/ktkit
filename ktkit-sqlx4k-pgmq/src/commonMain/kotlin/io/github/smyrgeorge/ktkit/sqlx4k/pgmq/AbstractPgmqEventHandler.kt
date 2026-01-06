@@ -5,7 +5,7 @@ import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
 import io.github.smyrgeorge.ktkit.api.event.EventContext
-import io.github.smyrgeorge.ktkit.context.ExecutionContext
+import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.context.Principal.Companion.cast
 import io.github.smyrgeorge.ktkit.error.impl.Unauthorized
@@ -61,6 +61,7 @@ abstract class AbstractPgmqEventHandler(
     init {
         if (options.autoStart) start()
         launch {
+            // Silently try to register shutdown handler.
             retryCatching(times = 8) {
                 // Register shutdown handler.
                 app.onShutdown { stop() }
@@ -114,28 +115,28 @@ abstract class AbstractPgmqEventHandler(
         }
 
         val event = EventContext(user, message.headers)
-        val execution = ExecutionContext.fromEvent(user, event, this)
+        val exec = ExecContext.fromEvent(user, event, this)
 
         val rc = message.readCt
         if (rc > 10) log.warn { "Retry-count '$rc > 10' was reached on queue='${queue.name}'." }
 
         // Load the execution context into the coroutine context.
-        withContext(execution) {
+        withContext(exec) {
             // Execute the handler.
-            context(execution) { event.handler(message) }
+            context(exec) { event.handler(message) }
         }
     }
 
-    context(c: ExecutionContext)
+    context(ec: ExecContext)
     private fun defaultSendHeaders(): Map<String, String> {
-        val span = c.currentOrNull()
+        val span = ec.currentOrNull()
         return listOfNotNull(
             if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
-            XRealNamePrincipalExtractor.HEADER_NAME to c.principal.cast<UserToken>().toXRealName(),
+            XRealNamePrincipalExtractor.HEADER_NAME to ec.principal.cast<UserToken>().toXRealName(),
         ).toMap()
     }
 
-    context(c: ExecutionContext, db: QueryExecutor)
+    context(ec: ExecContext, db: QueryExecutor)
     suspend fun send(
         message: String,
         headers: Map<String, String> = emptyMap(),
@@ -146,7 +147,7 @@ abstract class AbstractPgmqEventHandler(
         return pgmq.client.send(options.queue, message, headers, delay).toEither()
     }
 
-    context(c: ExecutionContext, db: QueryExecutor)
+    context(ec: ExecContext, db: QueryExecutor)
     suspend fun send(
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds,
@@ -157,7 +158,7 @@ abstract class AbstractPgmqEventHandler(
         return pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
     }
 
-    context(_: ExecutionContext)
+    context(_: ExecContext)
     abstract suspend fun EventContext.handler(message: Message)
 
     open suspend fun onFailToRead(e: Throwable) {

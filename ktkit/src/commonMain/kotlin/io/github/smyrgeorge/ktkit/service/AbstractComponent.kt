@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.service
 
 import io.github.smyrgeorge.ktkit.Application
-import io.github.smyrgeorge.ktkit.context.ExecutionContext
+import io.github.smyrgeorge.ktkit.context.ExecContext
 import kotlinx.coroutines.currentCoroutineContext
 import org.koin.mp.KoinPlatformTools
 
@@ -11,10 +11,10 @@ import org.koin.mp.KoinPlatformTools
  * The purpose of this interface is to provide common utilities and streamline
  * context handling for components that implement it. This abstraction enables easier
  * integration with coroutine contexts and ensures consistency in how application-specific
- * contexts, such as [ExecutionContext], are managed.
+ * contexts, such as [ExecContext], are managed.
  *
  * Implementing classes can rely on this abstraction to access and validate the presence of
- * an [ExecutionContext] within the current coroutine context.
+ * an [ExecContext] within the current coroutine context.
  */
 interface AbstractComponent {
     /**
@@ -33,11 +33,11 @@ interface AbstractComponent {
     val app: Application get() = KoinPlatformTools.defaultContext().get().get()
 
     /**
-     * Retrieves the [io.github.smyrgeorge.ktkit.context.ExecutionContext] from the current CoroutineContext.
+     * Retrieves the [io.github.smyrgeorge.ktkit.context.ExecContext] from the current CoroutineContext.
      *
-     * @return The [io.github.smyrgeorge.ktkit.context.ExecutionContext] if it exists within the current CoroutineContext.
-     * @throws IllegalStateException if the [io.github.smyrgeorge.ktkit.context.ExecutionContext] cannot be extracted from the CoroutineContext.
+     * @return The [io.github.smyrgeorge.ktkit.context.ExecContext] if it exists within the current CoroutineContext.
+     * @throws IllegalStateException if the [io.github.smyrgeorge.ktkit.context.ExecContext] cannot be extracted from the CoroutineContext.
      */
-    suspend fun ctx(): ExecutionContext =
-        currentCoroutineContext()[ExecutionContext] ?: error("No ExecutionContext found in CoroutineContext")
+    suspend fun ctx(): ExecContext =
+        currentCoroutineContext()[ExecContext] ?: error("No ExecutionContext found in CoroutineContext")
 }

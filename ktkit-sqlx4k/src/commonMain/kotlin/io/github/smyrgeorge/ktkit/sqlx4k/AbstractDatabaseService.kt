@@ -1,10 +1,10 @@
 package io.github.smyrgeorge.ktkit.sqlx4k
 
-import io.github.smyrgeorge.ktkit.context.ExecutionContext
+import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.service.AbstractService
 import io.github.smyrgeorge.ktkit.sqlx4k.AbstractDatabaseService.Companion.withTransaction
-import io.github.smyrgeorge.ktkit.util.DomainResult
+import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
@@ -23,7 +23,7 @@ interface AbstractDatabaseService : AbstractService {
     val db: Driver
 
     companion object {
-        fun <T> DbResult<T>.toDomainResult(): DomainResult<T> =
+        fun <T> DbResult<T>.toAppResult(): AppResult<T> =
             mapLeft { DatabaseError(it.code.name, it.message ?: "Unknown error") }
 
         /**
@@ -32,14 +32,14 @@ interface AbstractDatabaseService : AbstractService {
          * If the function execution results in an error, the error is converted to a throwable and rethrown.
          *
          * @param f A suspendable function to be executed within the transaction scope.
-         *          The function receives a [Transaction] context implicitly and must return a [DomainResult] of type [R].
-         * @return A [DomainResult] of type [R] containing the result of the transaction execution.
+         *          The function receives a [Transaction] context implicitly and must return a [AppResult] of type [R].
+         * @return A [AppResult] of type [R] containing the result of the transaction execution.
          *         If the operation fails, the error is handled and transformed into a throwable.
          */
-        context(c: ExecutionContext)
+        context(c: ExecContext)
         suspend inline fun <R> AbstractDatabaseService.withTransaction(
-            crossinline f: suspend context(Transaction)() -> DomainResult<R>
-        ): DomainResult<R> = db.transaction {
+            crossinline f: suspend context(Transaction)() -> AppResult<R>
+        ): AppResult<R> = db.transaction {
             c.span("db.transaction") { f().onLeft { throw it.toThrowable() } }
         }
     }

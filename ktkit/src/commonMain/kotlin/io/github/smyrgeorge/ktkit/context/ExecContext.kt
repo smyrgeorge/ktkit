@@ -22,7 +22,7 @@ import kotlin.time.Instant
  * @property http Optional HttpContext for accessing request data
  * @property event Optional EventContext for accessing event data
  */
-class ExecutionContext(
+class ExecContext(
     val reqId: String,
     val reqTs: Instant = Clock.System.now(),
     val principal: Principal,
@@ -38,10 +38,10 @@ class ExecutionContext(
     val event: EventContext get() = _event ?: error("EventContext is null.")
 
     override fun raise(r: ErrorSpec): Nothing = throw r.toThrowable()
-    override val key: CoroutineContext.Key<ExecutionContext> get() = ExecutionContext
+    override val key: CoroutineContext.Key<ExecContext> get() = ExecContext
     override fun toString() = "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$principal, attributes=$attributes)"
 
-    companion object : CoroutineContext.Key<ExecutionContext> {
+    companion object : CoroutineContext.Key<ExecContext> {
         /**
          * Creates a Context from an ApplicationCall with a user principal.
          *
@@ -55,7 +55,7 @@ class ExecutionContext(
             http: HttpContext,
             tracing: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
-        ): ExecutionContext = ExecutionContext(
+        ): ExecContext = ExecContext(
             principal = principal,
             reqId = tracing.current().id,
             attributes = attributes,
@@ -64,20 +64,20 @@ class ExecutionContext(
         )
 
         /**
-         * Creates an [ExecutionContext] by extracting relevant information from the given event.
+         * Creates an [ExecContext] by extracting relevant information from the given event.
          *
          * @param principal The user principal associated with the request.
          * @param event The event context that contains event-specific details.
          * @param tracing Tracing context for distributed tracing.
          * @param attributes Additional attributes or metadata to include in the execution context, default is an empty map.
-         * @return A new [ExecutionContext] instance populated with the provided inputs.
+         * @return A new [ExecContext] instance populated with the provided inputs.
          */
         fun fromEvent(
             principal: Principal,
             event: EventContext,
             tracing: TracingContext,
             attributes: Map<String, Any> = emptyMap(),
-        ): ExecutionContext = ExecutionContext(
+        ): ExecContext = ExecContext(
             principal = principal,
             reqId = tracing.current().id,
             attributes = attributes,

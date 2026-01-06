@@ -168,7 +168,6 @@ class Application(
     ) {
         private var module: Module = Module()
         private var json: Json = Json { default() }
-        private var routes: MutableList<AbstractRestHandler> = mutableListOf()
         private var other: KtorApplication.() -> Unit = {}
 
         fun di(config: Module.() -> Unit) {
@@ -181,18 +180,6 @@ class Application(
 
         fun withAnonymousUser(user: Principal) {
             ANONYMOUS_USER = user
-        }
-
-        internal fun <T : AbstractRestHandler> withRestHandler(handler: T) {
-            routes.add(handler)
-        }
-
-        internal fun withRestHandlers(vararg handlers: AbstractRestHandler) {
-            routes.addAll(handlers)
-        }
-
-        internal fun withRestHandlers(handlers: List<AbstractRestHandler>) {
-            routes.addAll(handlers)
         }
 
         fun logging(config: RootLogger.Logging.() -> Unit) {
@@ -236,10 +223,8 @@ class Application(
             }
 
             // Start Koin.
-            startKoin { modules(module) }.apply {
+            val di = startKoin { modules(module) }.apply {
                 app._di = this
-                // Auto register discovered REST handlers.
-                withRestHandlers(getAll<AbstractRestHandler>())
             }
 
             ktor.apply {
@@ -250,7 +235,8 @@ class Application(
 
                 // Register routes.
                 routing {
-                    routes.forEach {
+                    // Auto register discovered REST handlers.
+                    di.getAll<AbstractRestHandler>().forEach {
                         log.info("Registering REST Handler: ${it::class.simpleName}")
                         with(it) { routes() }
                     }

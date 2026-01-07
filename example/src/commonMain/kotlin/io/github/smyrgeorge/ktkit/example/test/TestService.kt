@@ -2,8 +2,8 @@ package io.github.smyrgeorge.ktkit.example.test
 
 import arrow.core.raise.context.bind
 import io.github.smyrgeorge.ktkit.context.ExecContext
-import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.toAppResult
 import io.github.smyrgeorge.ktkit.sqlx4k.AuditableDatabaseService
+import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.toAppResult
 import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.sqlx4k.Driver
@@ -25,7 +25,6 @@ class TestService(
         log.info { "Fetching all tests" }
         return findAll().also {
             log.info { "Fetched ${it.bind().size} tests" }
-            error("Booom!")
         }
     }
 }

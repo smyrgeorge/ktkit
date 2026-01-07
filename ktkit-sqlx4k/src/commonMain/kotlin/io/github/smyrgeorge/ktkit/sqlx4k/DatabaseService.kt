@@ -28,18 +28,17 @@ interface DatabaseService : Service {
             mapLeft { DatabaseError(it.code.name, it.message ?: "Unknown error") }
 
         /**
-         * Executes the provided function within the context of a database transaction and returns the result.
-         * The transaction is managed by the `db` driver instance of the implementing service.
-         * If the function execution results in an error, the error is converted to a throwable and rethrown.
+         * Executes a block of code within the context of a database transaction. If the executed block fails,
+         * an error will be thrown, converting the failure to a throwable. The execution duration is tracked
+         * with a span for tracing purposes.
          *
-         * @param f A suspendable function to be executed within the transaction scope.
-         *          The function receives a [Transaction] context implicitly and must return a [AppResult] of type [R].
-         * @return A [AppResult] of type [R] containing the result of the transaction execution.
-         *         If the operation fails, the error is handled and transformed into a throwable.
+         * @param f The block of code to be executed within the transaction. It receives an implicit [Transaction]
+         *          instance and produces an [AppResult] containing either a success result of type [R] or an error.
+         * @return An [AppResult] containing the success result of type [R], or an error if the transaction failed.
          */
         context(c: ExecContext)
         suspend inline fun <R> DatabaseService.withTransaction(
-            crossinline f: suspend context(Transaction)() -> AppResult<R>
+            crossinline f: suspend Transaction.() -> AppResult<R>
         ): AppResult<R> = db.transaction {
             // Wrap the function execution in a span to track its execution duration.
             val tags = mapOf(OpenTelemetryAttributes.SERVICE_NAME to app.name)

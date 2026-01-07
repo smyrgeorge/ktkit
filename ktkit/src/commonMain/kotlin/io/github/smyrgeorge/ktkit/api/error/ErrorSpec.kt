@@ -1,6 +1,6 @@
-package io.github.smyrgeorge.ktkit.error
+package io.github.smyrgeorge.ktkit.api.error
 
-import io.github.smyrgeorge.ktkit.error.impl.UnknownError
+import io.github.smyrgeorge.ktkit.api.error.impl.UnknownError
 
 /**
  * Represents a specification for errors used within the system.
@@ -29,10 +29,10 @@ interface ErrorSpec {
     fun toErrorSpecData(): ErrorSpecData
 
     /**
-     * Throws this error as an [io.github.smyrgeorge.ktkit.error.RuntimeError] exception.
+     * Throws this error as an [RuntimeError] exception.
      *
      * @param throwable Optional cause of the error
-     * @throws io.github.smyrgeorge.ktkit.error.RuntimeError Always throws
+     * @throws RuntimeError Always throws
      */
     fun raise(throwable: Throwable? = null): Nothing =
         throw RuntimeError(this, message, throwable)

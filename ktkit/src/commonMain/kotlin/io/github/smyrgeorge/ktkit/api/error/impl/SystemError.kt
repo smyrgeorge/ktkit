@@ -1,6 +1,6 @@
-package io.github.smyrgeorge.ktkit.error.impl
+package io.github.smyrgeorge.ktkit.api.error.impl
 
-import io.github.smyrgeorge.ktkit.error.ErrorSpec
+import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 
 /**
  * Abstract base class for all errors in the system.

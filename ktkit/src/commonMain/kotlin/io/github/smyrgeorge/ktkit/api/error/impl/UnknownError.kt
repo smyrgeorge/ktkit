@@ -1,8 +1,8 @@
-package io.github.smyrgeorge.ktkit.error.impl
+package io.github.smyrgeorge.ktkit.api.error.impl
 
-import io.github.smyrgeorge.ktkit.error.ErrorSpec
-import io.github.smyrgeorge.ktkit.error.ErrorSpecData
-import io.github.smyrgeorge.ktkit.error.impl.details.EmptyErrorData
+import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
+import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
+import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
 
 data class UnknownError(
     override val message: String,

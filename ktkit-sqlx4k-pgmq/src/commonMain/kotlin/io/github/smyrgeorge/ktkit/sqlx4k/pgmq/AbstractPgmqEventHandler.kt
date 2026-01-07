@@ -8,7 +8,7 @@ import io.github.smyrgeorge.ktkit.api.event.EventContext
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.context.Principal.Companion.cast
-import io.github.smyrgeorge.ktkit.error.impl.Unauthorized
+import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.util.EitherThrowable
 import io.github.smyrgeorge.ktkit.util.TRACE_PARENT_HEADER

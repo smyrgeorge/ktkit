@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.sqlx4k
 
 import arrow.core.Either
-import io.github.smyrgeorge.ktkit.error.impl.DatabaseError
+import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.service.Auditable
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span

@@ -1,7 +1,7 @@
-package io.github.smyrgeorge.ktkit.error
+package io.github.smyrgeorge.ktkit.api.error
 
 /**
- * Exception wrapper for [io.github.smyrgeorge.ktkit.error.impl.SystemError] instances.
+ * Exception wrapper for [io.github.smyrgeorge.ktkit.api.error.impl.SystemError] instances.
  *
  * Used to convert structured errors into throwable exceptions.
  *

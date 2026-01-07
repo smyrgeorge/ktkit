@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.auth.impl
 
 import io.github.smyrgeorge.ktkit.api.auth.PrincipalExtractor
-import io.github.smyrgeorge.ktkit.error.impl.Unauthorized
+import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
 import io.ktor.server.application.ApplicationCall
 import io.ktor.utils.io.core.toByteArray
 import kotlinx.serialization.json.Json

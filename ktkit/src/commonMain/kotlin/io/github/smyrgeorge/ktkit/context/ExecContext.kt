@@ -3,7 +3,7 @@ package io.github.smyrgeorge.ktkit.context
 import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktkit.api.event.EventContext
 import io.github.smyrgeorge.ktkit.api.rest.HttpContext
-import io.github.smyrgeorge.ktkit.error.ErrorSpec
+import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.log4k.TracingContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock

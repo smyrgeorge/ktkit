@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktkit.api.rest
 
-import io.github.smyrgeorge.ktkit.error.ErrorSpecData
+import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
 import kotlinx.serialization.Serializable
 
 /**

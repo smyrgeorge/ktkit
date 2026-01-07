@@ -22,3 +22,6 @@ actual fun registerShutdownHook() {
         }
     })
 }
+
+actual fun vmMemoryMetrics(): Map<String, Long> = emptyMap()
+actual fun vmProcessorsMetrics(): Map<String, Int> = emptyMap()

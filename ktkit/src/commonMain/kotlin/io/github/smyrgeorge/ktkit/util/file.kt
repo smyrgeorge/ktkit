@@ -7,7 +7,7 @@ import kotlinx.io.readByteArray
 
 private val fs = SystemFileSystem
 
-fun readEntireFileUtf8(path: Path): String {
+fun readEntireFileFromDisk(path: Path): String {
     val buffer = Buffer()
     val source = fs.source(path)
     try {
@@ -21,3 +21,5 @@ fun readEntireFileUtf8(path: Path): String {
         buffer.close()
     }
 }
+
+expect fun readEntireFileFromResources(path: Path): String

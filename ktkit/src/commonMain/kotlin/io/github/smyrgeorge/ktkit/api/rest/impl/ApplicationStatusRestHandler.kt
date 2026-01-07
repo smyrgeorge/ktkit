@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.api.rest.impl
 import io.github.smyrgeorge.ktkit.util.vmMemoryMetrics
 import io.github.smyrgeorge.ktkit.util.vmProcessorsMetrics
 import io.github.smyrgeorge.log4k.Meter
+import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.ktor.server.routing.Route
 import kotlinx.serialization.Serializable
 import kotlin.time.Clock
@@ -19,7 +20,7 @@ class ApplicationStatusRestHandler : AnonymousRestHandler() {
                 vmMemoryMetrics().forEach {
                     record(
                         it.value,
-                        "app" to app.name,
+                        OpenTelemetryAttributes.SERVICE_NAME to app.name,
                         "tag" to it.key.removePrefix("$name."),
                     )
                 }
@@ -31,7 +32,7 @@ class ApplicationStatusRestHandler : AnonymousRestHandler() {
                 vmProcessorsMetrics().forEach {
                     record(
                         it.value,
-                        "app" to app.name,
+                        OpenTelemetryAttributes.SERVICE_NAME to app.name,
                         "tag" to it.key.removePrefix("$name."),
                     )
                 }

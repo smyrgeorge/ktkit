@@ -44,7 +44,8 @@ abstract class AbstractPgmqEventHandler(
     val trace: Tracer = Tracer.of(this::class)
 
     private var started: Boolean = false
-    private val spanName = "${this::class.simpleName}.handle"
+    private val sendSpanName = "${this::class.simpleName}.send"
+    private val handleSpanName = "${this::class.simpleName}.handle"
 
     private val consumer = PgmqConsumer(
         pgmq = pgmq.client,
@@ -61,7 +62,7 @@ abstract class AbstractPgmqEventHandler(
     init {
         if (options.autoStart) start()
         launch {
-            // Silently try to register shutdown handler.
+            // Silently try to register a shutdown handler.
             retryCatching(times = 8) {
                 // Register shutdown handler.
                 app.onShutdown { stop() }
@@ -95,7 +96,7 @@ abstract class AbstractPgmqEventHandler(
         val tracing = TracingContext.builder().with(trace).with(parent).build()
 
         // Create the handler span.
-        runCatching { tracing.span(spanName, spanTags()) { tracing.f(this) } }
+        runCatching { tracing.span(handleSpanName, spanTags(app.name)) { tracing.f(this) } }
     }
 
     private suspend fun handle(
@@ -142,9 +143,11 @@ abstract class AbstractPgmqEventHandler(
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds
     ): EitherThrowable<Long> {
-        if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
-        val headers = defaultSendHeaders() + headers
-        return pgmq.client.send(options.queue, message, headers, delay).toEither()
+        return ec.span(sendSpanName) {
+            if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
+            val headers = defaultSendHeaders() + headers
+            pgmq.client.send(options.queue, message, headers, delay).toEither()
+        }
     }
 
     context(ec: ExecContext, db: QueryExecutor)
@@ -153,9 +156,11 @@ abstract class AbstractPgmqEventHandler(
         delay: Duration = 0.seconds,
         supplier: () -> String,
     ): EitherThrowable<Long> {
-        if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
-        val headers = defaultSendHeaders() + headers
-        return pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
+        return ec.span(sendSpanName) {
+            if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
+            val headers = defaultSendHeaders() + headers
+            pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
+        }
     }
 
     context(_: ExecContext)
@@ -177,7 +182,8 @@ abstract class AbstractPgmqEventHandler(
         with(ctx()) { log.warn { "Failed to nack message: ${e.message}" } }
     }
 
-    private fun Message.spanTags(): Map<String, String> = mapOf(
+    private fun Message.spanTags(serviceName: String): Map<String, String> = mapOf(
+        OpenTelemetryAttributes.SERVICE_NAME to serviceName,
         OpenTelemetryAttributes.MESSAGING_SYSTEM to "pgmq",
         OpenTelemetryAttributes.MESSAGING_DESTINATION_NAME to options.queue,
         OpenTelemetryAttributes.MESSAGING_MESSAGE_ID to msgId.toString(),

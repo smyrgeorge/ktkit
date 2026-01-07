@@ -84,7 +84,7 @@ abstract class AbstractRestHandler(
         // Create the logging-context.
         val tracing = TracingContext.builder().with(trace).with(parent).build()
         // Create the handler span.
-        runCatching { tracing.span(spanName(), spanTags()) { tracing.f(this) } }
+        runCatching { tracing.span(spanName(), spanTags(app.name)) { tracing.f(this) } }
             .onFailure { error -> log.error(error) { "Unexpected error while handling request: ${error.message}" } }
     }
 
@@ -110,7 +110,7 @@ abstract class AbstractRestHandler(
         crossinline handler: suspend context(ExecContext) HttpContext.() -> T
     ): Unit = call.trace { span ->
         try {
-            // Extrat the principal from the request.
+            // Extract the principal from the request.
             val user = principalExtractor?.extract(call)?.getOrThrow()
                 ?: defaultUser
                 ?: this@AbstractRestHandler.defaultUser

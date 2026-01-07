@@ -35,6 +35,7 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>,
         return ctx().tracing.span(
             name = operation,
             tags = mapOf(
+                OpenTelemetryAttributes.SERVICE_NAME to app.name,
                 OpenTelemetryAttributes.DB_STATEMENT to statement.toString(),
                 OpenTelemetryAttributes.DB_OPERATION to operation,
                 OpenTelemetryAttributes.DB_DRIVER_NAME to "sqlx4k"

@@ -10,8 +10,9 @@ import io.ktor.server.request.queryString
 fun ApplicationCall.spanName(): String =
     "${request.httpMethod.value.lowercase()}_${request.local.uri}"
 
-fun ApplicationCall.spanTags(): Tags =
+fun ApplicationCall.spanTags(serviceName: String): Tags =
     mapOf(
+        OpenTelemetryAttributes.SERVICE_NAME to serviceName,
         OpenTelemetryAttributes.HTTP_REQUEST_METHOD to request.httpMethod.value,
         OpenTelemetryAttributes.URL_PATH to request.path(),
         OpenTelemetryAttributes.URL_QUERY to request.queryString(),

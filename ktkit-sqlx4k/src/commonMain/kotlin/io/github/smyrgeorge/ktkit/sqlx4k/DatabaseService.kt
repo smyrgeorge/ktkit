@@ -6,6 +6,7 @@ import io.github.smyrgeorge.ktkit.service.Service
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
+import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
 import io.github.smyrgeorge.sqlx4k.arrow.impl.extensions.DbResult
@@ -40,7 +41,9 @@ interface DatabaseService : Service {
         suspend inline fun <R> DatabaseService.withTransaction(
             crossinline f: suspend context(Transaction)() -> AppResult<R>
         ): AppResult<R> = db.transaction {
-            c.span("db.transaction") { f().onLeft { throw it.toThrowable() } }
+            // Wrap the function execution in a span to track its execution duration.
+            val tags = mapOf(OpenTelemetryAttributes.SERVICE_NAME to app.name)
+            c.span("db.transaction", tags) { f().onLeft { throw it.toThrowable() } }
         }
     }
 }

@@ -21,20 +21,20 @@ fun main() {
             .build()
     )
 
-    val pgmq = Pgmq(db, options = PgmqClient.Options(verifyInstallation = false))
-
     runBlocking {
-        val files = readMigrationFilesFromResources("db/migrations")
         db.migrate(
-            files = files,
+            supplier = { readMigrationFilesFromResources("db/migrations") },
             afterFileMigration = { m, d ->
                 log.info { "Applied migration $m to database (took $d)" }
             }
         ).getOrThrow()
 
+        val pgmq = Pgmq(db, options = PgmqClient.Options(verifyInstallation = false))
         val pgmqFiles = readSqlFilesFromResources("db/pgmq/migrations")
         pgmq.client.installFromSqlFiles(pgmqFiles)
     }
 
-    start(db)
+    val pgmq = Pgmq(db)
+
+    start(db, pgmq)
 }

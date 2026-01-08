@@ -6,13 +6,14 @@ import io.github.smyrgeorge.ktkit.example.generated.TestRepositoryImpl
 import io.github.smyrgeorge.ktkit.example.test.TestRepository
 import io.github.smyrgeorge.ktkit.example.test.TestRestHandler
 import io.github.smyrgeorge.ktkit.example.test.TestService
+import io.github.smyrgeorge.ktkit.sqlx4k.pgmq.Pgmq
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.IPostgresSQL
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 
-fun start(db: IPostgresSQL) {
+fun start(db: IPostgresSQL, pgmq: Pgmq) {
     Application(
         name = "io.github.smyrgeorge.ktkit.example.Application",
         conf = Application.Conf(
@@ -26,6 +27,7 @@ fun start(db: IPostgresSQL) {
 
             di {
                 single { db }.bind<Driver>()
+                single { pgmq }.bind<Pgmq>()
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::TestService)
                 single { TestRepositoryImpl }.bind<TestRepository>()

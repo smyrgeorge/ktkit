@@ -18,7 +18,6 @@ fun main() {
             .build()
     )
 
-    val pgmq = Pgmq(db, options = PgmqClient.Options(verifyInstallation = false))
 
     runBlocking {
         db.migrate(
@@ -28,8 +27,11 @@ fun main() {
             }
         ).getOrThrow()
 
+        val pgmq = Pgmq(db, options = PgmqClient.Options(verifyInstallation = false))
         pgmq.client.installFromPath("src/commonMain/resources/db/pgmq/migrations")
     }
 
-    start(db)
+    val pgmq = Pgmq(db)
+
+    start(db, pgmq)
 }

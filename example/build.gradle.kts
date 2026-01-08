@@ -21,6 +21,7 @@ kotlin {
             dependencies {
                 implementation(project(":ktkit"))
                 implementation(project(":ktkit-sqlx4k"))
+                implementation(project(":ktkit-sqlx4k-pgmq"))
                 implementation(libs.sqlx4k.postgres)
             }
             // Config if your code is under the commonMain module.

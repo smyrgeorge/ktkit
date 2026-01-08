@@ -22,5 +22,5 @@ class Pgmq(
     options: PgmqClient.Options = PgmqClient.Options()
 ) {
     private val adapter = PgmqDbAdapterImpl(pg)
-    val client: PgmqClient = PgmqClient(adapter, options)
+    val client: PgmqClient = PgmqClient(adapter, options.copy(autoInstall = false))
 }

@@ -28,7 +28,7 @@ fun main() {
             }
         ).getOrThrow()
 
-        pgmq.client.installFromMigrationFiles("src/commonMain/resources/db/pgmq/migrations")
+        pgmq.client.installFromPath("src/commonMain/resources/db/pgmq/migrations")
     }
 
     start(db)

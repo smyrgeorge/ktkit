@@ -1,14 +1,13 @@
 package io.github.smyrgeorge.ktkit.sqlx4k.pgmq
 
-import arrow.core.left
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
+import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.api.event.EventContext
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.context.Principal.Companion.cast
-import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.util.EitherThrowable
 import io.github.smyrgeorge.ktkit.util.TRACE_PARENT_HEADER
@@ -43,9 +42,9 @@ abstract class AbstractPgmqEventHandler(
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
 
-    private var started: Boolean = false
     private val sendSpanName = "${this::class.simpleName}.send"
     private val handleSpanName = "${this::class.simpleName}.handle"
+    private val archiveSpanName = "${this::class.simpleName}.archive"
 
     private val consumer = PgmqConsumer(
         pgmq = pgmq.client,
@@ -76,13 +75,11 @@ abstract class AbstractPgmqEventHandler(
         runBlocking { pgmq.client.create(queue) }.getOrThrow()
         // Start the consumer.
         consumer.start()
-        started = true
     }
 
     fun stop() {
         log.info { "Stopping consumer for queue: $queue" }
         consumer.stop()
-        started = false
     }
 
     private inline fun Message.trace(
@@ -137,29 +134,37 @@ abstract class AbstractPgmqEventHandler(
         ).toMap()
     }
 
-    context(ec: ExecContext, db: QueryExecutor)
+    context(ec: ExecContext, _: QueryExecutor)
     suspend fun send(
         message: String,
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds
     ): EitherThrowable<Long> {
         return ec.span(sendSpanName) {
-            if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
             val headers = defaultSendHeaders() + headers
             pgmq.client.send(options.queue, message, headers, delay).toEither()
         }
     }
 
-    context(ec: ExecContext, db: QueryExecutor)
+    context(ec: ExecContext, _: QueryExecutor)
     suspend fun send(
         headers: Map<String, String> = emptyMap(),
         delay: Duration = 0.seconds,
         supplier: () -> String,
     ): EitherThrowable<Long> {
         return ec.span(sendSpanName) {
-            if (!started) return IllegalStateException("Cannot send message, handler is not started.").left()
             val headers = defaultSendHeaders() + headers
             pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
+        }
+    }
+
+    context(_: ExecContext, _: QueryExecutor)
+    suspend fun archive(message: Message): EitherThrowable<Boolean> = archive(message.msgId)
+
+    context(ec: ExecContext, _: QueryExecutor)
+    suspend fun archive(msgId: Long): EitherThrowable<Boolean> {
+        return ec.span(archiveSpanName) {
+            pgmq.client.archive(queue.name, msgId).toEither()
         }
     }
 

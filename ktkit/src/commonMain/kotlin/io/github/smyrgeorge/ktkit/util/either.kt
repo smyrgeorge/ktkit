@@ -8,11 +8,6 @@ import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 typealias AppResult<T> = Either<ErrorSpec, T>
 typealias EitherThrowable<T> = Either<Throwable, T>
 
-fun <T> Result<T>.toEither(): EitherThrowable<T> = fold(
-    onSuccess = { it.right() },
-    onFailure = { it.left() }
-)
-
 fun <T> EitherThrowable<T>.toResult(): Result<T> = fold(
     ifLeft = { Result.failure(it) },
     ifRight = { Result.success(it) }

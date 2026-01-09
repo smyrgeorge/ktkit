@@ -99,6 +99,11 @@ interface ErrorSpec {
         LOOP_DETECTED(508, "Loop Detected"),
         NOT_EXTENDED(510, "Not Extended"),
         NETWORK_AUTHENTICATION_REQUIRED(511, "Network Authentication Required"),
+        ;
+
+        companion object {
+            fun fromCode(code: Int): HttpStatus = entries.find { it.code == code } ?: INTERNAL_SERVER_ERROR
+        }
     }
 
     companion object {

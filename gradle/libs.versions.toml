@@ -23,6 +23,8 @@ ktoml = "0.7.1"
 ksp = "2.3.4"
 # https://github.com/arrow-kt/arrow
 arrow = "2.2.1.1"
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux
+spring-boot = "4.0.1"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -46,6 +48,7 @@ sqlx4k-arrow = { module = "io.github.smyrgeorge:sqlx4k-arrow", version.ref = "sq
 sqlx4k-codegen = { module = "io.github.smyrgeorge:sqlx4k-codegen", version.ref = "sqlx4k" }
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
 sqlx4k-postgres-pgmq = { module = "io.github.smyrgeorge:sqlx4k-postgres-pgmq", version.ref = "sqlx4k" }
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "spring-boot" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

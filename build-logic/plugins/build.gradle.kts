@@ -12,6 +12,10 @@ gradlePlugin {
             id = "io.github.smyrgeorge.ktkit.multiplatform.binaries"
             implementationClass = "io.github.smyrgeorge.ktkit.multiplatform.MultiplatformBinariesConventions"
         }
+        create("multiplatform.jvm") {
+            id = "io.github.smyrgeorge.ktkit.multiplatform.jvm"
+            implementationClass = "io.github.smyrgeorge.ktkit.multiplatform.MultiplatformJvmConventions"
+        }
         create("publish") {
             id = "io.github.smyrgeorge.ktkit.publish"
             implementationClass = "io.github.smyrgeorge.ktkit.publish.PublishConventions"

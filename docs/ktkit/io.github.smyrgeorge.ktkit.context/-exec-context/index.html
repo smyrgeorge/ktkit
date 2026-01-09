@@ -1,0 +1,499 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ExecContext</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    ktkit
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">0.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":ktkit/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ktkit/commonMain" data-filter=":ktkit/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    ktkit
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="ktkit::io.github.smyrgeorge.ktkit.context/ExecContext///PointingToDeclaration//-1617436410">
+  <div class="breadcrumbs"><a href="../../index.html">ktkit</a><span class="delimiter">/</span><a href="../index.html">io.github.smyrgeorge.ktkit.context</a><span class="delimiter">/</span><span class="current">ExecContext</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Exec</span><wbr><span><span>Context</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">ExecContext</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>reqId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>reqTs<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator"> = </span>Clock.System.now()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>principal<span class="token operator">: </span><a href="../-principal/index.html">Principal</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>attributes<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>tracing<span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/TracingContext///PointingToDeclaration/">TracingContext</span><span class="token punctuation">, </span></span><span class="parameter ">http<span class="token operator">: </span><a href="../../io.github.smyrgeorge.ktkit.api.rest/-http-context/index.html">HttpContext</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">event<span class="token operator">: </span><a href="../../io.github.smyrgeorge.ktkit.api.event/-event-context/index.html">EventContext</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <span data-unresolved-link="arrow.core.raise/Raise///PointingToDeclaration/">Raise</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token operator">&gt; </span>, <span data-unresolved-link="io.github.smyrgeorge.log4k/TracingContext///PointingToDeclaration/">TracingContext</span>, <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-element/index.html">CoroutineContext.Element</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/smyrgeorge/ktkit/tree/main/ktkit/src/commonMain/kotlin/io/github/smyrgeorge/ktkit/context/ExecContext.kt#L25">source</a>)</span></span></div><p class="paragraph">Request context containing user information, request metadata, and utilities for accessing request data.</p><p class="paragraph">Implements <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-element/index.html">CoroutineContext.Element</a> to allow passing context through coroutines.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-505057504%2FConstructors%2F-1617436410" anchor-label="ExecContext" id="-505057504%2FConstructors%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-exec-context.html"><span>Exec</span><wbr><span><span>Context</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-505057504%2FConstructors%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">reqId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">reqTs<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator"> = </span>Clock.System.now()<span class="token punctuation">, </span></span><span class="parameter ">principal<span class="token operator">: </span><a href="../-principal/index.html">Principal</a><span class="token punctuation">, </span></span><span class="parameter ">attributes<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()<span class="token punctuation">, </span></span><span class="parameter ">tracing<span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/TracingContext///PointingToDeclaration/">TracingContext</span><span class="token punctuation">, </span></span><span class="parameter ">http<span class="token operator">: </span><a href="../../io.github.smyrgeorge.ktkit.api.rest/-http-context/index.html">HttpContext</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">event<span class="token operator">: </span><a href="../../io.github.smyrgeorge.ktkit.api.event/-event-context/index.html">EventContext</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="1402770991%2FClasslikes%2F-1617436410" anchor-label="Companion" id="1402770991%2FClasslikes%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1402770991%2FClasslikes%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-key/index.html">CoroutineContext.Key</a><span class="token operator">&lt;</span><a href="index.html">ExecContext</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-1094623621%2FProperties%2F-1617436410" anchor-label="attributes" id="-1094623621%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="attributes.html"><span><span>attributes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1094623621%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="attributes.html">attributes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Custom attributes map for storing request-scoped data</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2054292999%2FProperties%2F-1617436410" anchor-label="current" id="-2054292999%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-2054292999%2FFunctions%2F-1617436410"><span><span>current</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2054292999%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="index.html#-2054292999%2FFunctions%2F-1617436410">current</a><span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/TracingEvent.Span///PointingToDeclaration/">TracingEvent.Span</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="651616526%2FProperties%2F-1617436410" anchor-label="event" id="651616526%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="event.html"><span><span>event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="651616526%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="event.html">event</a><span class="token operator">: </span><a href="../../io.github.smyrgeorge.ktkit.api.event/-event-context/index.html">EventContext</a></div><div class="brief "><p class="paragraph">Optional EventContext for accessing event data</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1105177558%2FProperties%2F-1617436410" anchor-label="http" id="-1105177558%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="http.html"><span><span>http</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1105177558%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="http.html">http</a><span class="token operator">: </span><a href="../../io.github.smyrgeorge.ktkit.api.rest/-http-context/index.html">HttpContext</a></div><div class="brief "><p class="paragraph">Optional HttpContext for accessing request data</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1954497623%2FProperties%2F-1617436410" anchor-label="key" id="-1954497623%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="key.html"><span><span>key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1954497623%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="key.html">key</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-key/index.html">CoroutineContext.Key</a><span class="token operator">&lt;</span><a href="index.html">ExecContext</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-672817634%2FProperties%2F-1617436410" anchor-label="parent" id="-672817634%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-672817634%2FProperties%2F-1617436410"><span><span>parent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-672817634%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="index.html#-672817634%2FProperties%2F-1617436410">parent</a><span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/TracingEvent.Span///PointingToDeclaration/">TracingEvent.Span</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2051818618%2FProperties%2F-1617436410" anchor-label="principal" id="2051818618%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="principal.html"><span><span>principal</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2051818618%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="principal.html">principal</a><span class="token operator">: </span><a href="../-principal/index.html">Principal</a></div><div class="brief "><p class="paragraph">The authenticated user's principal</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1422730799%2FProperties%2F-1617436410" anchor-label="reqId" id="1422730799%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="req-id.html"><span>req</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1422730799%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="req-id.html">reqId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Unique request identifier</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-419119797%2FProperties%2F-1617436410" anchor-label="reqTs" id="-419119797%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="req-ts.html"><span>req</span><wbr><span><span>Ts</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-419119797%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="req-ts.html">reqTs</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a></div><div class="brief "><p class="paragraph">Request timestamp</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1887196069%2FProperties%2F-1617436410" anchor-label="tracer" id="-1887196069%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1887196069%2FProperties%2F-1617436410"><span><span>tracer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1887196069%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="index.html#-1887196069%2FProperties%2F-1617436410">tracer</a><span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/Tracer///PointingToDeclaration/">Tracer</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-933871322%2FProperties%2F-1617436410" anchor-label="tracing" id="-933871322%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="tracing.html"><span><span>tracing</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-933871322%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="tracing.html">tracing</a><span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/TracingContext///PointingToDeclaration/">TracingContext</span></div><div class="brief "><p class="paragraph">TracingContext for logging purposes</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="1976639046%2FFunctions%2F-1617436410" anchor-label="bind" id="1976639046%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1142561667%2FFunctions%2F-1617436410"><span><span>bind</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1976639046%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#-1142561667%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><span data-unresolved-link="arrow.core/Either///PointingToDeclaration/">Either</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind.html">A</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#-1142561667%2FFunctions%2F-1617436410"><span class="token function">bind</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind.html">A</a></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#1713127244%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><span data-unresolved-link="arrow.core.raise/EagerEffect///PointingToDeclaration/">EagerEffect</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind.html">A</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#1713127244%2FFunctions%2F-1617436410"><span class="token function">bind</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind.html">A</a></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#1277750037%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><span data-unresolved-link="arrow.core.raise/Effect///PointingToDeclaration/">Effect</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind.html">A</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#1277750037%2FFunctions%2F-1617436410"><span class="token function">bind</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind.html">A</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1123409874%2FFunctions%2F-1617436410" anchor-label="bindAll" id="1123409874%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1310723504%2FFunctions%2F-1617436410"><span>bind</span><wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1123409874%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#-1310723504%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><span data-unresolved-link="arrow.core/NonEmptyList///PointingToDeclaration/">NonEmptyList</span><span class="token operator">&lt;</span><span data-unresolved-link="arrow.core/Either///PointingToDeclaration/">Either</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#-1310723504%2FFunctions%2F-1617436410"><span class="token function">bindAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="arrow.core/NonEmptyList///PointingToDeclaration/">NonEmptyList</span><span class="token operator">&lt;</span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#-2095198634%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><span data-unresolved-link="arrow.core/NonEmptySet///PointingToDeclaration/">NonEmptySet</span><span class="token operator">&lt;</span><span data-unresolved-link="arrow.core/Either///PointingToDeclaration/">Either</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#-2095198634%2FFunctions%2F-1617436410"><span class="token function">bindAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="arrow.core/NonEmptySet///PointingToDeclaration/">NonEmptySet</span><span class="token operator">&lt;</span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#560473280%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterable/index.html">Iterable</a><span class="token operator">&lt;</span><span data-unresolved-link="arrow.core/Either///PointingToDeclaration/">Either</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#560473280%2FFunctions%2F-1617436410"><span class="token function">bindAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#-261062452%2FFunctions%2F-1617436410">K</a><span class="token punctuation">, </span><a href="index.html#-261062452%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">K</a><span class="token punctuation">, </span><span data-unresolved-link="arrow.core/Either///PointingToDeclaration/">Either</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#-261062452%2FFunctions%2F-1617436410"><span class="token function">bindAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">K</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/bind-all.html">A</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2054292999%2FFunctions%2F-1617436410" anchor-label="current" id="-2054292999%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-2054292999%2FFunctions%2F-1617436410"><span><span>current</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2054292999%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-2054292999%2FFunctions%2F-1617436410"><span class="token function">current</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/TracingEvent.Span///PointingToDeclaration/">TracingEvent.Span</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2137503247%2FFunctions%2F-1617436410" anchor-label="currentOrNull" id="2137503247%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#2137503247%2FFunctions%2F-1617436410"><span>current</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2137503247%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#2137503247%2FFunctions%2F-1617436410"><span class="token function">currentOrNull</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="io.github.smyrgeorge.log4k/TracingEvent.Span///PointingToDeclaration/">TracingEvent.Span</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="466442070%2FFunctions%2F-1617436410" anchor-label="fold" id="466442070%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#466442070%2FFunctions%2F-1617436410"><span><span>fold</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="466442070%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#466442070%2FFunctions%2F-1617436410">R</a><span class="token operator">&gt; </span><a href="index.html#466442070%2FFunctions%2F-1617436410"><span class="token function">fold</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">initial<span class="token operator">: </span><a href="index.html#466442070%2FFunctions%2F-1617436410">R</a><span class="token punctuation">, </span></span><span class="parameter ">operation<span class="token operator">: </span><span class="token punctuation">(</span><a href="index.html#466442070%2FFunctions%2F-1617436410">R</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-element/index.html">CoroutineContext.Element</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="index.html#466442070%2FFunctions%2F-1617436410">R</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html#466442070%2FFunctions%2F-1617436410">R</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="232613081%2FFunctions%2F-1617436410" anchor-label="get" id="232613081%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#232613081%2FFunctions%2F-1617436410"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="232613081%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#232613081%2FFunctions%2F-1617436410">E</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-element/index.html">CoroutineContext.Element</a><span class="token operator">&gt; </span><a href="index.html#232613081%2FFunctions%2F-1617436410"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-key/index.html">CoroutineContext.Key</a><span class="token operator">&lt;</span><a href="index.html#232613081%2FFunctions%2F-1617436410">E</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html#232613081%2FFunctions%2F-1617436410">E</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-599133003%2FFunctions%2F-1617436410" anchor-label="invoke" id="-599133003%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#615850183%2FFunctions%2F-1617436410"><span><span>invoke</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-599133003%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#615850183%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><span data-unresolved-link="arrow.core.raise/EagerEffect///PointingToDeclaration/">EagerEffect</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/invoke.html">A</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#615850183%2FFunctions%2F-1617436410"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/invoke.html">A</a></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="index.html#629703632%2FFunctions%2F-1617436410">A</a><span class="token operator">&gt; </span><span data-unresolved-link="arrow.core.raise/Effect///PointingToDeclaration/">Effect</span><span class="token operator">&lt;</span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token punctuation">, </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/invoke.html">A</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="index.html#629703632%2FFunctions%2F-1617436410"><span class="token function">invoke</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../ktkit/io.github.smyrgeorge.ktkit.context/-exec-context/invoke.html">A</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1830620809%2FFunctions%2F-1617436410" anchor-label="minusKey" id="-1830620809%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1830620809%2FFunctions%2F-1617436410"><span>minus</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1830620809%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1830620809%2FFunctions%2F-1617436410"><span class="token function">minusKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/-key/index.html">CoroutineContext.Key</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/index.html">CoroutineContext</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1141296693%2FFunctions%2F-1617436410" anchor-label="plus" id="1141296693%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1141296693%2FFunctions%2F-1617436410"><span><span>plus</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1141296693%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="index.html#1141296693%2FFunctions%2F-1617436410"><span class="token function">plus</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/index.html">CoroutineContext</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.coroutines/-coroutine-context/index.html">CoroutineContext</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="268902637%2FFunctions%2F-1617436410" anchor-label="raise" id="268902637%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="raise.html"><span><span>raise</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="268902637%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="raise.html"><span class="token function">raise</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">r<span class="token operator">: </span><a href="../../io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-nothing/index.html">Nothing</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="683290694%2FFunctions%2F-1617436410" anchor-label="toString" id="683290694%2FFunctions%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-string.html"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="683290694%2FFunctions%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

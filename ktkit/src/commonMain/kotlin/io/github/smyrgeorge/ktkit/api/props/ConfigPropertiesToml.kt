@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.props
 
 import com.akuleshov7.ktoml.Toml
+import io.github.smyrgeorge.ktkit.util.getEnv
 import io.github.smyrgeorge.ktkit.util.readEntireFileFromDisk
 import io.github.smyrgeorge.ktkit.util.readEntireFileFromResources
 import kotlinx.io.files.Path
@@ -44,7 +45,7 @@ object ConfigPropertiesToml {
         path: Path
     ): T {
         val file = readEntireFileFromDisk(path)
-        return loadFile(deserializer, file)
+        return parseFile(deserializer, file)
     }
 
     /**
@@ -73,21 +74,38 @@ object ConfigPropertiesToml {
         path: Path
     ): T {
         val file = readEntireFileFromResources(path)
-        return loadFile(deserializer, file)
+        return parseFile(deserializer, file)
     }
 
     /**
-     * Loads and deserializes a file's contents into an object of type `T`.
+     * Parses the given file content into an object of type `T` using the provided deserialization strategy.
      *
-     * The file is read as UTF-8, and its contents are deserialized using the provided `deserializer`
-     * and `TOML` format.
+     * This function resolves environment variable placeholders in the content before deserializing it
+     * using the TOML format.
      *
-     * @param deserializer The deserialization strategy used to interpret the contents of the file.
-     * @param content The contents of the file to be deserialized.
-     * @return An instance of type `T` created from the file's contents.
+     * @param deserializer The deserialization strategy to use for interpreting the file content.
+     * @param content The file content as a string, which may include environment variable placeholders.
+     * @return An instance of type `T` created from the deserialized content.
      */
-    inline fun <reified T : @Serializable Any> loadFile(
+    inline fun <reified T : @Serializable Any> parseFile(
         deserializer: DeserializationStrategy<T>,
         content: String
-    ): T = Toml.decodeFromString(deserializer, content)
+    ): T = Toml.decodeFromString(deserializer, resolveEnvironmentVariables(content))
+
+    /**
+     * Resolves environment variable placeholders within the given string.
+     * This function identifies placeholders in the form of `${VAR_NAME}` and replaces
+     * them with the respective values of the corresponding environment variables.
+     * If a placeholder references a missing environment variable, the function throws an error.
+     *
+     * @param file The input string potentially containing placeholders for environment variables.
+     * @return A string with the environment variable placeholders replaced by their respective values.
+     * @throws IllegalStateException if an environment variable referenced in the input string is missing.
+     */
+    fun resolveEnvironmentVariables(file: String): String = envRegex.replace(file) { match ->
+        val key = match.groupValues[1]
+        getEnv(key) ?: error("Missing environment variable: $key")
+    }
+
+    private val envRegex = Regex("""\$\{([A-Za-z0-9_]+)}""")
 }

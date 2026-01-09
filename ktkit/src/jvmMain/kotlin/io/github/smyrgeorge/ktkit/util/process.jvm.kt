@@ -24,3 +24,5 @@ actual fun vmProcessorsMetrics(): Map<String, Int> {
     val runtime = Runtime.getRuntime()
     return mapOf("vm.processors.available" to runtime.availableProcessors())
 }
+
+actual fun getEnv(name: String): String? = System.getenv(name)

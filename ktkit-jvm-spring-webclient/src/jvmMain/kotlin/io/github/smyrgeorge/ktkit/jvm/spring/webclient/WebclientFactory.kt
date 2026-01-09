@@ -23,7 +23,7 @@ object WebclientFactory {
      * Creates a configured instance of a [WebClient] with specified connection settings, timeouts,
      * and codecs for JSON processing.
      *
-     * @param om the JSON mapper used for encoding and decoding JSON data.
+     * @param jm the JSON mapper used for encoding and decoding JSON data.
      * @param connectionTimeout the timeout duration for establishing connections, default is 2 seconds.
      * @param readTimeout the timeout duration for reading data, default is 10 seconds.
      * @param maxConnections the maximum number of connections allowed in the connection pool, default is 128.
@@ -35,7 +35,7 @@ object WebclientFactory {
      * @return a configured instance of [WebClient].
      */
     fun create(
-        om: JsonMapper,
+        jm: JsonMapper,
         connectionTimeout: Duration = 2.seconds,
         readTimeout: Duration = 10.seconds,
         maxConnections: Int = 128,
@@ -64,8 +64,8 @@ object WebclientFactory {
         val strategies = ExchangeStrategies
             .builder()
             .codecs { configurer ->
-                configurer.defaultCodecs().jacksonJsonEncoder(JacksonJsonEncoder(om, *codecMimeTypes))
-                configurer.defaultCodecs().jacksonJsonDecoder(JacksonJsonDecoder(om, *codecMimeTypes))
+                configurer.defaultCodecs().jacksonJsonEncoder(JacksonJsonEncoder(jm, *codecMimeTypes))
+                configurer.defaultCodecs().jacksonJsonDecoder(JacksonJsonDecoder(jm, *codecMimeTypes))
                 configurer.defaultCodecs().maxInMemorySize(codecMemoryMaxSize)
             }.build()
 

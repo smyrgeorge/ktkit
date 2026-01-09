@@ -129,10 +129,10 @@ abstract class AbstractWebClient(
         }.mapError { it.toRuntimeError() }
 
     companion object {
-        private fun WebClientResponseException.toRuntimeError(mapper: JsonMapper): RuntimeError {
+        private fun WebClientResponseException.toRuntimeError(jm: JsonMapper): RuntimeError {
             val error: ErrorSpec = try {
                 // Deserialize the error.
-                val error = mapper.readValue(responseBodyAsByteArray, ApiError::class.java)
+                val error = jm.readValue(responseBodyAsByteArray, ApiError::class.java)
                 GenericError(
                     message = error.detail,
                     data = error.data ?: EmptyErrorData,

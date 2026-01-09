@@ -11,7 +11,7 @@ pluginManagement {
 
 include("dokka")
 include("ktkit")
-include("ktkit-jvm")
+include("ktkit-jvm-spring-webclient")
 include("ktkit-sqlx4k")
 include("ktkit-sqlx4k-pgmq")
 include("example")

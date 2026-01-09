@@ -21,17 +21,17 @@ import java.util.Base64
  *
  * @param client The WebClient instance used for making HTTP requests.
  * @param baseUrl The base URL used for constructing request URLs.
- * @param mapper The JsonMapper instance responsible for handling JSON serialization and deserialization.
+ * @param jm The JsonMapper instance responsible for handling JSON serialization and deserialization.
  */
 class XRealNameWebClient(
     client: WebClient,
     baseUrl: String,
-    val mapper: JsonMapper,
+    val jm: JsonMapper,
 ) : AbstractWebClient(client, baseUrl) {
     suspend inline fun <reified T> get(
         token: UserToken,
         uri: String,
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) }
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) }
     ): Result<T> =
         get<T>(
             uri = uri,
@@ -43,7 +43,7 @@ class XRealNameWebClient(
         token: UserToken,
         uri: String,
         body: Any,
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) },
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) },
     ): Result<T> =
         post<T>(
             uri = uri,
@@ -56,7 +56,7 @@ class XRealNameWebClient(
         token: UserToken,
         uri: String,
         body: Any,
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) },
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) },
     ): Result<T> =
         postMultipartFile<T>(
             uri = uri,
@@ -69,7 +69,7 @@ class XRealNameWebClient(
         token: UserToken,
         uri: String,
         body: Any? = null,
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) },
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) },
     ): Result<T> =
         patch<T>(
             uri = uri,
@@ -82,7 +82,7 @@ class XRealNameWebClient(
         token: UserToken,
         uri: String,
         body: Any? = null,
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) },
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) },
     ): Result<T> =
         put<T>(
             uri = uri,
@@ -94,7 +94,7 @@ class XRealNameWebClient(
     suspend inline fun <reified T> delete(
         token: UserToken,
         uri: String,
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) },
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) },
     ): Result<T> =
         delete<T>(
             uri = uri,

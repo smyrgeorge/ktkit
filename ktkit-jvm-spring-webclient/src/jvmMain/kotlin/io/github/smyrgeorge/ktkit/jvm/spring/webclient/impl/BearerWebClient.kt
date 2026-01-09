@@ -17,18 +17,18 @@ import tools.jackson.databind.json.JsonMapper
  *              and JSON mapper.
  * @param client The base [WebClient] used for making HTTP requests.
  * @param baseUrl The base URL for all requests made by this client.
- * @param mapper The [JsonMapper] instance for handling serialization and deserialization of JSON payloads.
+ * @param jm The [JsonMapper] instance for handling serialization and deserialization of JSON payloads.
  */
 class BearerWebClient(
     client: WebClient,
     baseUrl: String,
-    val mapper: JsonMapper,
+    val jm: JsonMapper,
 ) : AbstractWebClient(client, baseUrl) {
     suspend inline fun <reified T> get(
         token: String,
         uri: String,
         crossinline headers: HeadersF = {},
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) }
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) }
     ): Result<T> =
         get<T>(
             uri = uri,
@@ -44,7 +44,7 @@ class BearerWebClient(
         uri: String,
         body: Any,
         crossinline headers: HeadersF = {},
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) }
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) }
     ): Result<T> =
         post<T>(
             uri = uri,
@@ -61,7 +61,7 @@ class BearerWebClient(
         uri: String,
         body: Any,
         crossinline headers: HeadersF = {},
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) },
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) },
     ): Result<T> =
         postMultipartFile<T>(
             uri = uri,
@@ -78,7 +78,7 @@ class BearerWebClient(
         uri: String,
         body: Any? = null,
         crossinline headers: HeadersF = {},
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) }
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) }
     ): Result<T> =
         patch<T>(
             uri = uri,
@@ -95,7 +95,7 @@ class BearerWebClient(
         uri: String,
         body: Any? = null,
         crossinline headers: HeadersF = {},
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) }
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) }
     ): Result<T> =
         put<T>(
             uri = uri,
@@ -111,7 +111,7 @@ class BearerWebClient(
         token: String,
         uri: String,
         crossinline headers: HeadersF = {},
-        crossinline onError: OnErrorF = { r -> r.toRuntimeError(mapper) }
+        crossinline onError: OnErrorF = { r -> r.toRuntimeError(jm) }
     ): Result<T> =
         delete<T>(
             uri = uri,

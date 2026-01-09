@@ -27,9 +27,9 @@ implementation("io.github.smyrgeorge:ktkit:x.y.z")
 
 ## Overview
 
-KtKit is a Kotlin multiplatform toolkit designed to accelerate server-side application development with Ktor. It brings
-together several libraries and patterns into a cohesive set of tools that handle the repetitive aspects of backend
-development, letting you focus on your business logic.
+KtKit is a Kotlin multiplatform toolkit designed to speed up server-side application development with Ktor.
+It brings together several libraries into a cohesive set of tools that handle the repetitive aspects of backend
+development.
 
 > [!NOTE]
 > **Early Stage Project**: KtKit is actively evolving. APIs may change between versions as we refine the abstractions
@@ -44,11 +44,6 @@ development, letting you focus on your business logic.
 - Enables functional error handling patterns with Arrow's Either monad
 - Supports multiple platforms (JVM, Linux, macOS) through Kotlin Multiplatform
 
-**Why KtKit:**
-Instead of wiring together Ktor, Koin, database clients, logging, and tracing yourself for every project, KtKit delivers
-opinionated but flexible building blocks that work together seamlessly. Write less boilerplate, maintain consistency
-across services, and ship faster.
-
 ## Features
 
 ### Key Technologies
@@ -61,7 +56,7 @@ across services, and ship faster.
 
 ## Example
 
-Check an example application [here](example/src/commonMain/kotlin/io/github/smyrgeorge/ktkit/example).
+Check the example application [here](example/src/commonMain/kotlin/io/github/smyrgeorge/ktkit/example).
 
 ## Building & Development
 
@@ -94,8 +89,8 @@ Check the repository for license information.
 
 ## Related Projects
 
-- [log4k](https://github.com/smyrgeorge/log4k) - Multiplatform logging with tracing
-- [sqlx4k](https://github.com/smyrgeorge/sqlx4k) - Multiplatform database access
+- [log4k](https://github.com/smyrgeorge/log4k) – Multiplatform logging with tracing
+- [sqlx4k](https://github.com/smyrgeorge/sqlx4k) – Multiplatform database access
 
 ## Author
 

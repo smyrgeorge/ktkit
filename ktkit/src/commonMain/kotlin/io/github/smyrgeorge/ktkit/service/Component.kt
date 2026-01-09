@@ -23,7 +23,7 @@ interface Component {
      * This property retrieves the [Application] instance defined within the current Koin context.
      * It serves as a convenient way to access the application-level dependency graph.
      *
-     * Note that this is a lazily-evaluated property and assumes that a valid Koin context has already
+     * Note that this is a lazily evaluated property and assumes that a valid Koin context has already
      * been initialized. Accessing this property without proper initialization of Koin might result in
      * an exception.
      *

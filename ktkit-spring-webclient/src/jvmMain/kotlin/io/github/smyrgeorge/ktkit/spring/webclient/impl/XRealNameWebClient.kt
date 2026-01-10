@@ -1,12 +1,12 @@
 @file:Suppress("unused")
 
-package io.github.smyrgeorge.ktkit.jvm.spring.webclient.impl
+package io.github.smyrgeorge.ktkit.spring.webclient.impl
 
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
-import io.github.smyrgeorge.ktkit.jvm.spring.webclient.AbstractWebClient
-import io.github.smyrgeorge.ktkit.jvm.spring.webclient.OnErrorF
+import io.github.smyrgeorge.ktkit.spring.webclient.AbstractWebClient
+import io.github.smyrgeorge.ktkit.spring.webclient.OnErrorF
 import org.springframework.http.HttpHeaders
 import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper

@@ -11,8 +11,8 @@ class PublishConventions : Plugin<Project> {
 
     private val descriptions: Map<String, String> = mapOf(
         "ktkit" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
-        "ktkit-jvm-ktor-client" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
-        "ktkit-jvm-spring-webclient" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
+        "ktkit-ktor-httpclient" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
+        "ktkit-spring-webclient" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
         "ktkit-sqlx4k" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
         "ktkit-sqlx4k-pgmq" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
     )

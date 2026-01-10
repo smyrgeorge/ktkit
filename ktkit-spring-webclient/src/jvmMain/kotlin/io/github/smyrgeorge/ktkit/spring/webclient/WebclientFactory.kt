@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.jvm.spring.webclient
+package io.github.smyrgeorge.ktkit.spring.webclient
 
 import io.netty.channel.ChannelOption
 import io.netty.handler.timeout.ReadTimeoutHandler

@@ -4,7 +4,8 @@ plugins {
 
 dependencies {
     dokka(project(":ktkit"))
-    dokka(project(":ktkit-jvm-spring-webclient"))
+    dokka(project(":ktkit-ktor-httpclient"))
+    dokka(project(":ktkit-spring-webclient"))
     dokka(project(":ktkit-sqlx4k"))
     dokka(project(":ktkit-sqlx4k-pgmq"))
 }

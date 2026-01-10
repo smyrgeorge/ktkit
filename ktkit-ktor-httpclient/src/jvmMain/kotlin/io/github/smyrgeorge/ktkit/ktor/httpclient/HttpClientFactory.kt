@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.jvm.ktor.client
+package io.github.smyrgeorge.ktkit.ktor.httpclient
 
 import io.github.smyrgeorge.ktkit.util.default
 import io.ktor.client.HttpClient

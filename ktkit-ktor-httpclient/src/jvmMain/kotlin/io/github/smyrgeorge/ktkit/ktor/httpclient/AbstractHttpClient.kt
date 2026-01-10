@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.jvm.ktor.client
+package io.github.smyrgeorge.ktkit.ktor.httpclient
 
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.RuntimeError
@@ -10,12 +10,23 @@ import io.github.smyrgeorge.ktkit.util.mapError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
-import io.ktor.client.request.*
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.*
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
@@ -207,6 +218,7 @@ abstract class AbstractHttpClient(
                     httpStatus = ErrorSpec.HttpStatus.fromCode(response.status.value)
                 ).toThrowable(this)
             }
+
             else -> UnknownError(message ?: "null").toThrowable(this)
         }
     }

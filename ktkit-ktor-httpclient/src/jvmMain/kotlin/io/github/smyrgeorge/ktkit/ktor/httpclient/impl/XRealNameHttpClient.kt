@@ -1,11 +1,11 @@
 @file:Suppress("unused")
 
-package io.github.smyrgeorge.ktkit.jvm.ktor.client.impl
+package io.github.smyrgeorge.ktkit.ktor.httpclient.impl
 
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
-import io.github.smyrgeorge.ktkit.jvm.ktor.client.AbstractHttpClient
+import io.github.smyrgeorge.ktkit.ktor.httpclient.AbstractHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.HeadersBuilder

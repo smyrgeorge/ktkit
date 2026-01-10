@@ -1,4 +1,4 @@
-package io.github.smyrgeorge.ktkit.jvm.spring.webclient
+package io.github.smyrgeorge.ktkit.spring.webclient
 
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.RuntimeError

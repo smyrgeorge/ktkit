@@ -43,7 +43,7 @@
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
-                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":ktkit-ktor-httpclient/jvmMain">jvm</button>
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":ktkit-ktor-httpclient/commonMain">common</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
                 <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
@@ -52,11 +52,11 @@
                             <i class="ui-kit-icon ui-kit-icon_cross"></i>
                         </button>
                     </div>
-                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
                             <label class="checkbox">
-                                <input type="checkbox" class="checkbox--input" id=":ktkit-ktor-httpclient/jvmMain" data-filter=":ktkit-ktor-httpclient/jvmMain">
+                                <input type="checkbox" class="checkbox--input" id=":ktkit-ktor-httpclient/commonMain" data-filter=":ktkit-ktor-httpclient/commonMain">
                                 <span class="checkbox--icon"></span>
-                                jvm
+                                common
                             </label>
                         </li>
                 </ul>
@@ -90,28 +90,28 @@
         </nav>
         <div id="resizer" class="resizer" data-item-type="BAR"></div>
         <div id="main" data-item-type="SECTION" role="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="ktkit-ktor-httpclient::io.github.smyrgeorge.ktkit.ktor.httpclient/AbstractHttpClient///PointingToDeclaration//374203369">
+<div class="main-content" data-page-type="classlike" id="content" pageids="ktkit-ktor-httpclient::io.github.smyrgeorge.ktkit.ktor.httpclient/AbstractHttpClient///PointingToDeclaration//1651365997">
   <div class="breadcrumbs"><a href="../../index.html">ktkit-ktor-httpclient</a><span class="delimiter">/</span><a href="../index.html">io.github.smyrgeorge.ktkit.ktor.httpclient</a><span class="delimiter">/</span><span class="current">AbstractHttpClient</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Abstract</span><wbr><span>Http</span><wbr><span><span>Client</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">AbstractHttpClient</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>client<span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>baseUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">""</span></span></span><span class="token punctuation">)</span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/smyrgeorge/ktkit/tree/main/ktkit-ktor-httpclient/src/jvmMain/kotlin/io/github/smyrgeorge/ktkit/ktor/httpclient/AbstractHttpClient.kt#L46">source</a>)</span></span></div><p class="paragraph">An abstract class that provides a foundation for implementing an HTTP client for making HTTP requests.</p><p class="paragraph">The <code class="lang-kotlin">AbstractHttpClient</code> standardizes the use of an <code class="lang-kotlin">HttpClient</code> instance to perform common HTTP operations, such as GET, POST, PATCH, PUT, and DELETE, while offering support for customizing request headers and error handling. This class is designed to streamline client-server communication by encapsulating reusable logic for building requests and processing responses.</p><h4 class="tableheader">Parameters</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>client</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The HttpClient instance used for executing HTTP requests.</p></div></div></div></div><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>base</span><wbr><span><span>Url</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The base URL of the target API to which requests are made. Default value is an empty string.</p></div></div></div></div></div><h4 class="tableheader">Inheritors</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../io.github.smyrgeorge.ktkit.ktor.httpclient.impl/-bearer-http-client/index.html">BearerHttpClient</a></div></span></div><div></div></div></div><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../io.github.smyrgeorge.ktkit.ktor.httpclient.impl/-x-real-name-http-client/index.html">XRealNameHttpClient</a></div></span></div><div></div></div></div></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">AbstractHttpClient</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>client<span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>baseUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">""</span></span></span><span class="token punctuation">)</span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/smyrgeorge/ktkit/tree/main/ktkit-ktor-httpclient/src/commonMain/kotlin/io/github/smyrgeorge/ktkit/ktor/httpclient/AbstractHttpClient.kt#L46">source</a>)</span></span></div><p class="paragraph">An abstract class that provides a foundation for implementing an HTTP client for making HTTP requests.</p><p class="paragraph">The <code class="lang-kotlin">AbstractHttpClient</code> standardizes the use of an <code class="lang-kotlin">HttpClient</code> instance to perform common HTTP operations, such as GET, POST, PATCH, PUT, and DELETE, while offering support for customizing request headers and error handling. This class is designed to streamline client-server communication by encapsulating reusable logic for building requests and processing responses.</p><h4 class="tableheader">Parameters</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>client</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The HttpClient instance used for executing HTTP requests.</p></div></div></div></div><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>base</span><wbr><span><span>Url</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The base URL of the target API to which requests are made. Default value is an empty string.</p></div></div></div></div></div><h4 class="tableheader">Inheritors</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../io.github.smyrgeorge.ktkit.ktor.httpclient.impl/-bearer-http-client/index.html">BearerHttpClient</a></div></span></div><div></div></div></div><div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../io.github.smyrgeorge.ktkit.ktor.httpclient.impl/-x-real-name-http-client/index.html">XRealNameHttpClient</a></div></span></div><div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="tableheader">Constructors</h2>
-        <div class="table"><a data-name="-763988055%2FConstructors%2F374203369" anchor-label="AbstractHttpClient" id="-763988055%2FConstructors%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+        <div class="table"><a data-name="-763988055%2FConstructors%2F1651365997" anchor-label="AbstractHttpClient" id="-763988055%2FConstructors%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-abstract-http-client.html"><span>Abstract</span><wbr><span>Http</span><wbr><span><span>Client</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-763988055%2FConstructors%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-763988055%2FConstructors%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">client<span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token punctuation">, </span></span><span class="parameter ">baseUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">""</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">client<span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token punctuation">, </span></span><span class="parameter ">baseUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">""</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -120,17 +120,17 @@
       </div>
       <div data-togglable="TYPE">
         <h2 class="tableheader">Types</h2>
-        <div class="table"><a data-name="-2063832374%2FClasslikes%2F374203369" anchor-label="Companion" id="-2063832374%2FClasslikes%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+        <div class="table"><a data-name="-2063832374%2FClasslikes%2F1651365997" anchor-label="Companion" id="-2063832374%2FClasslikes%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2063832374%2FClasslikes%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2063832374%2FClasslikes%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -139,32 +139,32 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="tableheader">Properties</h2>
-        <div class="table"><a data-name="-211755035%2FProperties%2F374203369" anchor-label="baseUrl" id="-211755035%2FProperties%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+        <div class="table"><a data-name="-211755035%2FProperties%2F1651365997" anchor-label="baseUrl" id="-211755035%2FProperties%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="base-url.html"><span>base</span><wbr><span><span>Url</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-211755035%2FProperties%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-211755035%2FProperties%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="base-url.html">baseUrl</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="base-url.html">baseUrl</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="554977868%2FProperties%2F374203369" anchor-label="client" id="554977868%2FProperties%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+<a data-name="554977868%2FProperties%2F1651365997" anchor-label="client" id="554977868%2FProperties%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="client.html"><span><span>client</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="554977868%2FProperties%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="554977868%2FProperties%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="client.html">client</a><span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="client.html">client</a><span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -173,107 +173,107 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="tableheader">Functions</h2>
-        <div class="table"><a data-name="12281547%2FFunctions%2F374203369" anchor-label="buildUri" id="12281547%2FFunctions%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+        <div class="table"><a data-name="12281547%2FFunctions%2F1651365997" anchor-label="buildUri" id="12281547%2FFunctions%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="build-uri.html"><span>build</span><wbr><span><span>Uri</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="12281547%2FFunctions%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="12281547%2FFunctions%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="build-uri.html"><span class="token function">buildUri</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="build-uri.html"><span class="token function">buildUri</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="970696693%2FFunctions%2F374203369" anchor-label="delete" id="970696693%2FFunctions%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+<a data-name="970696693%2FFunctions%2F1651365997" anchor-label="delete" id="970696693%2FFunctions%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="delete.html"><span><span>delete</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="970696693%2FFunctions%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="970696693%2FFunctions%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="delete.html">T</a><span class="token operator">&gt; </span><a href="delete.html"><span class="token function">delete</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="delete.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="delete.html">T</a><span class="token operator">&gt; </span><a href="delete.html"><span class="token function">delete</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="delete.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="2069491156%2FFunctions%2F374203369" anchor-label="get" id="2069491156%2FFunctions%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+<a data-name="2069491156%2FFunctions%2F1651365997" anchor-label="get" id="2069491156%2FFunctions%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="get.html"><span><span>get</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2069491156%2FFunctions%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2069491156%2FFunctions%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator">&gt; </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator">&gt; </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="358586665%2FFunctions%2F374203369" anchor-label="patch" id="358586665%2FFunctions%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+<a data-name="358586665%2FFunctions%2F1651365997" anchor-label="patch" id="358586665%2FFunctions%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="patch.html"><span><span>patch</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="358586665%2FFunctions%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="358586665%2FFunctions%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="patch.html">T</a><span class="token operator">&gt; </span><a href="patch.html"><span class="token function">patch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">body<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="patch.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="patch.html">T</a><span class="token operator">&gt; </span><a href="patch.html"><span class="token function">patch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">body<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="patch.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="934907888%2FFunctions%2F374203369" anchor-label="post" id="934907888%2FFunctions%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+<a data-name="934907888%2FFunctions%2F1651365997" anchor-label="post" id="934907888%2FFunctions%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="post.html"><span><span>post</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="934907888%2FFunctions%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="934907888%2FFunctions%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="post.html">T</a><span class="token operator">&gt; </span><a href="post.html"><span class="token function">post</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">body<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="post.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="post.html">T</a><span class="token operator">&gt; </span><a href="post.html"><span class="token function">post</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">body<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="post.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1644693186%2FFunctions%2F374203369" anchor-label="postMultipartFile" id="-1644693186%2FFunctions%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+<a data-name="-1644693186%2FFunctions%2F1651365997" anchor-label="postMultipartFile" id="-1644693186%2FFunctions%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="post-multipart-file.html"><span>post</span><wbr><span>Multipart</span><wbr><span><span>File</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1644693186%2FFunctions%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1644693186%2FFunctions%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="post-multipart-file.html">T</a><span class="token operator">&gt; </span><a href="post-multipart-file.html"><span class="token function">postMultipartFile</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">multipartData<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html">ByteArray</a><span class="token punctuation">, </span></span><span class="parameter ">fileName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"file"</span><span class="token punctuation">, </span></span><span class="parameter ">contentType<span class="token operator">: </span><span data-unresolved-link="io.ktor.http/ContentType///PointingToDeclaration/">ContentType</span><span class="token operator"> = </span>ContentType.Application.OctetStream<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="post-multipart-file.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="post-multipart-file.html">T</a><span class="token operator">&gt; </span><a href="post-multipart-file.html"><span class="token function">postMultipartFile</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">multipartData<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html">ByteArray</a><span class="token punctuation">, </span></span><span class="parameter ">fileName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"file"</span><span class="token punctuation">, </span></span><span class="parameter ">contentType<span class="token operator">: </span><span data-unresolved-link="io.ktor.http/ContentType///PointingToDeclaration/">ContentType</span><span class="token operator"> = </span>ContentType.Application.OctetStream<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="post-multipart-file.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1628093424%2FFunctions%2F374203369" anchor-label="put" id="1628093424%2FFunctions%2F374203369" data-filterable-set=":ktkit-ktor-httpclient/jvmMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/jvmMain" data-filterable-set=":ktkit-ktor-httpclient/jvmMain">
+<a data-name="1628093424%2FFunctions%2F1651365997" anchor-label="put" id="1628093424%2FFunctions%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="put.html"><span><span>put</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1628093424%2FFunctions%2F374203369"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1628093424%2FFunctions%2F1651365997"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/jvmMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="put.html">T</a><span class="token operator">&gt; </span><a href="put.html"><span class="token function">put</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">body<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="put.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">inline suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="put.html">T</a><span class="token operator">&gt; </span><a href="put.html"><span class="token function">put</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">body<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>headers<span class="token operator">: </span><a href="../-headers-f/index.html">HeadersF</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="put.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>

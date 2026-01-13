@@ -2,9 +2,10 @@
 
 package io.github.smyrgeorge.ktkit.api.rest
 
-import io.github.smyrgeorge.ktkit.context.Principal
+import io.github.smyrgeorge.ktkit.api.error.impl.MalformedRequestBody
 import io.github.smyrgeorge.ktkit.api.error.impl.MissingParameter
 import io.github.smyrgeorge.ktkit.api.error.impl.UnsupportedEnumValue
+import io.github.smyrgeorge.ktkit.context.Principal
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.receive
@@ -127,5 +128,10 @@ class HttpContext(
      * @param T The type to deserialize the body into
      * @return The deserialized body of type T
      */
-    suspend inline fun <reified T : Any> body(): T = call.receive()
+    suspend inline fun <reified T : Any> body(): T =
+        try {
+            call.receive()
+        } catch (e: Exception) {
+            MalformedRequestBody(e).raise()
+        }
 }

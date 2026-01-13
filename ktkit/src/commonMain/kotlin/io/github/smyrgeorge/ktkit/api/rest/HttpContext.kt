@@ -131,7 +131,7 @@ class HttpContext(
     suspend inline fun <reified T : Any> body(): T =
         try {
             call.receive()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             MalformedRequestBody(e).raise()
         }
 }

@@ -13,7 +13,7 @@ class TestRestHandler(
         GET("") {
             log.info { "Hello, ${user.username}!" }
             testService.withTransaction {
-                testService.test()
+                testService.test().map { l -> l.map { it.toDto() } }
             }
         }
     }

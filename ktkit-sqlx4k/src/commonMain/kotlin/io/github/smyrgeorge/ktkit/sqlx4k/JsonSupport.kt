@@ -15,14 +15,17 @@ import kotlinx.serialization.serializer
 import kotlin.reflect.KClass
 
 /**
- * Utility object for providing JSON serialization and deserialization support,
- * including the creation of value encoders for mapping Kotlin classes to string
- * representations suitable for database interactions.
+ * A utility object that provides JSON serialization and deserialization support
+ * for database-related operations using Kotlin Serialization.
  *
- * This object simplifies the registration and usage of JSON-based encoders
- * by offering methods for generating value encoder registries for specified
- * Kotlin classes. It supports a customizable JSON configuration through the
- * kotlinx.serialization library.
+ * This object facilitates the creation of custom encoders and decoders, capable
+ * of handling specific types and their subclasses. These encoders can be used for
+ * translating between Kotlin objects and their database representations.
+ *
+ * Functionality:
+ * - Configures a default JSON serialization format with a snake_case naming strategy.
+ * - Creates preconfigured `ValueEncoderRegistry` instances for given types.
+ * - Provides flexible methods for generating encoders for sealed and non-sealed classes.
  */
 object JsonSupport {
     @OptIn(ExperimentalSerializationApi::class)
@@ -33,26 +36,39 @@ object JsonSupport {
         }
     }
 
-    fun encoders(vararg types: KClass<*>): ValueEncoderRegistry =
-        encoders(defaultJson, *types)
-
-    fun encoders(json: Json, vararg types: KClass<*>): ValueEncoderRegistry =
-        encoders(json, types.toSet())
-
     fun encoders(types: Set<KClass<*>>): ValueEncoderRegistry =
         encoders(defaultJson, types)
 
-    fun encoders(json: Json, types: Set<KClass<*>>): ValueEncoderRegistry {
-        val encoders: List<Pair<KClass<*>, ValueEncoder<out Any>>> = types.flatMap { encoder(json, it) }
-        return ValueEncoderRegistry().apply {
-            encoders.forEach { encoder ->
-                register(encoder.first, encoder.second)
-            }
-        }
-    }
+    fun encoders(types: Set<Pair<KClass<*>, Set<KClass<*>>>>): ValueEncoderRegistry =
+        encoders(defaultJson, types)
 
-    fun <T : @Serializable Any> encoder(json: Json, clazz: KClass<T>): List<Pair<KClass<*>, ValueEncoder<T>>> {
-        val subclasses = clazz.getSealedSubclasses().map {
+    fun encoders(json: Json, types: Set<KClass<*>>): ValueEncoderRegistry =
+        types
+            .flatMap { encoder(json, it) }
+            .let { encoders ->
+                ValueEncoderRegistry().apply {
+                    encoders.forEach { (clazz, encoder) -> register(clazz, encoder) }
+                }
+            }
+
+    fun encoders(json: Json, types: Set<Pair<KClass<*>, Set<KClass<*>>>>): ValueEncoderRegistry =
+        types
+            .flatMap { (base, subclasses) -> encoder(json, base, subclasses) }
+            .let { encoders ->
+                ValueEncoderRegistry().apply {
+                    encoders.forEach { (clazz, encoder) -> register(clazz, encoder) }
+                }
+            }
+
+    fun <T : @Serializable Any> encoder(json: Json, clazz: KClass<T>): List<Pair<KClass<*>, ValueEncoder<T>>> =
+        encoder(json, clazz, clazz.getSealedSubclasses().toSet())
+
+    fun <T : @Serializable Any> encoder(
+        json: Json,
+        clazz: KClass<T>,
+        subclasses: Set<KClass<*>>
+    ): List<Pair<KClass<*>, ValueEncoder<T>>> {
+        val subclasses = subclasses.map {
             it to object : ValueEncoder<T> {
                 override fun encode(value: T): String =
                     json.encodeToString(clazz.serializer(), value)

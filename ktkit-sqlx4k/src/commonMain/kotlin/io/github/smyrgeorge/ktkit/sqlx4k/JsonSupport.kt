@@ -39,21 +39,9 @@ object JsonSupport {
     fun encoders(types: Set<KClass<*>>): ValueEncoderRegistry =
         encoders(defaultJson, types)
 
-    fun encoders(types: Set<Pair<KClass<*>, Set<KClass<*>>>>): ValueEncoderRegistry =
-        encoders(defaultJson, types)
-
     fun encoders(json: Json, types: Set<KClass<*>>): ValueEncoderRegistry =
         types
             .flatMap { encoder(json, it) }
-            .let { encoders ->
-                ValueEncoderRegistry().apply {
-                    encoders.forEach { (clazz, encoder) -> register(clazz, encoder) }
-                }
-            }
-
-    fun encoders(json: Json, types: Set<Pair<KClass<*>, Set<KClass<*>>>>): ValueEncoderRegistry =
-        types
-            .flatMap { (base, subclasses) -> encoder(json, base, subclasses) }
             .let { encoders ->
                 ValueEncoderRegistry().apply {
                     encoders.forEach { (clazz, encoder) -> register(clazz, encoder) }

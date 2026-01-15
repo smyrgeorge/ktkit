@@ -39,11 +39,13 @@
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
-        <div class="library-version" id="library-version">0.0.5
+        <div class="library-version" id="library-version">0.0.6
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
                 <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":ktkit-sqlx4k/commonMain">common</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":ktkit-sqlx4k/jvmMain">jvm</button>
+                <button class="platform-tag platform-selector native-like" data-active="" aria-pressed="true" data-filter=":ktkit-sqlx4k/nativeMain">native</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
                 <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
@@ -57,6 +59,20 @@
                                 <input type="checkbox" class="checkbox--input" id=":ktkit-sqlx4k/commonMain" data-filter=":ktkit-sqlx4k/commonMain">
                                 <span class="checkbox--icon"></span>
                                 common
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ktkit-sqlx4k/jvmMain" data-filter=":ktkit-sqlx4k/jvmMain">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                        <li role="option" class="dropdown--option platform-selector-option native-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ktkit-sqlx4k/nativeMain" data-filter=":ktkit-sqlx4k/nativeMain">
+                                <span class="checkbox--icon"></span>
+                                native
                             </label>
                         </li>
                 </ul>
@@ -90,13 +106,13 @@
         </nav>
         <div id="resizer" class="resizer" data-item-type="BAR"></div>
         <div id="main" data-item-type="SECTION" role="main">
-<div class="main-content" data-page-type="package" id="content" pageids="ktkit-sqlx4k::io.github.smyrgeorge.ktkit.sqlx4k////PointingToDeclaration//431789036">
+<div class="main-content" data-page-type="package" id="content" pageids="ktkit-sqlx4k::io.github.smyrgeorge.ktkit.sqlx4k////PointingToDeclaration//1470011230">
   <div class="breadcrumbs"><a href="../index.html">ktkit-sqlx4k</a><span class="delimiter">/</span><span class="current">io.github.smyrgeorge.ktkit.sqlx4k</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="tableheader">Types</h2>
@@ -156,6 +172,27 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-sqlx4k/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-json-support/index.html">JsonSupport</a></div><div class="brief "><p class="paragraph">Utility object for providing JSON serialization and deserialization support, including the creation of value encoders for mapping Kotlin classes to string representations suitable for database interactions.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-1115978653%2FFunctions%2F1470011230" anchor-label="getSealedSubclasses" id="-1115978653%2FFunctions%2F1470011230" data-filterable-set=":ktkit-sqlx4k/commonMain,:ktkit-sqlx4k/jvmMain,:ktkit-sqlx4k/nativeMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-sqlx4k/commonMain,:ktkit-sqlx4k/jvmMain,:ktkit-sqlx4k/nativeMain" data-filterable-set=":ktkit-sqlx4k/commonMain,:ktkit-sqlx4k/jvmMain,:ktkit-sqlx4k/nativeMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-sealed-subclasses.html"><span>get</span><wbr><span>Sealed</span><wbr><span><span>Subclasses</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1115978653%2FFunctions%2F1470011230"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":ktkit-sqlx4k/commonMain" data-filterable-set=":ktkit-sqlx4k/commonMain" data-active="" data-toggle=":ktkit-sqlx4k/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":ktkit-sqlx4k/jvmMain" data-filterable-set=":ktkit-sqlx4k/jvmMain" data-toggle=":ktkit-sqlx4k/jvmMain">jvm</button><button class="platform-bookmark" data-filterable-current=":ktkit-sqlx4k/nativeMain" data-filterable-set=":ktkit-sqlx4k/nativeMain" data-toggle=":ktkit-sqlx4k/nativeMain">native</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-sqlx4k/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="get-sealed-subclasses.html"><span class="token function">getSealedSubclasses</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div><div class="content sourceset-dependent-content" data-togglable=":ktkit-sqlx4k/jvmMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="get-sealed-subclasses.html"><span class="token function">getSealedSubclasses</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div><div class="content sourceset-dependent-content" data-togglable=":ktkit-sqlx4k/nativeMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="get-sealed-subclasses.html"><span class="token function">getSealedSubclasses</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div>                  </div>
                 </div>
               </div>
             </div>

@@ -2,4 +2,4 @@ package io.github.smyrgeorge.ktkit.sqlx4k
 
 import kotlin.reflect.KClass
 
-actual fun KClass<*>.getSealedSubclasses(): List<KClass<*>> = emptyList()
+actual fun KClass<*>.sealedSubclasses(): List<KClass<*>> = emptyList()

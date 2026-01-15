@@ -43,19 +43,33 @@ object JsonSupport {
         encoders(defaultJson, types)
 
     fun encoders(json: Json, types: Set<KClass<*>>): ValueEncoderRegistry {
-        val encoders = types.map { it to encoder(json, it) }
+        val encoders: List<Pair<KClass<*>, ValueEncoder<out Any>>> = types.flatMap { encoder(json, it) }
         return ValueEncoderRegistry().apply {
-            encoders.forEach { (clazz, encoder) -> register(clazz, encoder) }
+            encoders.forEach { encoder ->
+                register(encoder.first, encoder.second)
+            }
         }
     }
 
-    fun <T : @Serializable Any> encoder(json: Json, clazz: KClass<T>): ValueEncoder<T> {
-        return object : ValueEncoder<T> {
+    fun <T : @Serializable Any> encoder(json: Json, clazz: KClass<T>): List<Pair<KClass<*>, ValueEncoder<T>>> {
+        val subclasses = clazz.getSealedSubclasses().map {
+            it to object : ValueEncoder<T> {
+                override fun encode(value: T): String =
+                    json.encodeToString(clazz.serializer(), value)
+
+                override fun decode(value: ResultSet.Row.Column): T =
+                    json.decodeFromString(clazz.serializer(), value.asString())
+            }
+        }
+
+        val main = object : ValueEncoder<T> {
             override fun encode(value: T): String =
                 json.encodeToString(clazz.serializer(), value)
 
             override fun decode(value: ResultSet.Row.Column): T =
                 json.decodeFromString(clazz.serializer(), value.asString())
         }
+
+        return subclasses + (clazz to main)
     }
 }

@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.example.test
 
 import io.github.smyrgeorge.ktkit.api.rest.impl.XRealNameRestHandler
-import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
+import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction2
 import io.ktor.server.routing.Route
 
 class TestRestHandler(
@@ -12,8 +12,8 @@ class TestRestHandler(
     override fun Route.routes() {
         GET("") {
             log.info { "Hello, ${user.username}!" }
-            testService.withTransaction {
-                testService.test().map { l -> l.map { it.toDto() } }
+            testService.withTransaction2 {
+                testService.test().map { it.toDto() }
             }
         }
     }

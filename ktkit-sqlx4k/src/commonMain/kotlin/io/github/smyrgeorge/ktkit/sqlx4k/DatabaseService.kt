@@ -29,14 +29,45 @@ interface DatabaseService : Service {
         fun <T> DbResult<T>.toAppResult(): AppResult<T> =
             mapLeft { DatabaseError(it.code.name, it.message ?: "Unknown error") }
 
+        /**
+         * Executes a database operation within a context that handles error propagation and transformation.
+         *
+         * This function allows executing a database operation (provided in the `block` parameter)
+         * while managing error handling within the provided error context. Any database-specific errors
+         * are converted into application-level error representations.
+         *
+         * @param block A lambda representing the database operation to be executed. It operates within a context
+         *              that raises `SQLError` types and returns a result of type `A`.
+         * @return The result of the database operation of type `A` after error handling and transformation.
+         */
         context(_: Raise<ErrorSpec>)
         inline fun <A> db(block: context(Raise<SQLError>)() -> A): A =
             dbCaching { block() }.toAppResult().bind()
 
+        /**
+         * A utility method for caching database operations.
+         *
+         * This function provides a context-aware mechanism to execute a block of code within
+         * a database operation that can handle SQL-related errors. It leverages a `Raise` type
+         * for error handling, allowing clean error management in a functional style.
+         *
+         * @param block The block of code to execute, which operates within the `Raise<SQLError>`
+         *              context to handle potential SQL errors during database operations.
+         * @return A result of type `DbResult<A>` that encapsulates either the successful execution
+         *         or an error.
+         */
         context(_: Raise<ErrorSpec>)
         inline fun <A> dbCaching(block: context(Raise<SQLError>)() -> A): DbResult<A> =
             either { block() }
 
+        /**
+         * Executes a transactional context for a given operation. The operation is wrapped
+         * in a database transaction and executed while tracking its duration using OpenTelemetry.
+         *
+         * @param f The function to be executed within a database transaction. This function
+         *          is provided with an implicit [Transaction] context and can return a result of type [R].
+         * @return The result of the function execution within the transactional context.
+         */
         context(ec: ExecContext)
         suspend inline fun <R> DatabaseService.withTransaction(
             crossinline f: suspend context(Transaction)() -> R
@@ -46,6 +77,18 @@ interface DatabaseService : Service {
             ec.span("db.transaction", tags) { f() }
         }
 
+        /**
+         * Executes a transactional operation within a database context while catching and handling errors,
+         * returning a result wrapped in an [AppResult].
+         *
+         * Combines the transactional execution using [withTransaction] with error handling using the `either` construct.
+         * This method provides a convenient way to execute database operations within a transaction and handle
+         * potential failures in a unified manner.
+         *
+         * @param f The suspending function to execute within a database transaction. The function is provided with an
+         *          implicit [Transaction] context and is expected to produce a result of type [R].
+         * @return An [AppResult] containing the result of the operation if successful, or an error if an exception occurs.
+         */
         context(ec: ExecContext)
         suspend inline fun <R> DatabaseService.withTransactionCatching(
             crossinline f: suspend context(Transaction)() -> R

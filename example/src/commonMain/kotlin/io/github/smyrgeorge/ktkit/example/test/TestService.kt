@@ -8,12 +8,12 @@ import io.github.smyrgeorge.ktkit.sqlx4k.AuditableDatabaseService
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.db
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.dbCaching
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.toAppResult
-import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.Transaction
+import io.github.smyrgeorge.sqlx4k.arrow.impl.extensions.DbResult
 
 class TestService(
     override val db: Driver,
@@ -32,7 +32,7 @@ class TestService(
         val test: Int = db { sqlx4k() }
         log.info { "Fetched $test tests" }
 
-        val handled: AppResult<Int> = dbCaching { sqlx4kError() }
+        val handled: DbResult<Int> = dbCaching { sqlx4kError() }
         log.info { "Fetched $handled tests" }
 
         return findAll().also {

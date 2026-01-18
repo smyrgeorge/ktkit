@@ -31,11 +31,11 @@ interface DatabaseService : Service {
 
         context(_: Raise<ErrorSpec>)
         inline fun <A> db(block: context(Raise<SQLError>)() -> A): A =
-            dbCaching { block() }.bind()
+            dbCaching { block() }.toAppResult().bind()
 
         context(_: Raise<ErrorSpec>)
-        inline fun <A> dbCaching(block: context(Raise<SQLError>)() -> A): AppResult<A> =
-            either { block() }.toAppResult()
+        inline fun <A> dbCaching(block: context(Raise<SQLError>)() -> A): DbResult<A> =
+            either { block() }
 
         context(ec: ExecContext)
         suspend inline fun <R> DatabaseService.withTransaction(

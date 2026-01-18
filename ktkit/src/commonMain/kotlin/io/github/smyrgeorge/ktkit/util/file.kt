@@ -5,11 +5,13 @@ import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.readByteArray
 
-private val fs = SystemFileSystem
+val FS = SystemFileSystem
+
+fun String.toPath() = Path(this)
 
 fun readEntireFileFromDisk(path: Path): String {
     val buffer = Buffer()
-    val source = fs.source(path)
+    val source = FS.source(path)
     try {
         source.readAtMostTo(buffer, Int.MAX_VALUE.toLong())
         return buffer.readByteArray().decodeToString() // UTF-8 by default

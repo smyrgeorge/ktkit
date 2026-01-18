@@ -27,6 +27,11 @@ kotlin {
                 api(libs.ktor.serialization.kotlinx.json)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
         jvmMain {
             dependencies {
                 implementation(libs.log4k.slf4j)

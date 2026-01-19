@@ -15,12 +15,31 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 
 /**
- * Utility object for loading and deserializing configuration properties from TOML files.
+ * Utility object for managing and loading configuration properties from TOML files.
  *
- * Provides a method for reading TOML files and deserializing their content into strongly typed objects
- * using Kotlin serialization.
+ * This object provides functions to load and deserialize TOML configuration files
+ * into objects of type `T`. It supports loading from both the filesystem and resources,
+ * as well as merging configurations from multiple TOML files.
  */
 object ConfigPropertiesToml {
+    /**
+     * Loads a configuration file, parses it as a TOML configuration, and deserializes
+     * its content into an object of the specified type [T]. It searches for the configuration
+     * file in predefined locations and merges the results as needed.
+     *
+     * The method attempts to load and merge configuration in the following order of precedence:
+     * 1. "application.toml" from the current directory.
+     * 2. "config/application.toml" from the "config" directory.
+     * 3. "application.local.toml" from the current directory.
+     * 4. "config/application.local.toml" from the "config" directory.
+     *
+     * If one or more files are found, their contents are merged. Values from files with
+     * higher precedence override those from lower-precedence files during the merge process.
+     * If no files are found, only the base TOML content from resources is used.
+     *
+     * @return An instance of type [T] created by deserializing the merged or standalone
+     * configuration file(s).
+     */
     inline fun <reified T : @Serializable Any> load(): T {
         val base = readEntireFileFromResources(Path("application.toml"))
 

@@ -10,12 +10,12 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-internal fun JsonBuilder.defaultWithErrors() {
+fun JsonBuilder.defaultWithErrors() {
     default()
     serializersModule = defaultSerializersModule
 }
 
-internal val defaultSerializersModule = SerializersModule {
+val defaultSerializersModule = SerializersModule {
     polymorphic(ErrorSpecData::class) {
         subclass(DatabaseErrorData::class)
         subclass(EmptyErrorData::class)
@@ -25,9 +25,10 @@ internal val defaultSerializersModule = SerializersModule {
 }
 
 fun JsonBuilder.default() {
+    classDiscriminator = "@type"
     encodeDefaults = true
     ignoreUnknownKeys = true
-    isLenient = true
+    isLenient = false
     prettyPrint = false
     coerceInputValues = false
     explicitNulls = false

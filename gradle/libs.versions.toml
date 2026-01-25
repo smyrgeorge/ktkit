@@ -24,7 +24,7 @@ ksp = "2.3.4"
 # https://github.com/arrow-kt/arrow
 arrow = "2.2.1.1"
 # https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux
-spring-boot = "4.0.1"
+spring-boot = "4.0.2"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

@@ -36,23 +36,95 @@ development.
 > based on real-world usage. Production use is possible but expect some breaking changes. Feedback and contributions are
 > highly appreciated!
 
-**What it does:**
+**What it does (today):**
 
-- Provides type-safe abstractions for REST APIs, database operations, and message queuing
-- Integrates observability from the ground up with structured logging and OpenTelemetry tracing
-- Manages dependency injection, configuration, and request context propagation automatically
-- Enables functional error handling patterns with Arrow's Either monad
-- Supports multiple platforms (JVM, Linux, macOS) through Kotlin Multiplatform
+- Provides a small application bootstrap around Ktor with DI, JSON, and auto-registered REST handlers
+- Standardizes request handling with tracing, auth/permissions hooks, and RFC 9457-style API errors
+- Exposes basic health and metrics endpoints for services built on the toolkit
+- Offers TOML configuration loading with environment-variable interpolation and file/resource merging
+- Adds convenience helpers for retries, JSON/TOML utilities, and KMP-friendly file/http/process access
+- Uses Arrow (Raise/Either) and Kotlin context parameters to keep error handling and context passing lightweight
 
-## Features
+## Modules and features
 
-### Key Technologies
+### Core (`ktkit`)
 
-- **Ktor**: HTTP server framework
-- **Koin**: Dependency injection
-- **log4k**: Structured logging with tracing
-- **sqlx4k**: Multiplatform database access
-- **Arrow**: Functional error handling with Either monad
+- `Application` wrapper for Ktor server startup/shutdown, JSON setup, Koin DI, and routing
+- `AbstractRestHandler` with typed request helpers, `ExecContext` propagation, and error mapping
+- Built-in `/api/status/health` and `/api/status/metrics` endpoints
+- Error model (`ErrorSpec`/`ApiError`) aligned with RFC 9457 conventions
+- Config loader for TOML with environment substitution and layered overrides
+
+### sqlx4k integration (`ktkit-sqlx4k`)
+
+- `DatabaseService` helpers for error mapping and traced transactions
+- `AuditableRepository` hooks for `createdAt/createdBy/updatedAt/updatedBy`
+
+### Ktor HTTP client (`ktkit-ktor-httpclient`)
+
+- `HttpClientFactory` with timeouts, JSON, and optional logging
+- `AbstractHttpClient` with typed calls and `ApiError` -> `RuntimeError` mapping
+- Bearer-token and `x-real-name` header variants
+
+### Spring WebClient (`ktkit-spring-webclient`, JVM only)
+
+- `WebclientFactory` with pooled connections and JSON codecs
+- `AbstractWebClient` with typed calls and `ApiError` -> `RuntimeError` mapping
+- Bearer-token and `x-real-name` header variants
+
+### PGMQ integration (`ktkit-sqlx4k-pgmq`)
+
+- `Pgmq` wrapper and `AbstractPgmqEventHandler` with trace/user propagation
+- Consumer lifecycle helpers with retry + shutdown handling
+
+## Ergonomics (Arrow + context parameters)
+
+The example module shows how Arrow's `Raise` and Kotlin context parameters keep service code compact while
+preserving explicitness around errors and execution context:
+
+```kotlin
+class TestService(
+    override val db: Driver,
+    override val repo: TestRepository,
+) : AuditableDatabaseService<Test> {
+    val log = Logger.of(this::class)
+
+    context(_: ExecContext, _: QueryExecutor)
+    private suspend fun findAll(): List<Test> =
+        repo.findAll().toAppResult().bind()
+
+    context(_: ExecContext, _: Transaction)
+    suspend fun test(): List<Test> {
+        log.info { "Fetching all tests" }
+
+        val test: Int = db { sqlx4k() }
+        log.info { "Fetched $test tests" }
+
+        val handled: DbResult<Int> = dbCaching { sqlx4kError() }
+        log.info { "Fetched $handled tests" }
+
+        return findAll().also {
+            log.info { "Fetched ${it.size} tests" }
+        }
+    }
+}
+```
+
+The execution context is a coroutine context element that also implements Arrow's `Raise` and log4k's tracing context:
+
+```kotlin
+class ExecContext(
+    val reqId: String,
+    val reqTs: Instant = Clock.System.now(),
+    val principal: Principal,
+    // Only a part of the context is presented here.
+    // Check the documentation for more information.
+) : Raise<ErrorSpec>, TracingContext by tracing, CoroutineContext.Element
+```
+
+This lets handlers and services raise domain errors, access tracing, and carry request metadata without threading
+parameters manually. The context is propagated in two ways at once: via `CoroutineContext` and via context
+parameters in function signatures.
 
 ## Example
 

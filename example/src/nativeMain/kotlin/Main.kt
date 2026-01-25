@@ -1,3 +1,4 @@
+import io.github.smyrgeorge.ktkit.example.ExampleApplication
 import io.github.smyrgeorge.ktkit.example.start
 import io.github.smyrgeorge.ktkit.example.test.Test
 import io.github.smyrgeorge.ktkit.sqlx4k.JsonSupport
@@ -9,7 +10,7 @@ import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
 import kotlinx.coroutines.runBlocking
 
 fun main() {
-    val log = Logger.of("MainKt")
+    val log = Logger.of(ExampleApplication::class)
 
     val db = postgreSQL(
         url = "postgresql://localhost:35432/test",
@@ -24,7 +25,6 @@ fun main() {
             )
         )
     )
-
 
     runBlocking {
         db.migrate(

@@ -12,7 +12,7 @@ import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
 import kotlinx.coroutines.runBlocking
 
 fun main() {
-    val log = Logger.of("MainKt")
+    val log = Logger.of(ExampleApplication::class)
 
     val db = postgreSQL(
         url = "postgresql://localhost:35432/test",

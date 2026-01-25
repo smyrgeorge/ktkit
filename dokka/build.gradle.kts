@@ -8,7 +8,6 @@ dependencies {
     dokka(project(":ktkit-spring-webclient"))
     dokka(project(":ktkit-sqlx4k"))
     dokka(project(":ktkit-sqlx4k-pgmq"))
-    dokka(project(":ktkit-sqlx4k-postgres"))
 }
 
 dokka {

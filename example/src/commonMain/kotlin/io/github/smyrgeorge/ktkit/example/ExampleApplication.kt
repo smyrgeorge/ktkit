@@ -7,22 +7,32 @@ import io.github.smyrgeorge.ktkit.example.test.TestRepository
 import io.github.smyrgeorge.ktkit.example.test.TestRestHandler
 import io.github.smyrgeorge.ktkit.example.test.TestService
 import io.github.smyrgeorge.ktkit.sqlx4k.pgmq.Pgmq
+import io.github.smyrgeorge.log4k.Level
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.postgres.IPostgresSQL
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 
+class ExampleApplication
+
 fun start(db: IPostgresSQL, pgmq: Pgmq) {
     Application(
-        name = "io.github.smyrgeorge.ktkit.example.Application",
+        name = Application::class.simpleName!!,
         conf = Application.Conf(
             host = "localhost",
             port = 8080,
         ),
         configure = {
             tracing {
-//                appenders.register(SimpleConsoleTracingAppender())
+                // Configure tracing.
+            }
+            logging {
+                // Configure logging.
+                level = Level.INFO
+                // Log in JSON format:
+                // appenders.unregisterAll()
+                // appenders.register(SimpleJsonConsoleLoggingAppender())
             }
 
             di {
@@ -33,14 +43,8 @@ fun start(db: IPostgresSQL, pgmq: Pgmq) {
                 single { TestRepositoryImpl }.bind<TestRepository>()
             }
         },
-//        postConfigure = {
-//            val db = di.get<Driver>()
-//            db.migrate(
-//                path = "./src/db/migrations",
-//                afterFileMigration = { m, d ->
-//                    log.info { "Applied migration $m to database (took $d)" }
-//                }
-//            ).getOrThrow()
-//        }
+        postConfigure = {
+            // After configuration, perform any necessary post-configuration tasks.
+        }
     ).start()
 }

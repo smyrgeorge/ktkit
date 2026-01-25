@@ -21,8 +21,8 @@ kotlin {
             dependencies {
                 implementation(project(":ktkit"))
                 implementation(project(":ktkit-sqlx4k"))
+                implementation(libs.sqlx4k.postgres)
                 implementation(project(":ktkit-sqlx4k-pgmq"))
-                implementation(project(":ktkit-sqlx4k-postgres"))
             }
             // Config if your code is under the commonMain module.
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
@@ -48,13 +48,9 @@ tasks.named<Jar>("jvmJar") {
 }
 
 ksp {
+    arg("dialect", "postgresql")
     arg("output-package", "io.github.smyrgeorge.ktkit.example.generated")
 }
-
-//dependencies {
-//    add("kspJvm", libs.sqlx4k.codegen)
-//    add("kspMacosArm64", libs.sqlx4k.codegen)
-//}
 
 // Config if your code is under the commonMain module.
 dependencies {

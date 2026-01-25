@@ -57,27 +57,18 @@ development.
 
 ### sqlx4k integration (`ktkit-sqlx4k`)
 
+> sqlx4k: A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL,
+> MySQL/MariaDB, and SQLite supported.
+
 - `DatabaseService` helpers for error mapping and traced transactions
 - `AuditableRepository` hooks for `createdAt/createdBy/updatedAt/updatedBy`
-
-### Ktor HTTP client (`ktkit-ktor-httpclient`)
-
-- `HttpClientFactory` with timeouts, JSON, and optional logging
-- `AbstractHttpClient` with typed calls and `ApiError` -> `RuntimeError` mapping
-- Bearer-token and `x-real-name` header variants
-
-### Spring WebClient (`ktkit-spring-webclient`, JVM only)
-
-- `WebclientFactory` with pooled connections and JSON codecs
-- `AbstractWebClient` with typed calls and `ApiError` -> `RuntimeError` mapping
-- Bearer-token and `x-real-name` header variants
 
 ### PGMQ integration (`ktkit-sqlx4k-pgmq`)
 
 - `Pgmq` wrapper and `AbstractPgmqEventHandler` with trace/user propagation
 - Consumer lifecycle helpers with retry + shutdown handling
 
-## Ergonomics (Arrow + context parameters)
+## Ergonomics (Arrow + context-parameters)
 
 The example module shows how Arrow's `Raise` and Kotlin context parameters keep service code compact while
 preserving explicitness around errors and execution context:
@@ -97,12 +88,6 @@ class TestService(
     suspend fun test(): List<Test> {
         log.info { "Fetching all tests" }
 
-        val test: Int = db { sqlx4k() }
-        log.info { "Fetched $test tests" }
-
-        val handled: DbResult<Int> = dbCaching { sqlx4kError() }
-        log.info { "Fetched $handled tests" }
-
         return findAll().also {
             log.info { "Fetched ${it.size} tests" }
         }
@@ -115,7 +100,7 @@ The execution context is a coroutine context element that also implements Arrow'
 ```kotlin
 class ExecContext(
     val reqId: String,
-    val reqTs: Instant = Clock.System.now(),
+    val reqTs: Instant,
     val principal: Principal,
     // Only a part of the context is presented here.
     // Check the documentation for more information.

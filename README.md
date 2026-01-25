@@ -65,6 +65,8 @@ development.
 
 ### PGMQ integration (`ktkit-sqlx4k-pgmq`)
 
+> A lightweight message queue. Like AWS SQS and RSMQ but on Postgres.
+
 - `Pgmq` wrapper and `AbstractPgmqEventHandler` with trace/user propagation
 - Consumer lifecycle helpers with retry + shutdown handling
 

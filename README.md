@@ -57,7 +57,7 @@ development.
 
 ### sqlx4k integration (`ktkit-sqlx4k`)
 
-> sqlx4k: A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL,
+> A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL,
 > MySQL/MariaDB, and SQLite supported.
 
 - `DatabaseService` helpers for error mapping and traced transactions

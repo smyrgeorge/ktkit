@@ -25,7 +25,7 @@ import kotlin.io.encoding.Base64
 object XRealNamePrincipalExtractor : PrincipalExtractor {
     const val HEADER_NAME: String = "x-real-name"
 
-    override suspend fun extract(call: ApplicationCall): Result<UserToken?> {
+    override fun extract(call: ApplicationCall): Result<UserToken?> {
         return runCatching {
             val header = call.request.headers[HEADER_NAME] ?: return@runCatching null
             extract(header).getOrThrow()
@@ -42,6 +42,7 @@ object XRealNamePrincipalExtractor : PrincipalExtractor {
             }
         }
     }
+
     private val serde: Json = Json { ignoreUnknownKeys = true }
     fun UserToken.toXRealName(): String {
         return Base64.encode(serde.encodeToString(this).toByteArray())

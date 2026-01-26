@@ -32,7 +32,7 @@ interface PrincipalExtractor {
      * @return A [Result] containing a [Principal] if extraction is successful,
      * null if no token could be resolved, or an exception if an error occurs.
      */
-    suspend fun extract(call: ApplicationCall): Result<Principal?>
+    fun extract(call: ApplicationCall): Result<Principal?>
 
     /**
      * Extracts a [Principal] from the given header string.

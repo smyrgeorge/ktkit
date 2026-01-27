@@ -202,8 +202,8 @@ class Application(
      * @property ktor The Ktor application instance.
      */
     class Configurer(
-        private val app: Application,
-        private val ktor: KtorApplication,
+        val app: Application,
+        val ktor: KtorApplication,
     ) {
         private var module: Module = Module()
         private var json: Json = Json { defaultWithErrors() }

@@ -25,5 +25,3 @@ module:ktkit-sqlx4k
 io.github.smyrgeorge.ktkit.sqlx4k
 module:ktkit-sqlx4k-pgmq
 io.github.smyrgeorge.ktkit.sqlx4k.pgmq
-module:ktkit-sqlx4k-postgres
-io.github.smyrgeorge.ktkit.sqlx4k.postgres

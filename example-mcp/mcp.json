@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "default" : {
-      "type": "sse",
-      "url": "http://localhost:8080/",
-      "note": "SSE with Ktor plugin"
-    }
-  }
-}

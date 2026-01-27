@@ -85,14 +85,13 @@ fun configureServer(): Server {
     server.addTool(
         name = "get-user-info",
         description = "Returns user information as JSON",
-    ) { _ ->
+    ) {
         val userInfo = UserInfo(
             id = 1,
             name = "John Doe",
             email = "john.doe@example.com",
             active = true
         )
-        val json = Json.encodeToString(userInfo)
         CallToolResult(
             content = emptyList(),
             structuredContent = Json.encodeToJsonElement(userInfo).jsonObject
@@ -115,6 +114,7 @@ fun configureServer(): Server {
 
     return server
 }
+val server = configureServer()
 
 fun start() {
     Application(
@@ -134,7 +134,7 @@ fun start() {
                     anyHost() // TODO: Don't do this in production if possible. Try to limit it.
                 }
                 mcp {
-                    configureServer()
+                    server
                 }
             }
         },

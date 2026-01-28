@@ -6,12 +6,15 @@ plugins {
 
 kotlin {
     sourceSets {
+        all {
+            languageSettings.enableLanguageFeature("ContextParameters")
+        }
         configureEach {
             languageSettings.progressiveMode = true
         }
         commonMain {
             dependencies {
-                api(project(":ktkit"))
+                implementation(project(":ktkit"))
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.content.negotiation)

@@ -38,7 +38,7 @@ data class UserToken(
     override val id: Uuid = uuid
 
     companion object {
-        val DEFAULT_SYSTEM_USER: UserToken =
+        internal val DEFAULT_SYSTEM_USER: UserToken =
             UserToken(
                 uuid = Uuid.parse("00000000-0000-0000-0000-000000000000"),
                 username = "system",
@@ -48,7 +48,7 @@ data class UserToken(
                 lastName = "Internal"
             )
 
-        val DEFAULT_ANONYMOUS_USER: UserToken =
+        internal val DEFAULT_ANONYMOUS_USER: UserToken =
             UserToken(
                 uuid = Uuid.parse("00000000-0000-0000-0000-000000000001"),
                 username = "anonymous",

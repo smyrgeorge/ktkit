@@ -3,10 +3,10 @@
 package io.github.smyrgeorge.ktkit.ktor.httpclient.impl
 
 import arrow.core.raise.context.Raise
-import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
+import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.ktor.httpclient.AbstractRestClient
 import io.github.smyrgeorge.ktkit.ktor.httpclient.HttpClientFactory
 import io.ktor.client.HttpClient
@@ -21,7 +21,7 @@ class XRealNameRestClient(
 ) : AbstractRestClient(json, client, baseUrl) {
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T> get(
-        token: UserToken,
+        token: Principal,
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T = get<T>(uri) {
@@ -31,7 +31,7 @@ class XRealNameRestClient(
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T, reified B> post(
-        token: UserToken,
+        token: Principal,
         uri: String,
         body: B,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
@@ -42,7 +42,7 @@ class XRealNameRestClient(
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T> postMultipart(
-        token: UserToken,
+        token: Principal,
         uri: String,
         data: ByteArray,
         fileName: String = "file",
@@ -55,7 +55,7 @@ class XRealNameRestClient(
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T, reified B> patch(
-        token: UserToken,
+        token: Principal,
         uri: String,
         body: B? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
@@ -66,7 +66,7 @@ class XRealNameRestClient(
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T, reified B> put(
-        token: UserToken,
+        token: Principal,
         uri: String,
         body: B? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
@@ -77,7 +77,7 @@ class XRealNameRestClient(
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T> delete(
-        token: UserToken,
+        token: Principal,
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T = delete<T>(uri) {
@@ -86,7 +86,8 @@ class XRealNameRestClient(
     }
 
     @PublishedApi
-    internal fun HttpRequestBuilder.xRealName(token: UserToken) {
+    context(_: Raise<ErrorSpec>)
+    internal fun HttpRequestBuilder.xRealName(token: Principal) {
         headers[XRealNamePrincipalExtractor.HEADER_NAME] = token.toXRealName()
     }
 }

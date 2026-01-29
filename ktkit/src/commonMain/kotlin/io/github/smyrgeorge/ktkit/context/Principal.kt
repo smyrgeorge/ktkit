@@ -65,15 +65,4 @@ interface Principal {
     fun requireAllRoles(roles: Set<String>) {
         if (!hasAllRoles(roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").raise()
     }
-
-    companion object {
-        /**
-         * Casts the current [Principal] instance to the specified type [T].
-         *
-         * @return The casted instance of type [T] if the cast is successful.
-         * @throws IllegalStateException If the current instance cannot be cast to the specified type [T].
-         */
-        inline fun <reified T : Principal> Principal.cast(): T =
-            this as? T ?: error("Principal cannot be cast to ${T::class.simpleName}")
-    }
 }

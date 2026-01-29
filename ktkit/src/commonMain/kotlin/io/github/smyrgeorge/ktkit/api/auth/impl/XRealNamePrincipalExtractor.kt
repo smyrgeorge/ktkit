@@ -2,10 +2,9 @@ package io.github.smyrgeorge.ktkit.api.auth.impl
 
 import io.github.smyrgeorge.ktkit.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
-import io.github.smyrgeorge.ktkit.util.default
+import io.github.smyrgeorge.ktkit.context.Principal
 import io.ktor.server.application.ApplicationCall
 import io.ktor.utils.io.core.toByteArray
-import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 
 /**
@@ -37,15 +36,14 @@ object XRealNamePrincipalExtractor : PrincipalExtractor {
         return runCatching {
             try {
                 val j = Base64.decode(header).decodeToString()
-                json.decodeFromString<UserToken>(j)
+                app.json.decodeFromString<UserToken>(j)
             } catch (e: Exception) {
                 Unauthorized("Cannot extract $HEADER_NAME header: ${e.message}").raise(e)
             }
         }
     }
 
-    private val json: Json = Json { default() }
-    fun UserToken.toXRealName(): String {
-        return Base64.encode(json.encodeToString(this).toByteArray())
+    fun Principal.toXRealName(): String {
+        return Base64.encode(app.json.encodeToString(this).toByteArray())
     }
 }

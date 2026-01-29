@@ -1,10 +1,12 @@
 package io.github.smyrgeorge.ktkit.util
 
+import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.DatabaseErrorData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.MissingParameterErrorData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.UnsupportedEnumValueErrorData
+import io.github.smyrgeorge.ktkit.context.Principal
 import kotlinx.serialization.json.JsonBuilder
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -21,6 +23,9 @@ val defaultSerializersModule = SerializersModule {
         subclass(EmptyErrorData::class)
         subclass(MissingParameterErrorData::class)
         subclass(UnsupportedEnumValueErrorData::class)
+    }
+    polymorphic(Principal::class) {
+        subclass(UserToken::class)
     }
 }
 

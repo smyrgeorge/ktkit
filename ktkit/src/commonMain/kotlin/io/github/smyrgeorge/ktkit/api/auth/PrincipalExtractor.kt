@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.auth
 
 import io.github.smyrgeorge.ktkit.context.Principal
+import io.github.smyrgeorge.ktkit.service.Component
 import io.ktor.server.application.ApplicationCall
 
 /**
@@ -17,7 +18,7 @@ import io.ktor.server.application.ApplicationCall
  * @see Principal
  * @see ApplicationCall
  */
-interface PrincipalExtractor {
+interface PrincipalExtractor : Component {
     /**
      * Extracts a [Principal] from the given [ApplicationCall].
      *

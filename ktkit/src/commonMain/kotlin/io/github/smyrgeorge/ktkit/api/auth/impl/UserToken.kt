@@ -41,14 +41,6 @@ data class UserToken(
     override val id: Uuid = uuid
 
     companion object {
-        context(_: Raise<ErrorSpec>)
-        inline fun <reified T : Principal> Principal.toUserToken(): T =
-            this as? T ?: GenericError("Could not convert Principal to the desired type ${T::class.simpleName}").raise()
-
-        context(_: Raise<ErrorSpec>)
-        fun Principal.toUserToken(): UserToken =
-            this as? UserToken ?: GenericError("Principal is not a UserToken").raise()
-
         internal val DEFAULT_SYSTEM_USER: UserToken =
             UserToken(
                 uuid = Uuid.parse("00000000-0000-0000-0000-000000000000"),

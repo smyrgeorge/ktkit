@@ -1,13 +1,11 @@
 package io.github.smyrgeorge.ktkit.sqlx4k.pgmq
 
-import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
 import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.api.event.EventContext
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.context.Principal
-import io.github.smyrgeorge.ktkit.context.Principal.Companion.cast
 import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.util.EitherThrowable
 import io.github.smyrgeorge.ktkit.util.TRACE_PARENT_HEADER
@@ -130,7 +128,7 @@ abstract class AbstractPgmqEventHandler(
         val span = ec.currentOrNull()
         return listOfNotNull(
             if (span != null) TRACE_PARENT_HEADER to span.toOpenTelemetryHeader() else null,
-            XRealNamePrincipalExtractor.HEADER_NAME to ec.principal.cast<UserToken>().toXRealName(),
+            XRealNamePrincipalExtractor.HEADER_NAME to ec.principal.toXRealName(),
         ).toMap()
     }
 

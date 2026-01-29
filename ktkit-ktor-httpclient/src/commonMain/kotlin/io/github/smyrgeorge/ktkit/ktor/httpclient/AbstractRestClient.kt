@@ -39,11 +39,13 @@ import kotlinx.serialization.json.Json
  * @property json A JSON configuration instance, which is used for serializing and deserializing objects.
  * @property client The underlying HTTP client used for executing requests.
  * @property baseUrl The base URL to use for all requests. Individual request URIs are appended to this value.
+ * @property toErrorSpec A function used to map HTTP responses into structured error objects. Defaults to a generic error with the raw response body.
  */
 abstract class AbstractRestClient(
     val json: Json,
     val client: HttpClient,
     val baseUrl: String,
+    val toErrorSpec: suspend HttpResponse.() -> ErrorSpec = { toErrorSpecDefault(json) }
 ) {
     @PublishedApi
     internal fun buildUri(uri: String) = "${baseUrl}$uri"
@@ -51,19 +53,22 @@ abstract class AbstractRestClient(
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T> get(
         uri: String,
+        noinline toErrorSpec: (suspend HttpResponse.() -> ErrorSpec)? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T {
         val response: HttpResponse = client.get(buildUri(uri)) {
             builder()
         }
-        if (!response.status.isSuccess()) response.raise()
-        return response.bodySafe()
+        val errorHandling = toErrorSpec ?: this.toErrorSpec
+        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        else response.bodySafe()
     }
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T, reified B> post(
         uri: String,
         body: B,
+        noinline toErrorSpec: (suspend HttpResponse.() -> ErrorSpec)? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T {
         val response: HttpResponse = client.post(buildUri(uri)) {
@@ -71,8 +76,9 @@ abstract class AbstractRestClient(
             setBody(body)
             builder()
         }
-        if (!response.status.isSuccess()) response.raise()
-        return response.bodySafe()
+        val errorHandling = toErrorSpec ?: this.toErrorSpec
+        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        else response.bodySafe()
     }
 
     context(_: Raise<ErrorSpec>)
@@ -81,6 +87,7 @@ abstract class AbstractRestClient(
         data: ByteArray,
         fileName: String = "file",
         contentType: ContentType = ContentType.Application.OctetStream,
+        noinline toErrorSpec: (suspend HttpResponse.() -> ErrorSpec)? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T {
         val response: HttpResponse = client.post(buildUri(uri)) {
@@ -100,14 +107,16 @@ abstract class AbstractRestClient(
             )
             builder()
         }
-        if (!response.status.isSuccess()) response.raise()
-        return response.bodySafe()
+        val errorHandling = toErrorSpec ?: this.toErrorSpec
+        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        else response.bodySafe()
     }
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T, reified B> patch(
         uri: String,
         body: B? = null,
+        noinline toErrorSpec: (suspend HttpResponse.() -> ErrorSpec)? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T {
         val response: HttpResponse = client.patch(buildUri(uri)) {
@@ -117,14 +126,16 @@ abstract class AbstractRestClient(
             }
             builder()
         }
-        if (!response.status.isSuccess()) response.raise()
-        return response.bodySafe()
+        val errorHandling = toErrorSpec ?: this.toErrorSpec
+        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        else response.bodySafe()
     }
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T, reified B> put(
         uri: String,
         body: B? = null,
+        noinline toErrorSpec: (suspend HttpResponse.() -> ErrorSpec)? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T {
         val response: HttpResponse = client.put(buildUri(uri)) {
@@ -134,54 +145,24 @@ abstract class AbstractRestClient(
             }
             builder()
         }
-        if (!response.status.isSuccess()) response.raise()
-        return response.bodySafe()
+        val errorHandling = toErrorSpec ?: this.toErrorSpec
+        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        else response.bodySafe()
     }
 
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T> delete(
         uri: String,
+        noinline toErrorSpec: (suspend HttpResponse.() -> ErrorSpec)? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
     ): T {
         val response: HttpResponse = client.delete(buildUri(uri)) {
             builder()
         }
-        if (!response.status.isSuccess()) response.raise()
-        return response.bodySafe()
+        val errorHandling = toErrorSpec ?: this.toErrorSpec
+        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        else response.bodySafe()
     }
-
-    @PublishedApi
-    context(_: Raise<ErrorSpec>)
-    internal suspend fun HttpResponse.raise(): Nothing {
-        val bodyText = bodyAsTextSafe()
-        val error: ErrorSpec = try {
-            // Attempt to deserialize the error
-            val error = json.decodeFromString<ApiError>(bodyText)
-            GenericError(
-                message = error.detail,
-                data = error.data ?: EmptyErrorData,
-                httpStatus = ErrorSpec.HttpStatus.fromCode(status.value)
-            )
-        } catch (_: SerializationException) {
-            // If deserialization fails, create a generic error with the raw body
-            val msg = "Could not fulfill the request (HttpClientRequestError). Details: $bodyText"
-            UnknownError(message = msg, httpStatus = ErrorSpec.HttpStatus.fromCode(status.value))
-        }
-
-        error.raise()
-    }
-
-    @PublishedApi
-    context(_: Raise<ErrorSpec>)
-    internal suspend inline fun HttpResponse.bodyAsTextSafe(): String =
-        either<Throwable, String> { bodyAsText() }
-            .mapLeft {
-                UnknownError(
-                    message = it.message ?: "Could not deserialize response body",
-                    httpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
-                )
-            }.bind()
-
 
     @PublishedApi
     context(_: Raise<ErrorSpec>)
@@ -193,4 +174,33 @@ abstract class AbstractRestClient(
                     httpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
                 )
             }.bind()
+
+
+    companion object {
+        @PublishedApi
+        internal suspend fun HttpResponse.toErrorSpecDefault(json: Json): ErrorSpec {
+            val bodyText: String = try {
+                bodyAsText()
+            } catch (e: Throwable) {
+                return UnknownError(
+                    message = e.message ?: "Could not deserialize response body",
+                    httpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
+                )
+            }
+
+            return try {
+                // Attempt to deserialize the error
+                val error = json.decodeFromString<ApiError>(bodyText)
+                GenericError(
+                    message = error.detail,
+                    data = error.data ?: EmptyErrorData,
+                    httpStatus = ErrorSpec.HttpStatus.fromCode(status.value)
+                )
+            } catch (_: SerializationException) {
+                // If deserialization fails, create a generic error with the raw body
+                val msg = "Could not fulfill the request (HttpClientRequestError). Details: $bodyText"
+                UnknownError(message = msg, httpStatus = ErrorSpec.HttpStatus.fromCode(status.value))
+            }
+        }
+    }
 }

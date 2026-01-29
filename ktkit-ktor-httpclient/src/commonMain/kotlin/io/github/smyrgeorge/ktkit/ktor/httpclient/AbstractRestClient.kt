@@ -1,6 +1,6 @@
 package io.github.smyrgeorge.ktkit.ktor.httpclient
 
-import arrow.core.raise.Raise
+import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
 import arrow.core.raise.context.either
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
@@ -36,14 +36,14 @@ import kotlinx.serialization.json.Json
  * and DELETE. It also includes error-handling mechanisms to map HTTP responses into structured
  * error objects and perform optional JSON deserialization of response bodies.
  *
+ * @property json A JSON configuration instance, which is used for serializing and deserializing objects.
  * @property client The underlying HTTP client used for executing requests.
  * @property baseUrl The base URL to use for all requests. Individual request URIs are appended to this value.
- * @property json A JSON configuration instance, which is used for serializing and deserializing objects.
  */
 abstract class AbstractRestClient(
-    val client: HttpClient,
-    val baseUrl: String = "",
     val json: Json,
+    val client: HttpClient,
+    val baseUrl: String,
 ) {
     @PublishedApi
     internal fun buildUri(uri: String) = "${baseUrl}$uri"

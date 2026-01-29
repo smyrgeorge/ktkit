@@ -2,6 +2,7 @@ package io.github.smyrgeorge.ktkit.api.auth.impl
 
 import io.github.smyrgeorge.ktkit.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
+import io.github.smyrgeorge.ktkit.util.default
 import io.ktor.server.application.ApplicationCall
 import io.ktor.utils.io.core.toByteArray
 import kotlinx.serialization.json.Json
@@ -35,16 +36,16 @@ object XRealNamePrincipalExtractor : PrincipalExtractor {
     override fun extract(header: String): Result<UserToken> {
         return runCatching {
             try {
-                val json = Base64.decode(header).decodeToString()
-                serde.decodeFromString<UserToken>(json)
+                val j = Base64.decode(header).decodeToString()
+                json.decodeFromString<UserToken>(j)
             } catch (e: Exception) {
                 Unauthorized("Cannot extract $HEADER_NAME header: ${e.message}").raise(e)
             }
         }
     }
 
-    private val serde: Json = Json { ignoreUnknownKeys = true }
+    private val json: Json = Json { default() }
     fun UserToken.toXRealName(): String {
-        return Base64.encode(serde.encodeToString(this).toByteArray())
+        return Base64.encode(json.encodeToString(this).toByteArray())
     }
 }

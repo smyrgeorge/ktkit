@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-object HttpRestClientFactory {
+object HttpClientFactory {
     /**
      * Creates a configured instance of an [HttpClient] with specified connection settings, timeouts,
      * and JSON processing using kotlinx.serialization.

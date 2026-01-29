@@ -2,22 +2,23 @@
 
 package io.github.smyrgeorge.ktkit.ktor.httpclient.impl
 
-import arrow.core.raise.Raise
+import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor.toXRealName
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.ktor.httpclient.AbstractRestClient
+import io.github.smyrgeorge.ktkit.ktor.httpclient.HttpClientFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.ContentType
 import kotlinx.serialization.json.Json
 
 class XRealNameRestClient(
-    client: HttpClient,
-    baseUrl: String,
     json: Json,
-) : AbstractRestClient(client, baseUrl, json) {
+    client: HttpClient = HttpClientFactory.create(json = json),
+    baseUrl: String = "",
+) : AbstractRestClient(json, client, baseUrl) {
     context(_: Raise<ErrorSpec>)
     suspend inline fun <reified T> get(
         token: UserToken,

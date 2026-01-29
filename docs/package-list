@@ -18,9 +18,6 @@ io.github.smyrgeorge.ktkit.util
 module:ktkit-ktor-httpclient
 io.github.smyrgeorge.ktkit.ktor.httpclient
 io.github.smyrgeorge.ktkit.ktor.httpclient.impl
-module:ktkit-spring-webclient
-io.github.smyrgeorge.ktkit.spring.webclient
-io.github.smyrgeorge.ktkit.spring.webclient.impl
 module:ktkit-sqlx4k
 io.github.smyrgeorge.ktkit.sqlx4k
 module:ktkit-sqlx4k-pgmq

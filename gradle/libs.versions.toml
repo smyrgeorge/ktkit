@@ -16,11 +16,11 @@ ktor = "3.4.0"
 # https://github.com/InsertKoinIO/koin
 koin = "4.1.1"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.5.16"
+sqlx4k = "1.5.19"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp
-ksp = "2.3.4"
+ksp = "2.3.5"
 # https://github.com/arrow-kt/arrow
 arrow = "2.2.1.1"
 # https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux

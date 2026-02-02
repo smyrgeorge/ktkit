@@ -34,7 +34,7 @@ interface ErrorSpec {
      * @param throwable Optional cause of the error
      * @throws RuntimeError Always throws
      */
-    fun raise(throwable: Throwable? = null): Nothing =
+    fun throwRuntimeError(throwable: Throwable? = null): Nothing =
         throw RuntimeError(this, message, throwable)
 
     /**

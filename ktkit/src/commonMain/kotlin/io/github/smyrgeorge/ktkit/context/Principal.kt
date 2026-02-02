@@ -41,7 +41,7 @@ interface Principal {
      * @throws Forbidden If the user does not have the specified role.
      */
     fun requireRole(role: String) {
-        if (!hasRole(role)) Forbidden("User does not have authority $role").raise()
+        if (!hasRole(role)) Forbidden("User does not have authority $role").throwRuntimeError()
     }
 
     /**
@@ -52,7 +52,7 @@ interface Principal {
      * @throws Forbidden If the user does not have any of the specified roles.
      */
     fun requireAnyRole(roles: Set<String>) {
-        if (!hasAnyRole(roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").raise()
+        if (!hasAnyRole(roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").throwRuntimeError()
     }
 
     /**
@@ -63,6 +63,6 @@ interface Principal {
      * @throws Forbidden If the user does not have all the specified roles.
      */
     fun requireAllRoles(roles: Set<String>) {
-        if (!hasAllRoles(roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").raise()
+        if (!hasAllRoles(roles)) Forbidden("User does not have authorities: ${roles.joinToString()}").throwRuntimeError()
     }
 }

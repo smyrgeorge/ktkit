@@ -114,7 +114,7 @@ abstract class AbstractRestHandler(
             val user = principalExtractor?.extract(call)?.getOrThrow()
                 ?: defaultUser
                 ?: this@AbstractRestHandler.defaultUser
-                ?: Unauthorized("User is not authenticated").raise()
+                ?: Unauthorized("User is not authenticated").throwRuntimeError()
 
             // Add user tags to the span.
             span.tags.apply {
@@ -134,7 +134,7 @@ abstract class AbstractRestHandler(
 
             // Check for permissions.
             val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)
-            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").raise()
+            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").throwRuntimeError()
 
             // Load the execution context into the coroutine context.
             val result = withContext(exec) {

@@ -60,7 +60,7 @@ abstract class AbstractRestClient(
             builder()
         }
         val errorHandling = toErrorSpec ?: this.toErrorSpec
-        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        return if (!response.status.isSuccess()) errorHandling(response).throwRuntimeError()
         else response.bodySafe()
     }
 
@@ -77,7 +77,7 @@ abstract class AbstractRestClient(
             builder()
         }
         val errorHandling = toErrorSpec ?: this.toErrorSpec
-        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        return if (!response.status.isSuccess()) errorHandling(response).throwRuntimeError()
         else response.bodySafe()
     }
 
@@ -108,7 +108,7 @@ abstract class AbstractRestClient(
             builder()
         }
         val errorHandling = toErrorSpec ?: this.toErrorSpec
-        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        return if (!response.status.isSuccess()) errorHandling(response).throwRuntimeError()
         else response.bodySafe()
     }
 
@@ -127,7 +127,7 @@ abstract class AbstractRestClient(
             builder()
         }
         val errorHandling = toErrorSpec ?: this.toErrorSpec
-        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        return if (!response.status.isSuccess()) errorHandling(response).throwRuntimeError()
         else response.bodySafe()
     }
 
@@ -146,7 +146,7 @@ abstract class AbstractRestClient(
             builder()
         }
         val errorHandling = toErrorSpec ?: this.toErrorSpec
-        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        return if (!response.status.isSuccess()) errorHandling(response).throwRuntimeError()
         else response.bodySafe()
     }
 
@@ -160,7 +160,7 @@ abstract class AbstractRestClient(
             builder()
         }
         val errorHandling = toErrorSpec ?: this.toErrorSpec
-        return if (!response.status.isSuccess()) errorHandling(response).raise()
+        return if (!response.status.isSuccess()) errorHandling(response).throwRuntimeError()
         else response.bodySafe()
     }
 

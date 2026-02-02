@@ -38,7 +38,7 @@ object XRealNamePrincipalExtractor : PrincipalExtractor {
                 val j = Base64.decode(header).decodeToString()
                 app.json.decodeFromString<UserToken>(j)
             } catch (e: Exception) {
-                Unauthorized("Cannot extract $HEADER_NAME header: ${e.message}").raise(e)
+                Unauthorized("Cannot extract $HEADER_NAME header: ${e.message}").throwRuntimeError(e)
             }
         }
     }

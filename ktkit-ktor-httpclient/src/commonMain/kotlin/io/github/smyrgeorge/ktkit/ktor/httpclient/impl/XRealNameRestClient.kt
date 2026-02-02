@@ -12,14 +12,21 @@ import io.github.smyrgeorge.ktkit.ktor.httpclient.HttpClientFactory
 import io.github.smyrgeorge.ktkit.ktor.httpclient.RestClientErrorSpec
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import kotlinx.serialization.json.Json
 
 class XRealNameRestClient(
     json: Json,
     client: HttpClient = HttpClientFactory.create(json = json),
-) : AbstractRestClient(json, client, "", mapError) {
+) : AbstractRestClient(
+    json = json,
+    client = client,
+    baseUrl = "",
+    mapErrorResponse = {
+        val error = bodyOrRaise<ApiError>()
+        RestClientErrorSpec.RestClientReceiveError(error)
+    }
+) {
     context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> get(
         token: Principal,
@@ -110,12 +117,5 @@ class XRealNameRestClient(
     context(_: Raise<RestClientErrorSpec>)
     internal fun HttpRequestBuilder.xRealName(token: Principal) {
         headers[XRealNamePrincipalExtractor.HEADER_NAME] = token.toXRealName()
-    }
-
-    companion object {
-        private val mapError: suspend context(Raise<RestClientErrorSpec>) HttpResponse.() -> RestClientErrorSpec = {
-            val error = bodyOrRaise<ApiError>()
-            RestClientErrorSpec.RestClientReceiveError(error)
-        }
     }
 }

@@ -37,7 +37,7 @@ class ExecContext(
     val http: HttpContext get() = _http ?: error("HttpContext is null.")
     val event: EventContext get() = _event ?: error("EventContext is null.")
 
-    override fun raise(r: ErrorSpec): Nothing = throw r.toThrowable()
+    override fun raise(r: ErrorSpec): Nothing = r.throwRuntimeError()
     override val key: CoroutineContext.Key<ExecContext> get() = ExecContext
     override fun toString() = "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$principal, attributes=$attributes)"
 

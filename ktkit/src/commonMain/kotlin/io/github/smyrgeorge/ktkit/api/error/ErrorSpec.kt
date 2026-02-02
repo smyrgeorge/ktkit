@@ -30,22 +30,20 @@ interface ErrorSpec {
     fun toErrorSpecData(): ErrorSpecData = EmptyErrorData
 
     /**
-     * Throws this error as an [RuntimeError] exception.
-     *
-     * @param throwable Optional cause of the error
-     * @throws RuntimeError Always throws
-     */
-    fun throwRuntimeError(throwable: Throwable? = null): Nothing =
-        throw RuntimeError(this, message, throwable)
-
-    /**
      * Converts this error to an [RuntimeError] throwable without throwing it.
      *
      * @param throwable Optional cause of the error
      * @return InternalError wrapping this error
      */
-    fun toThrowable(throwable: Throwable? = null): RuntimeError =
-        RuntimeError(this, message, throwable)
+    fun toThrowable(throwable: Throwable? = null): RuntimeError = RuntimeError(this, message, throwable)
+
+    /**
+     * Throws this error as an [RuntimeError] exception.
+     *
+     * @param throwable Optional cause of the error
+     * @throws RuntimeError Always throws
+     */
+    fun throwRuntimeError(throwable: Throwable? = null): Nothing = throw toThrowable(throwable)
 
     /**
      * HTTP status codes supported by the error system.

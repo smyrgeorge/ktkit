@@ -3,14 +3,15 @@ package io.github.smyrgeorge.ktkit.api.rest
 import arrow.core.Either
 import arrow.core.NonEmptySet
 import io.github.smyrgeorge.ktkit.api.auth.PrincipalExtractor
-import io.github.smyrgeorge.ktkit.context.ExecContext
-import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
+import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
 import io.github.smyrgeorge.ktkit.api.error.RuntimeError
 import io.github.smyrgeorge.ktkit.api.error.impl.Forbidden
 import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.api.error.impl.UnknownError
 import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
+import io.github.smyrgeorge.ktkit.context.ExecContext
+import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.util.camelCaseToKebabCase
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
@@ -222,8 +223,8 @@ abstract class AbstractRestHandler(
         span.exception(error)
         span.end(error)
 
-        val data = cause.toErrorSpecData()
-        val title = cause::class.simpleName ?: error("Could not determine error class name.")
+        val data: ErrorSpecData = cause.data()
+        val title: String = cause::class.simpleName ?: error("Could not determine error class name.")
         val res = ApiError(
             type =
                 if (app.conf.includeTypePropertyInApiError)

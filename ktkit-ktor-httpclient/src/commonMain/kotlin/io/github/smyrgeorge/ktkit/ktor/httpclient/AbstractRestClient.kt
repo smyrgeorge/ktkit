@@ -171,10 +171,10 @@ abstract class AbstractRestClient(
     @PublishedApi
     context(_: Raise<RestClientErrorSpec>)
     internal suspend inline fun executeOrRaise(block: suspend () -> HttpResponse): HttpResponse =
-        catch({ block() }) { e -> RestClientErrorSpec.RequestError(e).raise() }
+        catch({ block() }) { e -> RestClientErrorSpec.RestClientRequestError(e).raise() }
 
     @PublishedApi
     context(_: Raise<RestClientErrorSpec>)
     internal suspend inline fun <reified T> HttpResponse.bodyOrRaise(): T =
-        catch({ body() }) { e -> RestClientErrorSpec.DeserializationError(e).raise() }
+        catch({ body() }) { e -> RestClientErrorSpec.RestClientDeserializationError(e).raise() }
 }

@@ -27,7 +27,7 @@ interface ErrorSpec {
      *
      * @return An instance of [ErrorSpecData] representing the details of this error.
      */
-    fun toErrorSpecData(): ErrorSpecData = EmptyErrorData
+    fun data(): ErrorSpecData = EmptyErrorData
 
     /**
      * Converts this error to an [RuntimeError] throwable without throwing it.
@@ -103,10 +103,5 @@ interface ErrorSpec {
         companion object {
             fun fromCode(code: Int): HttpStatus = entries.find { it.code == code } ?: INTERNAL_SERVER_ERROR
         }
-    }
-
-    companion object {
-        fun fromThrowable(throwable: Throwable): ErrorSpec =
-            UnknownError(throwable.message ?: "An unknown error occurred")
     }
 }

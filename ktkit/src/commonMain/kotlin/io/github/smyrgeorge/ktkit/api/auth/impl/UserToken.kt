@@ -1,8 +1,5 @@
 package io.github.smyrgeorge.ktkit.api.auth.impl
 
-import arrow.core.raise.context.Raise
-import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
-import io.github.smyrgeorge.ktkit.api.error.impl.GenericError
 import io.github.smyrgeorge.ktkit.context.Principal
 import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi

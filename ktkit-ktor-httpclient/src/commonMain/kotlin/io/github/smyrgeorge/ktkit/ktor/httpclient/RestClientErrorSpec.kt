@@ -5,18 +5,19 @@ import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 
 interface RestClientErrorSpec : ErrorSpec {
-
-    data class RequestError(
+    data class RestClientRequestError(
         val cause: Throwable,
-        override val message: String = "Could not fulfill the request (${cause::class.simpleName}): ${cause.message}",
-        override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR,
-    ) : RestClientErrorSpec
+    ) : RestClientErrorSpec {
+        override val message: String = "Could not fulfill the request (${cause::class.simpleName}): ${cause.message}"
+        override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
+    }
 
-    data class DeserializationError(
+    data class RestClientDeserializationError(
         val cause: Throwable,
-        override val message: String = "Could not extract response body (${cause::class.simpleName}): ${cause.message}",
-        override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR,
-    ) : RestClientErrorSpec
+    ) : RestClientErrorSpec {
+        override val message: String = "Could not extract response body (${cause::class.simpleName}): ${cause.message}"
+        override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
+    }
 
     @Suppress("NOTHING_TO_INLINE")
     companion object {

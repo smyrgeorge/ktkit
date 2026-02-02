@@ -20,7 +20,6 @@ class TestService(
     context(_: ExecContext, _: Transaction)
     suspend fun test(): List<Test> {
         log.info { "Fetching all tests" }
-
         return findAll().also {
             log.info { "Fetched ${it.size} tests" }
         }

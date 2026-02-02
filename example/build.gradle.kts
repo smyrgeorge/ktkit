@@ -19,9 +19,9 @@ kotlin {
         }
         commonMain {
             dependencies {
+                implementation(libs.sqlx4k.postgres)
                 implementation(project(":ktkit"))
                 implementation(project(":ktkit-sqlx4k"))
-                implementation(libs.sqlx4k.postgres)
                 implementation(project(":ktkit-sqlx4k-pgmq"))
             }
             // Config if your code is under the commonMain module.
@@ -35,7 +35,7 @@ tasks.named<Jar>("jvmJar") {
 
     manifest {
         attributes(
-            "Main-Class" to "io.github.smyrgeorge.ktkit.example.MainKt"
+            "Main-Class" to "io.github.smyrgeorge.ktkit.example.ExampleApplicationKt"
         )
     }
 

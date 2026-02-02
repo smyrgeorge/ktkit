@@ -4,6 +4,7 @@ import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 
 data class MalformedRequestBody(
     val cause: Throwable,
-    override val message: String = "Could not parse request body: ${cause.message}",
-    override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.BAD_REQUEST,
-) : SystemError
+) : SystemError {
+    override val message: String = "Could not parse request body: ${cause.message}"
+    override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.BAD_REQUEST
+}

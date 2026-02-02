@@ -8,7 +8,7 @@ data class DatabaseError(
     val code: String,
     val cause: Throwable? = null,
     override val message: String,
-    override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR,
 ) : SystemError {
-    override fun toErrorSpecData(): ErrorSpecData = DatabaseErrorData(code)
+    override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
+    override fun data(): ErrorSpecData = DatabaseErrorData(code)
 }

@@ -4,6 +4,7 @@ import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 
 data class Forbidden(
     override val message: String,
-    override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.FORBIDDEN,
-) : SystemError
+) : SystemError {
+    override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.FORBIDDEN
+}
 

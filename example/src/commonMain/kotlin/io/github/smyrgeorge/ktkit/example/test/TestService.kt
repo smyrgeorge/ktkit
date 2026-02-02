@@ -29,11 +29,10 @@ class TestService(
     suspend fun test(): List<Test> {
         log.info { "Fetching all tests" }
 
-        val test: Int = db { sqlx4kError() }
-        log.info { "Fetched $test tests" }
+        db { sqlx4kError() }
 
         val handled: DbResult<Int> = dbCaching { sqlx4kError() }
-        log.info { "Fetched $handled tests" }
+        log.warn { "Handled error: $handled" }
 
         return findAll().also {
             log.info { "Fetched ${it.size} tests" }
@@ -45,5 +44,5 @@ class TestService(
     fun sqlx4k(): Int = 5
 
     context(_: Raise<SQLError>, _: QueryExecutor)
-    fun sqlx4kError(): Int = raise(SQLError(SQLError.Code.UnknownError, "Unknown error"))
+    fun sqlx4kError(): Int = raise(SQLError(SQLError.Code.UnknownError, "Boom!"))
 }

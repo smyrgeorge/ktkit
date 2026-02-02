@@ -87,6 +87,26 @@ class XRealNameRestClient(
         xRealName(token)
     }
 
+    context(_: Raise<RestClientErrorSpec>)
+    suspend inline fun <reified T> head(
+        token: Principal,
+        uri: String,
+        crossinline builder: HttpRequestBuilder.() -> Unit = {},
+    ): T = head<T>(uri) {
+        builder()
+        xRealName(token)
+    }
+
+    context(_: Raise<RestClientErrorSpec>)
+    suspend inline fun <reified T> options(
+        token: Principal,
+        uri: String,
+        crossinline builder: HttpRequestBuilder.() -> Unit = {},
+    ): T = options<T>(uri) {
+        builder()
+        xRealName(token)
+    }
+
     @PublishedApi
     context(_: Raise<RestClientErrorSpec>)
     internal fun HttpRequestBuilder.xRealName(token: Principal) {

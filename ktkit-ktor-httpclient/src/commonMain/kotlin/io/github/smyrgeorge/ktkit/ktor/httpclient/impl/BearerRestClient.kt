@@ -85,6 +85,26 @@ class BearerRestClient(
         bearer(token)
     }
 
+    context(_: Raise<RestClientErrorSpec>)
+    suspend inline fun <reified T> head(
+        token: String,
+        uri: String,
+        crossinline builder: HttpRequestBuilder.() -> Unit = {},
+    ): T = head<T>(uri) {
+        builder()
+        bearer(token)
+    }
+
+    context(_: Raise<RestClientErrorSpec>)
+    suspend inline fun <reified T> options(
+        token: String,
+        uri: String,
+        crossinline builder: HttpRequestBuilder.() -> Unit = {},
+    ): T = options<T>(uri) {
+        builder()
+        bearer(token)
+    }
+
     @PublishedApi
     internal fun HttpRequestBuilder.bearer(token: String) {
         headers.append(HttpHeaders.Authorization, "Bearer $token")

@@ -5,6 +5,7 @@ import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
+import io.github.smyrgeorge.ktkit.api.error.impl.UnknownError
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.service.Service
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
@@ -73,17 +74,17 @@ interface DatabaseService : Service {
          * Executes a transactional context for a given operation. The operation is wrapped
          * in a database transaction and executed while tracking its duration using OpenTelemetry.
          *
-         * @param f The function to be executed within a database transaction. This function
+         * @param block The function to be executed within a database transaction. This function
          *          is provided with an implicit [Transaction] context and can return a result of type [R].
          * @return The result of the function execution within the transactional context.
          */
         context(ec: ExecContext)
         suspend inline fun <R> DatabaseService.withTransaction(
-            crossinline f: suspend context(Transaction)() -> R
+            crossinline block: suspend context(Transaction)() -> R
         ): R = db.transaction {
             // Wrap the function execution in a span to track its execution duration.
             val tags = mapOf(OpenTelemetryAttributes.SERVICE_NAME to app.name)
-            ec.span("db.transaction", tags) { f() }
+            ec.span("db.transaction", tags) { block() }
         }
 
         /**
@@ -94,13 +95,21 @@ interface DatabaseService : Service {
          * This method provides a convenient way to execute database operations within a transaction and handle
          * potential failures in a unified manner.
          *
-         * @param f The suspending function to execute within a database transaction. The function is provided with an
+         * @param block The suspending function to execute within a database transaction. The function is provided with an
          *          implicit [Transaction] context and is expected to produce a result of type [R].
          * @return An [AppResult] containing the result of the operation if successful, or an error if an exception occurs.
          */
         context(ec: ExecContext)
         suspend inline fun <R> DatabaseService.withTransactionCatching(
-            crossinline f: suspend context(Transaction)() -> R
-        ): AppResult<R> = either { withTransaction(f) }
+            crossinline block: suspend context(Transaction)() -> R
+        ): AppResult<R> = either {
+            runCatching { withTransaction(block) }.getOrElse {
+                val error = when (it) {
+                    is ErrorSpec -> it
+                    else -> UnknownError(it.message ?: "Unknown error")
+                }
+                raise(error)
+            }
+        }
     }
 }

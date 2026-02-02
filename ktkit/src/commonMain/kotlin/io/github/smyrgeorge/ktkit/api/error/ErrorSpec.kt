@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.error
 
 import io.github.smyrgeorge.ktkit.api.error.impl.UnknownError
+import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
 
 /**
  * Represents a specification for errors used within the system.
@@ -26,7 +27,7 @@ interface ErrorSpec {
      *
      * @return An instance of [ErrorSpecData] representing the details of this error.
      */
-    fun toErrorSpecData(): ErrorSpecData
+    fun toErrorSpecData(): ErrorSpecData = EmptyErrorData
 
     /**
      * Throws this error as an [RuntimeError] exception.

@@ -3,11 +3,12 @@
 package io.github.smyrgeorge.ktkit.ktor.httpclient.impl
 
 import arrow.core.raise.context.Raise
-import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.ktor.httpclient.AbstractRestClient
 import io.github.smyrgeorge.ktkit.ktor.httpclient.HttpClientFactory
+import io.github.smyrgeorge.ktkit.ktor.httpclient.RestClientErrorSpec
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import kotlinx.serialization.json.Json
@@ -16,8 +17,9 @@ class BearerRestClient(
     json: Json,
     client: HttpClient = HttpClientFactory.create(json = json),
     baseUrl: String = "",
-) : AbstractRestClient(json, client, baseUrl) {
-    context(_: Raise<ErrorSpec>)
+    toRestClientErrorSpec: suspend HttpResponse.() -> RestClientErrorSpec
+) : AbstractRestClient(json, client, baseUrl, toRestClientErrorSpec) {
+    context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> get(
         token: String,
         uri: String,
@@ -27,7 +29,7 @@ class BearerRestClient(
         bearer(token)
     }
 
-    context(_: Raise<ErrorSpec>)
+    context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T, reified B> post(
         token: String,
         uri: String,
@@ -38,7 +40,7 @@ class BearerRestClient(
         bearer(token)
     }
 
-    context(_: Raise<ErrorSpec>)
+    context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> postMultipart(
         token: String,
         uri: String,
@@ -51,7 +53,7 @@ class BearerRestClient(
         bearer(token)
     }
 
-    context(_: Raise<ErrorSpec>)
+    context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T, reified B> patch(
         token: String,
         uri: String,
@@ -62,7 +64,7 @@ class BearerRestClient(
         bearer(token)
     }
 
-    context(_: Raise<ErrorSpec>)
+    context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T, reified B> put(
         token: String,
         uri: String,
@@ -73,7 +75,7 @@ class BearerRestClient(
         bearer(token)
     }
 
-    context(_: Raise<ErrorSpec>)
+    context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> delete(
         token: String,
         uri: String,

@@ -7,6 +7,7 @@ import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.service.Service
+import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
@@ -58,7 +59,15 @@ interface DatabaseService : Service {
          */
         context(_: Raise<ErrorSpec>)
         inline fun <A> dbCaching(block: context(Raise<SQLError>)() -> A): DbResult<A> =
-            either { block() }
+            either {
+                runCatching { block() }.getOrElse {
+                    val error = when (it) {
+                        is SQLError -> it
+                        else -> SQLError(SQLError.Code.UnknownError, it.message ?: "Unknown error")
+                    }
+                    raise(error)
+                }
+            }
 
         /**
          * Executes a transactional context for a given operation. The operation is wrapped

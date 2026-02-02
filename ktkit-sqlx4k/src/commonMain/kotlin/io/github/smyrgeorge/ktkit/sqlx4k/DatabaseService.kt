@@ -1,8 +1,8 @@
 package io.github.smyrgeorge.ktkit.sqlx4k
 
+import arrow.core.Either
 import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
-import arrow.core.raise.either
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.context.ExecContext
@@ -11,13 +11,13 @@ import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.Driver
-import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.Transaction
 import io.github.smyrgeorge.sqlx4k.arrow.impl.extensions.DbResult
 
 interface DatabaseService : Service {
     val db: Driver
 
+    @Suppress("NOTHING_TO_INLINE")
     companion object {
         /**
          * Transforms a [DbResult] instance into an [AppResult] by mapping any left-side error to a [DatabaseError].
@@ -26,38 +26,36 @@ interface DatabaseService : Service {
          * @receiver A [DbResult] containing either a success value of type `T` or an error.
          * @return An [AppResult] where the left-side errors of [DbResult] are mapped to [DatabaseError] instances.
          */
-        fun <T> DbResult<T>.toAppResult(): AppResult<T> =
+        @PublishedApi
+        internal inline fun <T> DbResult<T>.mapError(): Either<DatabaseError, T> =
             mapLeft { DatabaseError(it.code.name, it, it.message ?: "No message provided.") }
 
         /**
-         * Executes a database operation within a caching context, handling SQL-related errors and binding
-         * the resulting application-level outcome.
+         * Executes a database operation within a safe context, raising errors as specified by the [ErrorSpec] interface.
          *
-         * This function takes a block of code as a lambda, executes it within the context of a database
-         * caching operation, and converts the result into an application-level result. The execution
-         * context includes error handling for SQL-related errors.
+         * This function wraps a database operation block and processes potential errors using `dbCatching`.
+         * The result is unwrapped and returned to the caller, assuming the operation succeeds.
+         * If the operation fails, an error is raised within the context of the [ErrorSpec].
          *
-         * @param block A lambda block to be executed in the context of a database operation. The block may
-         *              raise SQL-related errors and is expected to return a value of type `A`.
-         * @return The result of the executed block after being transformed into an application-level format
-         *         and bound to the overall computation.
+         * @param block The lambda expression representing the database operation to be executed.
+         * @return The result of the database operation, of generic type [T], if the operation is successful.
+         * @throws DatabaseError if the database operation fails and an error is raised in the context of [ErrorSpec].
          */
         context(_: Raise<ErrorSpec>)
-        inline fun <A> db(block: context(Raise<SQLError>)() -> A): A =
-            dbCaching { block() }.toAppResult().bind()
+        inline fun <T> db(block: () -> DbResult<T>): T = dbCatching(block).bind()
 
         /**
-         * Executes a block of code within a database caching context, handling any SQL-related errors
-         * and returning a result wrapped in a `DbResult`.
+         * Executes a given database operation block, catching any potential errors and mapping them to a consistent
+         * error format. This method ensures robust error handling and encapsulates the result of the database operation
+         * in an `Either` type.
          *
-         * @param block A lambda block to be executed within the given context. The block may raise SQL-related
-         *              errors and is designed to return a value of type `A`.
-         * @return A `DbResult` instance that wraps the result of the executed block or captures any errors
-         *         encountered during execution.
+         * @param block The database operation to execute, returning a `DbResult` containing either a success value
+         *              of type `T` or a failure.
+         * @return An `Either` instance where the right side is the successful result of the database operation (`T`)
+         *         and the left side is a mapped `DatabaseError` for any encountered errors.
          */
-        context(rc: Raise<ErrorSpec>)
-        inline fun <A> dbCaching(block: context(Raise<SQLError>)() -> A): DbResult<A> =
-            either { block() }
+        context(_: Raise<ErrorSpec>)
+        inline fun <T> dbCatching(block: () -> DbResult<T>): Either<DatabaseError, T> = block().mapError()
 
         /**
          * Executes a transactional context for a given operation. The operation is wrapped

@@ -83,13 +83,11 @@ class TestService(
     val log = Logger.of(this::class)
 
     context(_: ExecContext, _: QueryExecutor)
-    private suspend fun findAll(): List<Test> =
-        repo.findAll().toAppResult().bind()
+    private suspend fun findAll(): List<Test> = db { repo.findAll() }
 
     context(_: ExecContext, _: Transaction)
     suspend fun test(): List<Test> {
         log.info { "Fetching all tests" }
-
         return findAll().also {
             log.info { "Fetched ${it.size} tests" }
         }

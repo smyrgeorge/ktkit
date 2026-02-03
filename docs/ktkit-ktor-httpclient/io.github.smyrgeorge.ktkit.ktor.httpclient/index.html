@@ -39,7 +39,7 @@
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
-        <div class="library-version" id="library-version">0.0.15
+        <div class="library-version" id="library-version">0.0.16
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
@@ -110,7 +110,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-abstract-rest-client/index.html">AbstractRestClient</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>json<span class="token operator">: </span><span data-unresolved-link="kotlinx.serialization.json/Json///PointingToDeclaration/">Json</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>client<span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>baseUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>toErrorSpec<span class="token operator">: </span><span class="token keyword">suspend </span><span data-unresolved-link="io.ktor.client.statement/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../ktkit/io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a><span class="token operator"> = </span>{ toErrorSpecDefault(json) }</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">An abstract base class for implementing HTTP clients with common HTTP operations.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-abstract-rest-client/index.html">AbstractRestClient</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>json<span class="token operator">: </span><span data-unresolved-link="kotlinx.serialization.json/Json///PointingToDeclaration/">Json</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>client<span class="token operator">: </span><span data-unresolved-link="io.ktor.client/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>baseUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>mapErrorResponse<span class="token operator">: </span><span class="token keyword">context</span><span class="token punctuation">(</span><span data-unresolved-link="arrow.core.raise.context/Raise///PointingToDeclaration/">Raise</span><span class="token operator">&lt;</span><a href="-rest-client-error-spec/index.html">RestClientErrorSpec</a><span class="token operator">&gt;</span><span class="token punctuation">) </span><span class="token keyword">suspend </span><span data-unresolved-link="io.ktor.client.statement/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="-rest-client-error-spec/index.html">RestClientErrorSpec</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Represents an abstract REST client providing helper methods to perform HTTP operations such as GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS. This class handles request execution, error transformation, and response deserialization.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -126,6 +126,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-http-client-factory/index.html">HttpClientFactory</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1963296863%2FClasslikes%2F1651365997" anchor-label="RestClientErrorSpec" id="-1963296863%2FClasslikes%2F1651365997" data-filterable-set=":ktkit-ktor-httpclient/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-ktor-httpclient/commonMain" data-filterable-set=":ktkit-ktor-httpclient/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-rest-client-error-spec/index.html"><span>Rest</span><wbr><span>Client</span><wbr><span>Error</span><wbr><span><span>Spec</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1963296863%2FClasslikes%2F1651365997"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-ktor-httpclient/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-rest-client-error-spec/index.html">RestClientErrorSpec</a> : <a href="../../ktkit/io.github.smyrgeorge.ktkit.api.error/-error-spec/index.html">ErrorSpec</a></div></div></div>
                 </div>
               </div>
             </div>

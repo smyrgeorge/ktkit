@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.ktor.httpclient
 import arrow.core.raise.catch
 import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktkit.ktor.httpclient.RestClientErrorSpec.Companion.raise
+import io.github.smyrgeorge.ktkit.util.KtKitDSL
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -150,6 +151,7 @@ abstract class AbstractRestClient(
         internal suspend inline fun executeOrRaise(block: suspend () -> HttpResponse): HttpResponse =
             catch({ block() }) { e -> RestClientErrorSpec.RestClientRequestError(e).raise() }
 
+        @KtKitDSL
         context(_: Raise<RestClientErrorSpec>)
         suspend inline fun <reified T> HttpResponse.bodyOrRaise(): T =
             catch({ body() }) { e -> RestClientErrorSpec.RestClientDeserializationError(e).raise() }

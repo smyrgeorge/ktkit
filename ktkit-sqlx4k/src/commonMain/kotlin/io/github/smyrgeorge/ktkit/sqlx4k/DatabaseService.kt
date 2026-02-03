@@ -7,6 +7,7 @@ import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.service.Service
+import io.github.smyrgeorge.ktkit.util.KtKitDSL
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.Driver
@@ -42,6 +43,7 @@ interface DatabaseService : Service {
          * @return The result of the database operation, of generic type [T], if the operation is successful.
          * @throws DatabaseError if the database operation fails and an error is raised in the context of [ErrorSpec].
          */
+        @KtKitDSL
         context(_: Raise<ErrorSpec>)
         inline fun <T> db(block: () -> DbResult<T>): T = dbCatching(block).bind()
 
@@ -55,6 +57,7 @@ interface DatabaseService : Service {
          * @return An `Either` instance where the right side is the successful result of the database operation (`T`)
          *         and the left side is a mapped `DatabaseError` for any encountered errors.
          */
+        @KtKitDSL
         context(_: Raise<ErrorSpec>)
         inline fun <T> dbCatching(block: () -> DbResult<T>): Either<DatabaseError, T> = block().mapError()
 
@@ -66,6 +69,7 @@ interface DatabaseService : Service {
          *          is provided with an implicit [Transaction] context and can return a result of type [R].
          * @return The result of the function execution within the transactional context.
          */
+        @KtKitDSL
         context(ec: ExecContext)
         suspend inline fun <R> DatabaseService.withTransaction(
             crossinline block: suspend context(Transaction)() -> R

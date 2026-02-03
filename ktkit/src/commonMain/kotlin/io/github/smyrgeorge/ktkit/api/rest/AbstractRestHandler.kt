@@ -13,6 +13,7 @@ import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.service.Component
+import io.github.smyrgeorge.ktkit.util.KtKitDSL
 import io.github.smyrgeorge.ktkit.util.extractOpenTelemetryHeader
 import io.github.smyrgeorge.ktkit.util.spanName
 import io.github.smyrgeorge.ktkit.util.spanTags
@@ -250,6 +251,7 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
+    @KtKitDSL
     fun <T> Route.GET(
         path: String,
         defaultUser: Principal? = null,
@@ -271,6 +273,7 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 201 Created)
      * @param handler The function to execute
      */
+    @KtKitDSL
     fun <T> Route.POST(
         path: String,
         defaultUser: Principal? = null,
@@ -292,6 +295,7 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
+    @KtKitDSL
     fun <T> Route.PUT(
         path: String,
         defaultUser: Principal? = null,
@@ -313,6 +317,7 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
+    @KtKitDSL
     fun <T> Route.PATCH(
         path: String,
         defaultUser: Principal? = null,
@@ -334,6 +339,7 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses (default: 200 OK)
      * @param handler The function to execute
      */
+    @KtKitDSL
     fun <T> Route.DELETE(
         path: String,
         defaultUser: Principal? = null,
@@ -355,6 +361,7 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses. Defaults to HttpStatusCode.OK.
      * @param handler The function to execute for handling the request.
      */
+    @KtKitDSL
     fun <T> Route.HEAD(
         path: String,
         defaultUser: Principal? = null,
@@ -376,6 +383,7 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses. Defaults to HttpStatusCode.OK.
      * @param handler The function to execute for handling the request.
      */
+    @KtKitDSL
     fun <T> Route.OPTIONS(
         path: String,
         defaultUser: Principal? = null,

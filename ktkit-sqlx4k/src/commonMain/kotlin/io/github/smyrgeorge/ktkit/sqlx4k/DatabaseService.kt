@@ -14,6 +14,11 @@ import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.Transaction
 import io.github.smyrgeorge.sqlx4k.arrow.impl.extensions.DbResult
 
+/**
+ * Provides database-related services and utilities for working with database operations.
+ * This interface extends [Service], incorporating common service-level functionality
+ * and additional database-specific methods.
+ */
 interface DatabaseService : Service {
     val db: Driver
 

@@ -45,6 +45,18 @@ development.
 - Adds convenience helpers for retries, JSON/TOML utilities, and KMP-friendly file/http/process access
 - Uses Arrow (Raise/Either) and Kotlin context parameters to keep error handling and context passing lightweight
 
+**Planned features:**
+
+- [ ] Integration with Arrow's resilience libraries (e.g. Retry, Resource, Circuit Breaker)
+- [ ] Write extensive examples
+- [ ] Write extensive tests
+- [ ] Write extensive documentation
+- [ ] BearerPrincipalExtractor for JWT authentication
+- [x] XRealNamePrincipalExtractor for X-Real-Name header authentication
+- [x] sqlx4k integration
+- [x] PGMQ integration
+- [ ] Extend this list with more ideas 🧐!
+
 ## Modules and features
 
 ### Core (`ktkit`)
@@ -55,6 +67,15 @@ development.
 - Error model (`ErrorSpec`/`ApiError`) aligned with RFC 9457 conventions
 - Config loader for TOML with environment substitution and layered overrides
 
+### Ktor HTTP Client (`ktkit-ktor-httpclient`)
+
+A multiplatform REST client abstraction built on Ktor's HttpClient with functional error handling via Arrow's `Raise`.
+
+- `HttpClientFactory` for creating pre-configured HttpClient instances with timeouts, connection pooling, and JSON setup
+- `AbstractRestClient` base class with typed HTTP methods (GET, POST, PUT, PATCH, DELETE, etc.)
+- Built-in implementations: `BearerRestClient` (Bearer token auth) and `XRealNameRestClient` (X-Real-Name header auth)
+- Error handling via sealed `RestClientErrorSpec` hierarchy
+
 ### sqlx4k integration (`ktkit-sqlx4k`)
 
 > A coroutine-first SQL toolkit with compile-time query validations for Kotlin Multiplatform. PostgreSQL,
@@ -62,6 +83,8 @@ development.
 
 - `DatabaseService` helpers for error mapping and traced transactions
 - `AuditableRepository` hooks for `createdAt/createdBy/updatedAt/updatedBy`
+- `AuditableDatabaseService` interface for services with auditable entities and a `save()` extension
+- `JsonSupport` utility for JSON column serialization with sqlx4k's `ValueEncoder` system
 
 ### PGMQ integration (`ktkit-sqlx4k-pgmq`)
 

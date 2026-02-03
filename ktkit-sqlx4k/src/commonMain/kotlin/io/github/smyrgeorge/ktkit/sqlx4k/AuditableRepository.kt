@@ -13,6 +13,13 @@ import io.github.smyrgeorge.sqlx4k.arrow.ArrowContextCrudRepository
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 
+/**
+ * Represents a repository interface for managing entities that implement the [Auditable] interface.
+ * It provides hooks for handling common auditing fields such as `createdAt`, `createdBy`, `updatedAt`, and `updatedBy`
+ * during insert and update operations. Additionally, it supports tracing and error handling for database operations.
+ *
+ * @param T The type of the entity managed by this repository. Must implement the [Auditable] interface.
+ */
 @OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
 interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>, Component {
     override suspend fun preInsertHook(context: QueryExecutor, entity: T): T {

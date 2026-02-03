@@ -15,10 +15,10 @@ import kotlinx.serialization.json.Json
 
 class BearerRestClient(
     json: Json,
-    mapErrorResponse: suspend context(Raise<RestClientErrorSpec>) HttpResponse.() -> RestClientErrorSpec,
+    mapError: suspend context(Raise<RestClientErrorSpec>) HttpResponse.() -> RestClientErrorSpec,
     baseUrl: String = "",
     client: HttpClient = HttpClientFactory.create(json = json),
-) : AbstractRestClient(json, client, baseUrl, mapErrorResponse) {
+) : AbstractRestClient(json, client, baseUrl, mapError) {
     context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> get(
         token: String,

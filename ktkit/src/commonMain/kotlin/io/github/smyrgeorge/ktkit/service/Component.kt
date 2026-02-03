@@ -39,5 +39,5 @@ interface Component {
      * @throws IllegalStateException if the [io.github.smyrgeorge.ktkit.context.ExecContext] cannot be extracted from the CoroutineContext.
      */
     suspend fun ctx(): ExecContext =
-        currentCoroutineContext()[ExecContext] ?: error("No ExecutionContext found in CoroutineContext")
+        currentCoroutineContext()[ExecContext] ?: error("No ExecContext found in CoroutineContext")
 }

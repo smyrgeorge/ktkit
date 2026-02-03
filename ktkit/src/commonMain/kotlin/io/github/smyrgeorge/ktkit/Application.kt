@@ -1,7 +1,9 @@
 package io.github.smyrgeorge.ktkit
 
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
+import io.github.smyrgeorge.ktkit.api.error.impl.NotFound
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
+import io.github.smyrgeorge.ktkit.api.rest.ApiError
 import io.github.smyrgeorge.ktkit.api.rest.impl.ApplicationStatusRestHandler
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.util.applicationLogger
@@ -13,6 +15,7 @@ import io.github.smyrgeorge.ktkit.util.registerShutdownHook
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.RootLogger
 import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleMeteringCollectorAppender
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.application.log
@@ -22,6 +25,8 @@ import io.ktor.server.engine.EngineConnectorBuilder
 import io.ktor.server.engine.applicationEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
@@ -151,7 +156,7 @@ class Application(
      * - `UP`: Indicates that the application is operational and running.
      * - `DOWN`: Indicates that the application is non-operational or has been shut down.
      *
-     * This enum can be utilized to monitor and communicate the current state of the application,
+     * This enum can be used to monitor and communicate the current state of the application,
      * especially in health checks and logging.
      */
     enum class Status {
@@ -272,6 +277,26 @@ class Application(
                     json(json)
                 }
 
+                // Install status pages for default handler
+                install(StatusPages) {
+                    unhandled { call ->
+                        val title: String = NotFound.TITLE
+                        val res = ApiError(
+                            type = ApiError.errorType(
+                                includeTypePropertyInApiError = app.conf.includeTypePropertyInApiError,
+                                errorTypeHost = app.conf.errorTypeHost,
+                                title = title
+                            ),
+                            title = title,
+                            status = HttpStatusCode.NotFound.value,
+                            requestId = null,
+                            detail = "The requested resource was not found.",
+                            data = null
+                        )
+                        call.respond(HttpStatusCode.NotFound, res)
+                    }
+                }
+
                 // Register routes.
                 routing {
                     // Auto register discovered REST handlers.
@@ -336,7 +361,7 @@ class Application(
          * A globally accessible variable representing the default anonymous user context within the application.
          *
          * This variable holds a `Principal` instance intended for scenarios where user authentication
-         * is not required or an anonymous context is sufficient. It is utilized as the default user
+         * is not required or an anonymous context is enough. It is used as the default user
          * in various configurations, such as in REST handlers that operate without requiring user
          * authentication.
          *

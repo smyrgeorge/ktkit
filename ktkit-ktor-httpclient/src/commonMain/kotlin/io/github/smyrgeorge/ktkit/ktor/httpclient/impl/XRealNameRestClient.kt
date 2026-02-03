@@ -17,12 +17,13 @@ import kotlinx.serialization.json.Json
 
 class XRealNameRestClient(
     json: Json,
+    baseUrl: String = "",
     client: HttpClient = HttpClientFactory.create(json = json),
 ) : AbstractRestClient(
     json = json,
     client = client,
-    baseUrl = "",
-    mapErrorResponse = {
+    baseUrl = baseUrl,
+    mapError = {
         val error = bodyOrRaise<ApiError>()
         RestClientErrorSpec.RestClientReceiveError(error)
     }

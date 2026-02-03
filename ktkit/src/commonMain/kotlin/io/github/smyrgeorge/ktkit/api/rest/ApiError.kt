@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.rest
 
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
+import io.github.smyrgeorge.ktkit.util.camelCaseToKebabCase
 import kotlinx.serialization.Serializable
 
 /**
@@ -24,6 +25,17 @@ data class ApiError(
     val status: Int,
     val detail: String,
     // Extensions:
-    val requestId: String,
+    val requestId: String?,
     val data: ErrorSpecData?
-)
+) {
+    companion object {
+        fun errorType(
+            includeTypePropertyInApiError: Boolean,
+            errorTypeHost: String,
+            title: String
+        ): String? {
+            return if (includeTypePropertyInApiError) "${errorTypeHost}/${camelCaseToKebabCase(title)}"
+            else null
+        }
+    }
+}

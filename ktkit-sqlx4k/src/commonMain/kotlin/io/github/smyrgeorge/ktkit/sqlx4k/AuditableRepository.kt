@@ -2,8 +2,8 @@ package io.github.smyrgeorge.ktkit.sqlx4k
 
 import arrow.core.Either
 import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
-import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.ktkit.service.Auditable
+import io.github.smyrgeorge.ktkit.service.Component
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
@@ -46,8 +46,10 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>,
                 // However, we do it just in case this will change in the future.
                 is Result<*> if res.isFailure -> {
                     // Early close the span if the query failed.
-                    exception(res.exceptionOrNull()!!)
-                    end(res.exceptionOrNull()!!)
+                    res.exceptionOrNull()?.let {
+                        exception(it)
+                        end(it)
+                    }
                     res
                 }
 
@@ -56,8 +58,11 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>,
                     val e = when (val e = res.leftOrNull()!!) {
                         is SQLError -> e
                         is Throwable -> e
-                        else -> DatabaseError(code = "UnknownError", message = "Unknown error occurred: $e")
-                    } as Throwable
+                        else -> DatabaseError(
+                            code = SQLError.Code.UnknownError.name,
+                            message = "Unknown error occurred (${e::class.simpleName}): $e"
+                        ).toThrowable()
+                    }
 
                     // Early close the span if the query failed.
                     exception(e)

@@ -63,8 +63,8 @@ class HttpContext(
         inline fun <reified T : Enum<T>> String.toEnum(): T =
             try {
                 enumValueOf<T>(this)
-            } catch (_: Exception) {
-                UnsupportedEnumValue(T::class.simpleName ?: "Unknown", this).throwRuntimeError()
+            } catch (e: Exception) {
+                UnsupportedEnumValue(T::class.simpleName ?: "Unknown", this).throwRuntimeError(e)
             }
 
         inline fun <reified T : Enum<T>> String.toEnumOrNull(): T? =
@@ -132,6 +132,6 @@ class HttpContext(
         try {
             call.receive()
         } catch (e: Throwable) {
-            MalformedRequestBody(e).throwRuntimeError()
+            MalformedRequestBody(e).throwRuntimeError(e)
         }
 }

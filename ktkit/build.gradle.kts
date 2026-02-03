@@ -23,6 +23,7 @@ kotlin {
                 api(libs.kotlinx.serialization.json)
                 api(libs.ktoml.core)
                 api(libs.ktor.server.core)
+                api(libs.ktor.server.status.pages)
                 api(libs.ktor.server.content.negotiation)
                 api(libs.ktor.serialization.kotlinx.json)
             }

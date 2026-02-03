@@ -32,13 +32,13 @@ import kotlinx.serialization.json.Json
  * @property json The instance of `Json` for JSON serialization and deserialization.
  * @property client The `HttpClient` responsible for executing HTTP requests.
  * @property baseUrl The base URL used to construct full request URIs.
- * @property mapErrorResponse A function transforming an `HttpResponse` into a [RestClientErrorSpec] for structured error handling.
+ * @property mapError A function transforming an `HttpResponse` into a [RestClientErrorSpec]
  */
 abstract class AbstractRestClient(
     val json: Json,
     val client: HttpClient,
     val baseUrl: String,
-    val mapErrorResponse: suspend context(Raise<RestClientErrorSpec>) HttpResponse.() -> RestClientErrorSpec
+    val mapError: suspend context(Raise<RestClientErrorSpec>) HttpResponse.() -> RestClientErrorSpec
 ) {
     @PublishedApi
     internal fun buildUri(uri: String) = "${baseUrl}$uri"
@@ -47,27 +47,21 @@ abstract class AbstractRestClient(
     suspend inline fun <reified T> get(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response: HttpResponse = executeOrRaise { client.get(buildUri(uri)) { builder() } }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    ): T = executeOrRaise { client.get(buildUri(uri)) { builder() } }
+        .also { response -> if (!response.status.isSuccess()) mapError(response).raise() }
+        .bodyOrRaise()
 
     context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T, reified B> post(
         uri: String,
         body: B,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response = executeOrRaise {
-            client.post(buildUri(uri)) {
-                contentType(ContentType.Application.Json)
-                setBody(body); builder()
-            }
+    ): T = executeOrRaise {
+        client.post(buildUri(uri)) {
+            contentType(ContentType.Application.Json)
+            setBody(body); builder()
         }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    }.also { response -> if (!response.status.isSuccess()) mapError(response).raise() }.bodyOrRaise()
 
     context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> postMultipart(
@@ -76,97 +70,79 @@ abstract class AbstractRestClient(
         fileName: String = "file",
         contentType: ContentType = ContentType.Application.OctetStream,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response = executeOrRaise {
-            client.post(buildUri(uri)) {
-                setBody(
-                    MultiPartFormDataContent(
-                        formData {
-                            append(
-                                key = "file",
-                                value = data,
-                                headers = Headers.build {
-                                    append(HttpHeaders.ContentType, contentType.toString())
-                                    append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
-                                }
-                            )
-                        }
-                    )
+    ): T = executeOrRaise {
+        client.post(buildUri(uri)) {
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append(
+                            key = "file",
+                            value = data,
+                            headers = Headers.build {
+                                append(HttpHeaders.ContentType, contentType.toString())
+                                append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
+                            }
+                        )
+                    }
                 )
-                builder()
-            }
+            )
+            builder()
         }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    }.also { response -> if (!response.status.isSuccess()) mapError(response).raise() }.bodyOrRaise()
 
     context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T, reified B> patch(
         uri: String,
         body: B? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response: HttpResponse = executeOrRaise {
-            client.patch(buildUri(uri)) {
-                body?.let {
-                    contentType(ContentType.Application.Json)
-                    setBody(body)
-                }
-                builder()
+    ): T = executeOrRaise {
+        client.patch(buildUri(uri)) {
+            body?.let {
+                contentType(ContentType.Application.Json)
+                setBody(body)
             }
+            builder()
         }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    }.also { response -> if (!response.status.isSuccess()) mapError(response).raise() }.bodyOrRaise()
 
     context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T, reified B> put(
         uri: String,
         body: B? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response: HttpResponse = executeOrRaise {
-            client.put(buildUri(uri)) {
-                body?.let {
-                    contentType(ContentType.Application.Json)
-                    setBody(body)
-                }
-                builder()
+    ): T = executeOrRaise {
+        client.put(buildUri(uri)) {
+            body?.let {
+                contentType(ContentType.Application.Json)
+                setBody(body)
             }
+            builder()
         }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    }.also { response -> if (!response.status.isSuccess()) mapError(response).raise() }.bodyOrRaise()
 
     context(_: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> delete(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response: HttpResponse = executeOrRaise { client.delete(buildUri(uri)) { builder() } }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    ): T = executeOrRaise { client.delete(buildUri(uri)) { builder() } }
+        .also { response -> if (!response.status.isSuccess()) mapError(response).raise() }
+        .bodyOrRaise()
 
     context(r: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> head(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response: HttpResponse = executeOrRaise { client.head(buildUri(uri)) { builder() } }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    ): T = executeOrRaise { client.head(buildUri(uri)) { builder() } }
+        .also { response -> if (!response.status.isSuccess()) mapError(response).raise() }
+        .bodyOrRaise()
 
     context(r: Raise<RestClientErrorSpec>)
     suspend inline fun <reified T> options(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T {
-        val response: HttpResponse = executeOrRaise { client.options(buildUri(uri)) { builder() } }
-        return if (!response.status.isSuccess()) mapErrorResponse(response).raise()
-        else response.bodyOrRaise()
-    }
+    ): T = executeOrRaise { client.options(buildUri(uri)) { builder() } }
+        .also { response -> if (!response.status.isSuccess()) mapError(response).raise() }
+        .bodyOrRaise()
 
     companion object {
         @PublishedApi

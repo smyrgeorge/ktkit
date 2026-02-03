@@ -7,7 +7,6 @@ import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.service.Service
-import io.github.smyrgeorge.ktkit.util.AppResult
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.Driver
@@ -20,11 +19,13 @@ interface DatabaseService : Service {
     @Suppress("NOTHING_TO_INLINE")
     companion object {
         /**
-         * Transforms a [DbResult] instance into an [AppResult] by mapping any left-side error to a [DatabaseError].
-         * This conversion ensures that database-level errors are encapsulated in a standardized error format.
+         * Maps the error component of a `DbResult` to a `DatabaseError` object, while preserving the success value.
          *
-         * @receiver A [DbResult] containing either a success value of type `T` or an error.
-         * @return An [AppResult] where the left-side errors of [DbResult] are mapped to [DatabaseError] instances.
+         * This method converts the left (`Error`) side of the `DbResult` into a more specific `DatabaseError`,
+         * encapsulating the underlying error details such as the error code, cause, and message.
+         *
+         * @return An `Either` object where the left side is a `DatabaseError` constructed from the current error,
+         *         and the right side is the success value of the original `DbResult`.
          */
         @PublishedApi
         internal inline fun <T> DbResult<T>.mapError(): Either<DatabaseError, T> =

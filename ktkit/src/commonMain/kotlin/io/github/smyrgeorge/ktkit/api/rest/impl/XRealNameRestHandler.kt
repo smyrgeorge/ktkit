@@ -31,4 +31,3 @@ abstract class XRealNameRestHandler(
     hasAllRoles: NonEmptySet<String>? = null,
     permissions: HttpContext.() -> Boolean = { true },
 ) : AbstractRestHandler(defaultUser, hasRole, hasAnyRole, hasAllRoles, permissions, XRealNamePrincipalExtractor)
-

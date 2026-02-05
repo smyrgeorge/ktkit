@@ -52,7 +52,6 @@ development.
 - [ ] Write extensive tests
 - [ ] Write extensive documentation
 - [ ] BearerPrincipalExtractor for JWT authentication
-- [x] XRealNamePrincipalExtractor for X-Real-Name header authentication
 - [x] sqlx4k integration
 - [x] PGMQ integration
 - [ ] Extend this list with more ideas 🧐!
@@ -66,6 +65,22 @@ development.
 - Built-in `/api/status/health` and `/api/status/metrics` endpoints
 - Error model (`ErrorSpec`/`ApiError`) aligned with RFC 9457 conventions
 - Config loader for TOML with environment substitution and layered overrides
+
+#### Security: X-Real-Name Header Authentication
+
+> [!WARNING]
+> The `XRealNamePrincipalExtractor` and `XRealNameRestClient` use a base64-encoded JSON header (`x-real-name`) to
+> identify the authenticated user. **This mechanism is not safe to expose directly to the internet.**
+
+This pattern assumes a trusted reverse proxy or API gateway sits in front of your application and:
+
+1. Authenticates the user (e.g., via OAuth, JWT, or session cookies)
+2. Strips any incoming `x-real-name` header from client requests
+3. Sets the `x-real-name` header with the authenticated user's information before forwarding
+
+If your application is exposed directly to the internet without such a proxy, any client can forge the header and
+impersonate any user. Only use this extractor when your application runs behind a trusted infrastructure layer that
+controls this header.
 
 ### Ktor HTTP Client (`ktkit-ktor-httpclient`)
 

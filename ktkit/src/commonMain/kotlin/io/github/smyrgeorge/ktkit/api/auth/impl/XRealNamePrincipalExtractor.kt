@@ -16,6 +16,12 @@ import kotlin.io.encoding.Base64
  * If the header is missing or the decoding/deserialization fails, the method captures
  * the error and returns it within the [Result].
  *
+ * **Security Warning:** This extractor is **not intended to be exposed directly to the internet**.
+ * The `x-real-name` header is typically set by a trusted reverse proxy or API gateway after
+ * authenticating the user. If exposed directly, any client could forge this header and
+ * impersonate any user. Use this extractor only behind a trusted proxy that strips or
+ * overwrites the `x-real-name` header before forwarding requests to your application.
+ *
  * @constructor Initializes the extractor with a predefined header name (`x-real-name`)
  * and a JSON serializer configured to ignore unknown keys during deserialization.
  *

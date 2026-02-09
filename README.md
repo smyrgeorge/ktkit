@@ -82,6 +82,56 @@ If your application is exposed directly to the internet without such a proxy, an
 impersonate any user. Only use this extractor when your application runs behind a trusted infrastructure layer that
 controls this header.
 
+#### TOML Configuration Loading
+
+`ConfigPropertiesToml` loads and deserializes TOML files into `@Serializable` data classes. It supports environment
+variable interpolation (`${VAR_NAME}`), loading from resources or the filesystem, and merging a base config with an
+override file (override values take precedence).
+
+The `load()` method reads `application.toml` from resources as the base, then looks for an override in this order:
+`application.toml`, `config/application.toml`, `application.local.toml`, `config/application.local.toml`.
+
+```kotlin
+// Define your config as a @Serializable data class
+@Serializable
+data class AppConfig(val server: ServerConfig, val database: DatabaseConfig)
+@Serializable
+data class ServerConfig(val host: String, val port: Int)
+@Serializable
+data class DatabaseConfig(val url: String, val maxConnections: Int)
+```
+
+```toml
+# src/commonMain/resources/application.toml (base config)
+[server]
+host = "localhost"
+port = 8080
+
+[database]
+url = "postgresql://${DB_HOST}/mydb"
+maxConnections = 10
+```
+
+```toml
+# config/application.local.toml (local override)
+[database]
+maxConnections = 50
+```
+
+```kotlin
+// Auto-load with layered overrides
+val config: AppConfig = ConfigPropertiesToml.load()
+
+// Or load from a specific file
+val config: AppConfig = ConfigPropertiesToml.loadFromFileSystem("path/to/config.toml")
+
+// Or merge two files explicitly
+val config: AppConfig = ConfigPropertiesToml.loadFromFileSystem(
+    base = "base.toml",
+    override = "override.toml"
+)
+```
+
 ### Ktor HTTP Client (`ktkit-ktor-httpclient`)
 
 A multiplatform REST client abstraction built on Ktor's HttpClient with functional error handling via Arrow's `Raise`.

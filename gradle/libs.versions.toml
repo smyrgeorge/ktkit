@@ -20,7 +20,7 @@ sqlx4k = "1.5.20"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp
-ksp = "2.3.5"
+ksp = "2.3.6"
 # https://github.com/arrow-kt/arrow
 arrow = "2.2.1.1"
 

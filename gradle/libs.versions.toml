@@ -12,7 +12,7 @@ log4k = "1.4.2"
 # https://github.com/Kotlin/kotlinx.serialization
 kotlinx-serialization = "1.10.0"
 # https://github.com/ktorio/ktor
-ktor = "3.4.1"
+ktor = "3.4.2"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.0"
 # https://github.com/smyrgeorge/sqlx4k

@@ -45,7 +45,7 @@ class ServiceVariations(
     // NOTE:
     // raise(...) short-circuits with exceptional control flow, so sqlx4k transaction() rolls back.
     context(_: Raise<ErrorSpec>, _: Transaction)
-    suspend fun findTestRaise(fail: Boolean = false): List<Test> {
+    suspend fun findAllRaise(fail: Boolean = false): List<Test> {
         if (fail) raise(NotFound("No tests found (raise variation)."))
         return db { repo.findAll() }
     }

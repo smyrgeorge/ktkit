@@ -20,6 +20,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.sqlx4k.postgres)
+                implementation(libs.atomicfu)
                 implementation(project(":ktkit"))
                 implementation(project(":ktkit-sqlx4k"))
                 implementation(project(":ktkit-sqlx4k-pgmq"))

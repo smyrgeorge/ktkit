@@ -1,9 +1,7 @@
 package io.github.smyrgeorge.ktkit.context
 
-import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktkit.api.event.EventContext
 import io.github.smyrgeorge.ktkit.api.rest.HttpContext
-import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.log4k.TracingContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
@@ -30,15 +28,16 @@ class ExecContext(
     val tracing: TracingContext,
     http: HttpContext? = null,
     event: EventContext? = null,
-) : Raise<ErrorSpec>, TracingContext by tracing, CoroutineContext.Element {
+) : TracingContext by tracing,
+    CoroutineContext.Element {
     private val _http: HttpContext? = http
     private val _event: EventContext? = event
 
     val http: HttpContext get() = _http ?: error("HttpContext is null.")
     val event: EventContext get() = _event ?: error("EventContext is null.")
 
-    override fun raise(r: ErrorSpec): Nothing = r.throwRuntimeError()
     override val key: CoroutineContext.Key<ExecContext> get() = ExecContext
+
     override fun toString() = "ExecutionContext(reqId='$reqId', reqTs=$reqTs, user=$principal, attributes=$attributes)"
 
     companion object : CoroutineContext.Key<ExecContext> {

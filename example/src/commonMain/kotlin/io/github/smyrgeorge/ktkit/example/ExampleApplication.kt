@@ -3,9 +3,11 @@ package io.github.smyrgeorge.ktkit.example
 import io.github.smyrgeorge.ktkit.Application
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktkit.example.generated.TestRepositoryImpl
+import io.github.smyrgeorge.ktkit.example.test.ServiceVariations
 import io.github.smyrgeorge.ktkit.example.test.TestRepository
 import io.github.smyrgeorge.ktkit.example.test.TestRestHandler
 import io.github.smyrgeorge.ktkit.example.test.TestService
+import io.github.smyrgeorge.ktkit.example.test.TransactionalService
 import io.github.smyrgeorge.ktkit.sqlx4k.pgmq.Pgmq
 import io.github.smyrgeorge.log4k.Level
 import io.github.smyrgeorge.sqlx4k.Driver
@@ -40,6 +42,8 @@ fun start(db: IPostgresSQL, pgmq: Pgmq) {
                 single { pgmq }.bind<Pgmq>()
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::TestService)
+                singleOf(::ServiceVariations)
+                singleOf(::TransactionalService)
                 single { TestRepositoryImpl }.bind<TestRepository>()
             }
         },

@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.api.rest
 import arrow.core.Either
 import arrow.core.NonEmptySet
 import arrow.core.raise.context.Raise
+import arrow.core.raise.context.bind
 import arrow.core.raise.context.either
 import io.github.smyrgeorge.ktkit.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
@@ -144,58 +145,121 @@ abstract class AbstractRestHandler(
                 val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)
                 if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").throwRuntimeError()
 
-                // Load the execution context into the coroutine context.
-                val result: Either<ErrorSpec, T> =
-                    either {
-                        val raise = this
-                        withContext(exec) {
-                            context(exec, raise) { http.handler() }
-                        }
-                    }
-
-                when (result) {
-                    is Either.Left -> {
-                        respond(span, call, result.value.toThrowable())
-                    }
-
-                    is Either.Right -> {
-                        when (val value = result.value) {
-                            is Result<*> -> {
-                                value
-                                    .onFailure { error -> respond(span, call, error) }
-                                    .onSuccess { inner -> respond(span, call, onSuccessHttpStatusCode, inner) }
-                            }
-
-                            is Either<*, *> -> {
-                                if (value.isLeft()) {
-                                    when (val left = value.leftOrNull()!!) {
-                                        is ErrorSpec -> {
-                                            respond(span, call, left.toThrowable())
-                                        }
-
-                                        else -> {
-                                            respond(
-                                                span,
-                                                call,
-                                                UnknownError("Unsupported Either left type: $left").toThrowable(),
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    respond(span, call, onSuccessHttpStatusCode, value.getOrNull())
-                                }
-                            }
-
-                            else -> {
-                                respond(span, call, onSuccessHttpStatusCode, value)
-                            }
-                        }
-                    }
-                }
+                val result = executeHandler(exec, http, handler)
+                respondHandlerResult(span, call, onSuccessHttpStatusCode, result)
             } catch (error: Throwable) {
                 respond(span, call, error)
             }
         }
+
+    /**
+     * Executes the HTTP handler inside Arrow's `either {}` scope while preserving the current [ExecContext].
+     *
+     * The route contract supports both direct-style Arrow handlers (`raise` / `bind`) and compatibility mode
+     * for handlers that still return `Either<ErrorSpec, T>`. This method therefore normalizes the raw handler
+     * result so the rest of the request pipeline can work with a single `Either<ErrorSpec, Any?>`.
+     *
+     * @param exec The request execution context loaded into the coroutine context.
+     * @param http The current HTTP context passed to the handler.
+     * @param handler The route handler to execute.
+     * @return A normalized [Either] whose left side is always an [ErrorSpec] and whose right side is the final
+     *         response payload after flattening one compatibility layer of returned `Either`.
+     */
+    private suspend inline fun <T> executeHandler(
+        exec: ExecContext,
+        http: HttpContext,
+        crossinline handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
+    ): Either<ErrorSpec, Any?> =
+        either {
+            val raise = this
+            val value = withContext(exec) {
+                context(exec, raise) { http.handler() }
+            }
+
+            // Flatten one returned Either<ErrorSpec, T> so the route contract can support both direct-style
+            // handlers and legacy handlers that still explicitly return Either.
+            normalizeHandlerValue(value).bind()
+        }
+
+    /**
+     * Normalizes the raw handler return value into a single Arrow [Either].
+     *
+     * The outer `either {}` already captures logical failures raised by the handler. This method handles the
+     * compatibility case where the handler itself returns an `Either`, which produces a nested result that needs
+     * to be flattened exactly one level:
+     * - `Either.Left(ErrorSpec)` becomes a normalized failure
+     * - `Either.Right(value)` becomes a normalized success
+     *
+     * Other values are treated as plain successful payloads. Returned `Either` values with a non-[ErrorSpec]
+     * left side are not part of the supported REST contract and are mapped to [UnknownError].
+     *
+     * @param value The raw value returned by the handler.
+     * @return A normalized [Either] suitable for final HTTP response handling.
+     */
+    private inline fun normalizeHandlerValue(value: Any?): Either<ErrorSpec, Any?> =
+        when (value) {
+            is Either<*, *> ->
+                if (value.isLeft()) {
+                    when (val left = value.leftOrNull()!!) {
+                        is ErrorSpec -> Either.Left(left)
+                        else -> Either.Left(UnknownError("Unsupported Either left type: $left"))
+                    }
+                } else {
+                    Either.Right(value.getOrNull())
+                }
+
+            else -> Either.Right(value)
+        }
+
+    /**
+     * Responds to the current call using a normalized handler result.
+     *
+     * After normalization, response handling becomes a simple split between typed API failures and successful
+     * payloads.
+     *
+     * @param span The tracing span associated with the current request.
+     * @param call The current application call.
+     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses.
+     * @param result The normalized handler result.
+     */
+    private suspend fun respondHandlerResult(
+        span: Span.Local,
+        call: ApplicationCall,
+        onSuccessHttpStatusCode: HttpStatusCode,
+        result: Either<ErrorSpec, Any?>,
+    ) {
+        when (result) {
+            is Either.Left -> respond(span, call, result.value.toThrowable())
+            is Either.Right -> respondSuccess(span, call, onSuccessHttpStatusCode, result.value)
+        }
+    }
+
+    /**
+     * Responds to a successful handler result.
+     *
+     * This preserves the existing behavior for Kotlin [Result] values by unwrapping them before producing the
+     * final HTTP response. Any other value is treated as a regular successful payload.
+     *
+     * @param span The tracing span associated with the current request.
+     * @param call The current application call.
+     * @param status The HTTP status code indicating a successful response.
+     * @param value The successful handler payload.
+     */
+    private suspend fun respondSuccess(
+        span: Span.Local,
+        call: ApplicationCall,
+        status: HttpStatusCode,
+        value: Any?,
+    ) {
+        when (value) {
+            is Result<*> ->
+                value
+                    .onFailure { error -> respond(span, call, error) }
+                    .onSuccess { inner -> respond(span, call, status, inner) }
+
+            else -> respond(span, call, status, value)
+        }
+    }
 
     /**
      * Responds to an HTTP request based on the type of the provided result.

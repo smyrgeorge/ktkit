@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.example
 import io.github.smyrgeorge.ktkit.Application
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktkit.example.generated.TestRepositoryImpl
+import io.github.smyrgeorge.ktkit.example.test.ServiceVariations
 import io.github.smyrgeorge.ktkit.example.test.TestRepository
 import io.github.smyrgeorge.ktkit.example.test.TestRestHandler
 import io.github.smyrgeorge.ktkit.example.test.TestService
@@ -40,6 +41,7 @@ fun start(db: IPostgresSQL, pgmq: Pgmq) {
                 single { pgmq }.bind<Pgmq>()
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
                 singleOf(::TestService)
+                singleOf(::ServiceVariations)
                 single { TestRepositoryImpl }.bind<TestRepository>()
             }
         },

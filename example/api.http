@@ -1,0 +1,31 @@
+#
+# Generate your own x-real-name header value with:
+# echo -n '{"uuid":"00000000-0000-0000-0000-000000000001","username":"test-user","roles":[]}' | base64
+#
+### Get Test
+GET http://localhost:8080/api/v1/test
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
+### Get Test Result
+GET http://localhost:8080/api/v1/test/result
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
+### Get Test Result Failure
+GET http://localhost:8080/api/v1/test/result?fail=true
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
+### Get Test Either
+GET http://localhost:8080/api/v1/test/either
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
+### Get Test Either Failure
+GET http://localhost:8080/api/v1/test/either?fail=true
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
+### Get Test Raise
+GET http://localhost:8080/api/v1/test/raise
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
+### Get Test Raise Failure
+GET http://localhost:8080/api/v1/test/raise?fail=true
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119

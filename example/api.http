@@ -19,13 +19,21 @@ GET http://localhost:8080/api/v1/test/either
 x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
 
 ### Get Test Either Failure
-GET http://localhost:8080/api/v1/test/either?fail=true
+GET http://localhost:8080/api/v1/test/either?fail=false
 x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
 
 ### Get Test Raise
-GET http://localhost:8080/api/v1/test/raise
+GET http://localhost:8080/api/v1/test/raise?fail=false
 x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
 
-### Get Test Raise Failure
-GET http://localhost:8080/api/v1/test/raise?fail=true
+
+### Create Test With Raise Transaction Commit
+POST http://localhost:8080/api/v1/test/raise/create?fail=false
 x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+
+
+### Update Test With Raise Transaction Commit
+PUT http://localhost:8080/api/v1/test/raise/update/1?fail=true
+x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
+

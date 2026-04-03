@@ -2,6 +2,8 @@ package io.github.smyrgeorge.ktkit.api.rest
 
 import arrow.core.Either
 import arrow.core.NonEmptySet
+import arrow.core.raise.context.Raise
+import arrow.core.raise.context.either
 import io.github.smyrgeorge.ktkit.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
@@ -57,7 +59,7 @@ abstract class AbstractRestHandler(
     private val hasAnyRole: NonEmptySet<String>? = null,
     private val hasAllRoles: NonEmptySet<String>? = null,
     private val permissions: HttpContext.() -> Boolean = { true },
-    private val principalExtractor: PrincipalExtractor? = null
+    private val principalExtractor: PrincipalExtractor? = null,
 ) : Component {
     val log: Logger = Logger.of(this::class)
     val trace: Tracer = Tracer.of(this::class)
@@ -77,13 +79,16 @@ abstract class AbstractRestHandler(
      * @param f A lambda function to be executed within the tracing context. It takes a `Span.Local`
      *          as a parameter and performs tracing-related logic.
      */
-    private inline fun ApplicationCall.trace(
-        f: TracingContext.(Span.Local) -> Unit
-    ) {
+    private inline fun ApplicationCall.trace(f: TracingContext.(Span.Local) -> Unit) {
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = extractOpenTelemetryHeader()?.let { trace.span(it.spanId, it.traceId) }
         // Create the logging-context.
-        val tracing = TracingContext.builder().with(trace).with(parent).build()
+        val tracing =
+            TracingContext
+                .builder()
+                .with(trace)
+                .with(parent)
+                .build()
         // Create the handler span.
         runCatching { tracing.span(spanName(), spanTags(app.name)) { tracing.f(this) } }
             .onFailure { error -> log.error(error) { "Unexpected error while handling request: ${error.message}" } }
@@ -108,64 +113,89 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
-        crossinline handler: suspend context(ExecContext) HttpContext.() -> T
-    ): Unit = call.trace { span ->
-        try {
-            // Extract the principal from the request.
-            val user = principalExtractor?.extract(call)?.getOrThrow()
-                ?: defaultUser
-                ?: this@AbstractRestHandler.defaultUser
-                ?: Unauthorized("User is not authenticated").throwRuntimeError()
+        crossinline handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
+    ): Unit =
+        call.trace { span ->
+            try {
+                // Extract the principal from the request.
+                val user =
+                    principalExtractor?.extract(call)?.getOrThrow()
+                        ?: defaultUser
+                        ?: this@AbstractRestHandler.defaultUser
+                        ?: Unauthorized("User is not authenticated").throwRuntimeError()
 
-            // Add user tags to the span.
-            span.tags.apply {
-                @OptIn(ExperimentalUuidApi::class)
-                put(OpenTelemetryAttributes.USER_ID, user.id)
-                put(OpenTelemetryAttributes.USER_NAME, user.username)
-            }
+                // Add user tags to the span.
+                span.tags.apply {
+                    @OptIn(ExperimentalUuidApi::class)
+                    put(OpenTelemetryAttributes.USER_ID, user.id)
+                    put(OpenTelemetryAttributes.USER_NAME, user.username)
+                }
 
-            // Create the execution-context for the request.
-            val http = HttpContext(user, call)
-            val exec = ExecContext.fromHttp(user, http, this)
+                // Create the execution-context for the request.
+                val http = HttpContext(user, call)
+                val exec = ExecContext.fromHttp(user, http, this)
 
-            // Role-based authorization.
-            hasRole?.let { role -> user.requireRole(role) }
-            hasAnyRole?.let { anyRole -> user.requireAnyRole(anyRole) }
-            hasAllRoles?.let { allRoles -> user.requireAllRoles(allRoles) }
+                // Role-based authorization.
+                hasRole?.let { role -> user.requireRole(role) }
+                hasAnyRole?.let { anyRole -> user.requireAnyRole(anyRole) }
+                hasAllRoles?.let { allRoles -> user.requireAllRoles(allRoles) }
 
-            // Check for permissions.
-            val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)
-            if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").throwRuntimeError()
+                // Check for permissions.
+                val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)
+                if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").throwRuntimeError()
 
-            // Load the execution context into the coroutine context.
-            val result = withContext(exec) {
-                // Execute the handler.
-                context(exec) { http.handler() }
-            }
-
-            when (result) {
-                is Result<*> -> result
-                    .onFailure { error -> respond(span, call, error) }
-                    .onSuccess { value -> respond(span, call, onSuccessHttpStatusCode, value) }
-
-                is Either<*, *> -> result.fold(
-                    ifLeft = { left ->
-                        val error = when (left) {
-                            is ErrorSpec -> left.toThrowable()
-                            is Throwable -> left
-                            else -> UnknownError("Unexpected error type: $left").toThrowable()
+                // Load the execution context into the coroutine context.
+                val result: Either<ErrorSpec, T> =
+                    either {
+                        val raise = this
+                        withContext(exec) {
+                            context(exec, raise) { http.handler() }
                         }
-                        respond(span, call, error)
-                    },
-                    ifRight = { value -> respond(span, call, onSuccessHttpStatusCode, value) }
-                )
+                    }
 
-                else -> respond(span, call, onSuccessHttpStatusCode, result)
+                when (result) {
+                    is Either.Left -> {
+                        respond(span, call, result.value.toThrowable())
+                    }
+
+                    is Either.Right -> {
+                        when (val value = result.value) {
+                            is Result<*> -> {
+                                value
+                                    .onFailure { error -> respond(span, call, error) }
+                                    .onSuccess { inner -> respond(span, call, onSuccessHttpStatusCode, inner) }
+                            }
+
+                            is Either<*, *> -> {
+                                if (value.isLeft()) {
+                                    when (val left = value.leftOrNull()!!) {
+                                        is ErrorSpec -> {
+                                            respond(span, call, left.toThrowable())
+                                        }
+
+                                        else -> {
+                                            respond(
+                                                span,
+                                                call,
+                                                UnknownError("Unsupported Either left type: $left").toThrowable(),
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    respond(span, call, onSuccessHttpStatusCode, value.getOrNull())
+                                }
+                            }
+
+                            else -> {
+                                respond(span, call, onSuccessHttpStatusCode, value)
+                            }
+                        }
+                    }
+                }
+            } catch (error: Throwable) {
+                respond(span, call, error)
             }
-        } catch (error: Throwable) {
-            respond(span, call, error)
         }
-    }
 
     /**
      * Responds to an HTTP request based on the type of the provided result.
@@ -184,7 +214,7 @@ abstract class AbstractRestHandler(
         span: Span.Local,
         call: ApplicationCall,
         status: HttpStatusCode,
-        result: Any?
+        result: Any?,
     ) {
         // Set the HTTP status code and tags on the span.
         span.tags[OpenTelemetryAttributes.HTTP_RESPONSE_STATUS_CODE] = status.value
@@ -208,8 +238,12 @@ abstract class AbstractRestHandler(
         call: ApplicationCall,
         error: Throwable,
     ) {
-        val cause: ErrorSpec = if (error is RuntimeError) error.error
-        else UnknownError(error.message ?: "An unknown error occurred")
+        val cause: ErrorSpec =
+            if (error is RuntimeError) {
+                error.error
+            } else {
+                UnknownError(error.message ?: "An unknown error occurred")
+            }
 
         // Only log server errors (5xx)
         if (cause.httpStatus.code >= 500) {
@@ -225,18 +259,20 @@ abstract class AbstractRestHandler(
 
         val data: ErrorSpecData = cause.data()
         val title: String = cause::class.simpleName ?: error("Could not determine error class name.")
-        val res = ApiError(
-            type = ApiError.errorType(
-                includeTypePropertyInApiError = app.conf.includeTypePropertyInApiError,
-                errorTypeHost = app.conf.errorTypeHost,
-                title = title
-            ),
-            title = title,
-            status = cause.httpStatus.code,
-            requestId = span.context.spanId,
-            detail = cause.message,
-            data = if (data is EmptyErrorData) null else data
-        )
+        val res =
+            ApiError(
+                type =
+                    ApiError.errorType(
+                        includeTypePropertyInApiError = app.conf.includeTypePropertyInApiError,
+                        errorTypeHost = app.conf.errorTypeHost,
+                        title = title,
+                    ),
+                title = title,
+                status = cause.httpStatus.code,
+                requestId = span.context.spanId,
+                detail = cause.message,
+                data = if (data is EmptyErrorData) null else data,
+            )
 
         val status = HttpStatusCode.fromValue(cause.httpStatus.code)
         call.respond(status, res)
@@ -257,7 +293,7 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(ExecContext) HttpContext.() -> T
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ) {
         get(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -279,7 +315,7 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.Created,
-        handler: suspend context(ExecContext) HttpContext.() -> T
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ) {
         post(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -301,7 +337,7 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(ExecContext) HttpContext.() -> T
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ) {
         put(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -323,7 +359,7 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(ExecContext) HttpContext.() -> T
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ) {
         patch(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -345,7 +381,7 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(ExecContext) HttpContext.() -> T
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ) {
         delete(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -367,7 +403,7 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(ExecContext) HttpContext.() -> T
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ) {
         head(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)
@@ -389,7 +425,7 @@ abstract class AbstractRestHandler(
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean = { true },
         onSuccessHttpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        handler: suspend context(ExecContext) HttpContext.() -> T
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ) {
         options(path.uri()) {
             handle(call, defaultUser, permissions, onSuccessHttpStatusCode, handler)

@@ -8,7 +8,7 @@ publish = "0.36.0"
 # https://github.com/Kotlin/dokka
 dokka = "2.2.0"
 # https://github.com/smyrgeorge/log4k
-log4k = "1.4.3"
+log4k = "2.0.0"
 # https://github.com/Kotlin/kotlinx.serialization
 kotlinx-serialization = "1.10.0"
 # https://github.com/ktorio/ktor
@@ -16,7 +16,7 @@ ktor = "3.4.2"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.0"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.7.2"
+sqlx4k = "1.7.3"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp
@@ -34,6 +34,8 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 ktoml-core = { module = "com.akuleshov7:ktoml-core", version.ref = "ktoml" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 log4k = { module = "io.github.smyrgeorge:log4k", version.ref = "log4k" }
+log4k-classic = { module = "io.github.smyrgeorge:log4k-classic", version.ref = "log4k" }
+log4k-context = { module = "io.github.smyrgeorge:log4k-context", version.ref = "log4k" }
 log4k-slf4j = { module = "io.github.smyrgeorge:log4k-slf4j", version.ref = "log4k" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-resilience = { module = "io.arrow-kt:arrow-resilience", version.ref = "arrow" }

@@ -14,6 +14,7 @@ import io.github.smyrgeorge.ktkit.util.httpEngine
 import io.github.smyrgeorge.ktkit.util.registerShutdownHook
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.RootLogger
+import io.github.smyrgeorge.log4k.classic.info
 import io.github.smyrgeorge.log4k.impl.appenders.simple.SimpleMeteringCollectorAppender
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json

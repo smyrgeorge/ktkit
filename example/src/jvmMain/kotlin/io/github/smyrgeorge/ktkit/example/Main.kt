@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.example
 import io.github.smyrgeorge.ktkit.example.test.Test
 import io.github.smyrgeorge.ktkit.sqlx4k.JsonSupport
 import io.github.smyrgeorge.ktkit.sqlx4k.pgmq.Pgmq
+import io.github.smyrgeorge.log4k.Level
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.impl.migrate.utils.readMigrationFilesFromResources
@@ -10,6 +11,8 @@ import io.github.smyrgeorge.sqlx4k.impl.migrate.utils.readSqlFilesFromResources
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.PgmqClient
 import io.github.smyrgeorge.sqlx4k.postgres.postgreSQL
 import kotlinx.coroutines.runBlocking
+
+fun Logger.info(msg: () -> String) = log(Level.INFO, null, msg(), emptyArray(), null)
 
 fun main() {
     val log = Logger.of(ExampleApplication::class)

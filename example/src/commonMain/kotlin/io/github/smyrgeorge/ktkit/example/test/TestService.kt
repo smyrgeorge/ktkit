@@ -4,6 +4,7 @@ import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.sqlx4k.AuditableDatabaseService
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.db
 import io.github.smyrgeorge.log4k.Logger
+import io.github.smyrgeorge.log4k.context.info
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.Transaction

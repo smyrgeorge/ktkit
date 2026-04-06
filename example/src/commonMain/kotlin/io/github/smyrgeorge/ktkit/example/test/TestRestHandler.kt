@@ -2,6 +2,7 @@ package io.github.smyrgeorge.ktkit.example.test
 
 import io.github.smyrgeorge.ktkit.api.rest.impl.XRealNameRestHandler
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
+import io.github.smyrgeorge.log4k.context.info
 import io.ktor.server.routing.Route
 
 class TestRestHandler(

@@ -19,6 +19,7 @@ kotlin {
         }
         commonMain {
             dependencies {
+                implementation(libs.log4k.context)
                 implementation(libs.sqlx4k.postgres)
                 implementation(project(":ktkit"))
                 implementation(project(":ktkit-sqlx4k"))

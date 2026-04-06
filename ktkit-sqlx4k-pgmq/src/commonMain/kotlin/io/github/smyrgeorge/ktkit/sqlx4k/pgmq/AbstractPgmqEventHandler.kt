@@ -19,6 +19,8 @@ import io.github.smyrgeorge.log4k.Tracer
 import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.log4k.TracingContext.Companion.span
 import io.github.smyrgeorge.log4k.TracingEvent.Span
+import io.github.smyrgeorge.log4k.classic.info
+import io.github.smyrgeorge.log4k.classic.warn
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.Message
@@ -30,6 +32,9 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.ExperimentalUuidApi
+import io.github.smyrgeorge.sqlx4k.postgres.pgmq.impl.extensions.archive as archiveWithContext
+import io.github.smyrgeorge.sqlx4k.postgres.pgmq.impl.extensions.send as sendWithContext
+
 
 abstract class AbstractPgmqEventHandler(
     private val pgmq: Pgmq,
@@ -140,7 +145,7 @@ abstract class AbstractPgmqEventHandler(
     ): EitherThrowable<Long> {
         return ec.span(sendSpanName) {
             val headers = defaultSendHeaders() + headers
-            pgmq.client.send(options.queue, message, headers, delay).toEither()
+            sendWithContext(options.queue, message, headers, delay).toEither()
         }
     }
 
@@ -152,7 +157,7 @@ abstract class AbstractPgmqEventHandler(
     ): EitherThrowable<Long> {
         return ec.span(sendSpanName) {
             val headers = defaultSendHeaders() + headers
-            pgmq.client.send(options.queue, supplier(), headers, delay).toEither()
+            sendWithContext(options.queue, supplier(), headers, delay).toEither()
         }
     }
 
@@ -162,7 +167,7 @@ abstract class AbstractPgmqEventHandler(
     context(ec: ExecContext, _: QueryExecutor)
     suspend fun archive(msgId: Long): EitherThrowable<Boolean> {
         return ec.span(archiveSpanName) {
-            pgmq.client.archive(queue.name, msgId).toEither()
+            archiveWithContext(queue.name, msgId).toEither()
         }
     }
 
@@ -170,19 +175,19 @@ abstract class AbstractPgmqEventHandler(
     abstract suspend fun EventContext.handler(message: Message)
 
     open suspend fun onFailToRead(e: Throwable) {
-        with(ctx()) { log.warn { "Failed to read from the queue: ${e.message}" } }
+        log.warn { "Failed to read from the queue: ${e.message}" }
     }
 
     open suspend fun onFailToProcess(e: Throwable) {
-        with(ctx()) { log.warn { "Failed to process message: ${e.message}" } }
+        log.warn { "Failed to process message: ${e.message}" }
     }
 
     open suspend fun onFailToAck(e: Throwable) {
-        with(ctx()) { log.warn { "Failed to ack message: ${e.message}" } }
+        log.warn { "Failed to ack message: ${e.message}" }
     }
 
     open suspend fun onFailToNack(e: Throwable) {
-        with(ctx()) { log.warn { "Failed to nack message: ${e.message}" } }
+        log.warn { "Failed to nack message: ${e.message}" }
     }
 
     private fun Message.spanTags(serviceName: String): Map<String, String> = mapOf(

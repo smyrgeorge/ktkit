@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktkit.util
 
 import io.github.smyrgeorge.log4k.Logger
+import io.github.smyrgeorge.log4k.classic.warn
 import kotlinx.coroutines.delay
 
 private object RetryUtil

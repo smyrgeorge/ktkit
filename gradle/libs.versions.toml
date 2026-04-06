@@ -1,6 +1,6 @@
 [versions]
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.jvm
-kotlin = "2.3.20"
+kotlin = "2.3.0"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinx-coroutines = "1.10.2"
 # https://github.com/vanniktech/gradle-maven-publish-plugin
@@ -16,13 +16,14 @@ ktor = "3.4.2"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.0"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.7.2"
+sqlx4k = "1.5.20"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp
 ksp = "2.3.6"
 # https://github.com/arrow-kt/arrow
 arrow = "2.2.2.1"
+atomicfu = "0.30.0"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -53,6 +54,7 @@ sqlx4k-arrow = { module = "io.github.smyrgeorge:sqlx4k-arrow", version.ref = "sq
 sqlx4k-codegen = { module = "io.github.smyrgeorge:sqlx4k-codegen", version.ref = "sqlx4k" }
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
 sqlx4k-postgres-pgmq = { module = "io.github.smyrgeorge:sqlx4k-postgres-pgmq", version.ref = "sqlx4k" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

@@ -16,7 +16,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(libs.log4k)
-                api(libs.log4k.classic)
+                implementation(libs.log4k.classic)
                 api(libs.koin.core)
                 api(libs.arrow.core)
                 api(libs.arrow.resilience)

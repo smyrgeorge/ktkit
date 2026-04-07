@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 @Table("test")
 data class Test(
     @Id
-    override val id: Int,
+    override val id: Int = 0,
     override var createdAt: Instant = Clock.System.now(),
     override var createdBy: Uuid = SYSTEM_USER.id,
     override var updatedAt: Instant = createdAt,

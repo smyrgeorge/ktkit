@@ -28,6 +28,11 @@ kotlin {
             // Config if your code is under the commonMain module.
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }
+        jvmMain {
+            dependencies {
+                implementation(project(":ktkit-sqlx4k-postgres"))
+            }
+        }
     }
 }
 

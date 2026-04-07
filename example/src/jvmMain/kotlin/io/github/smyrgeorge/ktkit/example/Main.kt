@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.example
 
 import io.github.smyrgeorge.ktkit.example.test.Test
-import io.github.smyrgeorge.ktkit.sqlx4k.JsonSupport
+import io.github.smyrgeorge.ktkit.sqlx4k.PostgresJsonSupport
 import io.github.smyrgeorge.ktkit.sqlx4k.pgmq.Pgmq
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.context.info
@@ -23,7 +23,7 @@ fun main() {
         options = ConnectionPool.Options.builder()
             .maxConnections(10)
             .build(),
-        encoders = JsonSupport.encoders(
+        encoders = PostgresJsonSupport.encoders(
             types = setOf(
                 Test.Data::class
             )

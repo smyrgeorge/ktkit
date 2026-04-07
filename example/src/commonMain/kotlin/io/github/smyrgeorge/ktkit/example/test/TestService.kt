@@ -25,4 +25,13 @@ class TestService(
             log.info { "Fetched ${it.size} tests" }
         }
     }
+
+    context(_: ExecContext, _: Transaction)
+    suspend fun createAndFetchAll(): List<Test> {
+        val row = Test(test = "Test", data = Test.Data())
+        db { repo.save(row) }
+        return findAll().also {
+            log.info { "Fetched ${it.size} tests" }
+        }
+    }
 }

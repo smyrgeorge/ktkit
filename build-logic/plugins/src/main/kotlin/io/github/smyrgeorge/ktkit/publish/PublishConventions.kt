@@ -15,6 +15,7 @@ class PublishConventions : Plugin<Project> {
         "ktkit-ktor-httpclient" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
         "ktkit-sqlx4k" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
         "ktkit-sqlx4k-pgmq" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
+        "ktkit-sqlx4k-postgres" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
     )
 
     override fun apply(project: Project) {

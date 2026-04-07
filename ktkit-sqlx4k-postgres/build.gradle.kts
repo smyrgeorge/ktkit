@@ -15,8 +15,14 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":ktkit"))
-                api(libs.sqlx4k.postgres.pgmq)
-                implementation(libs.log4k.classic)
+                api(project(":ktkit-sqlx4k"))
+                api(libs.sqlx4k.arrow)
+                api(libs.sqlx4k.postgres)
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation(libs.r2dbc.postgresql)
             }
         }
     }

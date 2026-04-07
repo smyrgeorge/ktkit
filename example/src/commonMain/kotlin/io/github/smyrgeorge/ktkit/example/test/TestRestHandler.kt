@@ -17,5 +17,11 @@ class TestRestHandler(
                 testService.test().map { it.toDto() }
             }
         }
+        GET("/create-and-fetch-all") {
+            log.info { "Hello, ${user.username}!" }
+            testService.withTransaction {
+                testService.createAndFetchAll().map { it.toDto() }
+            }
+        }
     }
 }

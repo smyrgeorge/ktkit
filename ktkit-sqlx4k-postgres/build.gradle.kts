@@ -1,5 +1,5 @@
 plugins {
-    id("io.github.smyrgeorge.ktkit.multiplatform")
+    id("io.github.smyrgeorge.ktkit.multiplatform.jvm")
     id("io.github.smyrgeorge.ktkit.dokka")
     id("io.github.smyrgeorge.ktkit.publish")
 }
@@ -12,16 +12,12 @@ kotlin {
         configureEach {
             languageSettings.progressiveMode = true
         }
-        commonMain {
+        jvmMain {
             dependencies {
                 api(project(":ktkit"))
                 api(project(":ktkit-sqlx4k"))
                 api(libs.sqlx4k.arrow)
                 api(libs.sqlx4k.postgres)
-            }
-        }
-        jvmMain {
-            dependencies {
                 implementation(libs.r2dbc.postgresql)
             }
         }

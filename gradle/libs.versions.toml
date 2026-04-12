@@ -14,7 +14,7 @@ kotlinx-serialization = "1.10.0"
 # https://github.com/ktorio/ktor
 ktor = "3.4.2"
 # https://github.com/InsertKoinIO/koin
-koin = "4.2.0"
+koin = "4.2.1"
 # https://github.com/smyrgeorge/sqlx4k
 sqlx4k = "1.7.3"
 # https://github.com/orchestr7/ktoml

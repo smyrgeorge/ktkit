@@ -33,7 +33,7 @@ class ServiceVariations(
         }
 
     // NOTE:
-    // Returning Either.Left by itself does not mark transaction rollback in sqlx4k.
+    // Returning Either.Left by itself DOES NOT mark transaction rollback in sqlx4k (for now).
     // Rollback would require converting Left to a thrown error at the transaction boundary.
     context(_: Transaction)
     suspend fun findAllEither(fail: Boolean = false): Either<ErrorSpec, List<Test>> =

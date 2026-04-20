@@ -25,7 +25,6 @@ ksp = "2.3.6"
 arrow = "2.2.2.1"
 # https://github.com/pgjdbc/r2dbc-postgresql
 r2dbc-postgresql = "1.1.1.RELEASE"
-atomicfu = "0.30.0"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -59,7 +58,6 @@ sqlx4k-codegen = { module = "io.github.smyrgeorge:sqlx4k-codegen", version.ref =
 sqlx4k-postgres = { module = "io.github.smyrgeorge:sqlx4k-postgres", version.ref = "sqlx4k" }
 sqlx4k-postgres-pgmq = { module = "io.github.smyrgeorge:sqlx4k-postgres-pgmq", version.ref = "sqlx4k" }
 r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql" }
-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

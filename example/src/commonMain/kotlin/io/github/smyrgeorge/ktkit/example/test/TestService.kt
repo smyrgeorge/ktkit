@@ -6,6 +6,7 @@ import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.sqlx4k.AuditableDatabaseService
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.db
 import io.github.smyrgeorge.log4k.Logger
+import io.github.smyrgeorge.log4k.TracingContext
 import io.github.smyrgeorge.log4k.context.info
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
@@ -20,7 +21,7 @@ class TestService(
     context(_: Raise<ErrorSpec>, _: QueryExecutor)
     private suspend fun findAll(): List<Test> = db { repo.findAll() }
 
-    context(_: Raise<ErrorSpec>, _: Transaction)
+    context(_: TracingContext, _: Raise<ErrorSpec>, _: Transaction)
     suspend fun test(): List<Test> {
         log.info { "Fetching all tests" }
         return findAll().also {
@@ -28,7 +29,7 @@ class TestService(
         }
     }
 
-    context(_: ExecContext, _: Transaction)
+    context(_:TracingContext, _:Raise<ErrorSpec>, _: Transaction)
     suspend fun createAndFetchAll(): List<Test> {
         val row = Test(test = "Test", data = Test.Data())
         db { repo.save(row) }

@@ -359,4 +359,10 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+### AI
+# For now ignore user ai tools
+.claude
+AGENTS.md
+CLAUDE.md
+
 # End of https://www.toptal.com/developers/gitignore/api/java,rust,macos,maven,gradle,kotlin,eclipse,windows,intellij,visualstudiocode

@@ -6,38 +6,11 @@
 GET http://localhost:8080/api/v1/test
 x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
 
-### Get Test
-GET http://localhost:8080/api/v1/test/create-and-fetch-all
+### Create and fetch all
+GET http://localhost:8080/api/v1/test/create-and-fetch-all?fail=false
 x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
 
-### Get Test Result
-GET http://localhost:8080/api/v1/test/result
-x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
-
-### Get Test Result Failure
-GET http://localhost:8080/api/v1/test/result?fail=true
-x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
-
-### Get Test Either
-GET http://localhost:8080/api/v1/test/either
-x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
-
-### Get Test Either Failure
-GET http://localhost:8080/api/v1/test/either?fail=false
-x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
-
-
-### Get Test Raise
-GET http://localhost:8080/api/v1/test/raise?fail=false
-x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
-
-
-### Create Test With Raise Transaction Commit
-POST http://localhost:8080/api/v1/test/raise/create?fail=false
-x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
-
-
-### Update Test With Raise Transaction Commit
-PUT http://localhost:8080/api/v1/test/raise/update/1?fail=false
+### Update and fetch all
+PUT http://localhost:8080/api/v1/test/update-and-fetch-all/1?fail=true
 x-real-name: eyJ1dWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJyb2xlcyI6W119
 

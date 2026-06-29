@@ -210,12 +210,7 @@ Check the example application [here](example/src/commonMain/kotlin/io/github/smy
 ### Build
 
 ```bash
-# Build all modules, for Jvm and your current platform
 ./gradlew build
-
-# Build all modules for all supported platforms
-./gradlew build -Ptargets=all
-#
 ```
 
 ### Docker Setup

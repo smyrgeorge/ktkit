@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.util
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.classic.warn
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 private object RetryUtil
 
@@ -29,14 +30,14 @@ suspend fun <T> retry(
     log: Logger = io.github.smyrgeorge.ktkit.util.log,
     block: suspend () -> T
 ): T = io {
-    var currentDelay = initialDelay
+    var currentDelay: Long = initialDelay
     repeat(times - 1) {
         try {
             return@io block()
         } catch (e: Exception) {
             log.warn("[${it + 1}/$times] ${e.message}", e)
         }
-        delay(currentDelay)
+        delay(currentDelay.milliseconds)
         currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
     }
     return@io block() // last attempt

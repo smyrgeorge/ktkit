@@ -4,7 +4,7 @@ set -e
 
 ./gradlew clean build -Ptargets=all
 
-./gradlew :dokka:dokkaGenerate
+./gradlew :dokka:dokkaGenerate -Ptargets=all
 rm -rf ./docs/*
 cp -R ./dokka/build/dokka/html/* ./docs/
 

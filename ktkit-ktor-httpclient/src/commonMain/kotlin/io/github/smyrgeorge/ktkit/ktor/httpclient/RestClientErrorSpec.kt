@@ -1,6 +1,5 @@
 package io.github.smyrgeorge.ktkit.ktor.httpclient
 
-import arrow.core.raise.RaiseDSL
 import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
@@ -32,7 +31,6 @@ interface RestClientErrorSpec : ErrorSpec {
 
     @Suppress("NOTHING_TO_INLINE")
     companion object {
-        @RaiseDSL
         context(rc: Raise<RestClientErrorSpec>)
         inline fun RestClientErrorSpec.raise(): Nothing = rc.raise(this)
     }

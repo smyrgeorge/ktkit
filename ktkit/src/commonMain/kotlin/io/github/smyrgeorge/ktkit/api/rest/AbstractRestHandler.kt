@@ -196,7 +196,7 @@ abstract class AbstractRestHandler(
      * @param value The raw value returned by the handler.
      * @return A normalized [Either] suitable for final HTTP response handling.
      */
-    private inline fun normalizeHandlerValue(value: Any?): Either<ErrorSpec, Any?> =
+    private fun normalizeHandlerValue(value: Any?): Either<ErrorSpec, Any?> =
         when (value) {
             is Either<*, *> ->
                 if (value.isLeft()) {

@@ -6,9 +6,6 @@ plugins {
 
 kotlin {
     sourceSets {
-        all {
-            languageSettings.enableLanguageFeature("ContextParameters")
-        }
         configureEach {
             languageSettings.progressiveMode = true
         }

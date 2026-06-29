@@ -11,9 +11,6 @@ kotlin {
         freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
     }
     sourceSets {
-        all {
-            languageSettings.enableLanguageFeature("ContextParameters")
-        }
         configureEach {
             languageSettings.progressiveMode = true
         }

@@ -16,11 +16,11 @@ ktor = "3.5.1"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.2"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.11.0"
+sqlx4k = "1.12.0"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp
-ksp = "2.3.9"
+ksp = "2.3.10"
 # https://github.com/arrow-kt/arrow
 arrow = "2.2.3"
 # https://github.com/pgjdbc/r2dbc-postgresql

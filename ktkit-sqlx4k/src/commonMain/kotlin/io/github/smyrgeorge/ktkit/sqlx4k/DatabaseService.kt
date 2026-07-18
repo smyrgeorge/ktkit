@@ -45,7 +45,6 @@ interface DatabaseService : Service {
          *
          * @param block The lambda expression representing the database operation to be executed.
          * @return The result of the database operation, of generic type [T], if the operation is successful.
-         * @throws DatabaseError if the database operation fails and an error is raised in the context of [ErrorSpec].
          */
         context(_: Raise<ErrorSpec>)
         inline fun <T> db(block: () -> DbResult<T>): T = dbCatching(block).bind()

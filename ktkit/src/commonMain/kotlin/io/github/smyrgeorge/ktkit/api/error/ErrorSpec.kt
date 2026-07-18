@@ -1,6 +1,5 @@
 package io.github.smyrgeorge.ktkit.api.error
 
-import io.github.smyrgeorge.ktkit.api.error.impl.UnknownError
 import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
 
 /**

@@ -30,7 +30,7 @@ interface Component {
      * This is typically used within shared components or application-wide abstractions where access
      * to the application's primary context is required.
      */
-    val app: Application get() = APP
+    val app: Application get() = KoinPlatformTools.defaultContext().get().get()
 
     /**
      * Retrieves the [io.github.smyrgeorge.ktkit.context.ExecContext] from the current CoroutineContext.
@@ -40,10 +40,4 @@ interface Component {
      */
     suspend fun ctx(): ExecContext =
         currentCoroutineContext()[ExecContext] ?: error("No ExecContext found in CoroutineContext")
-
-    companion object {
-        @PublishedApi
-        internal val APP: Application = KoinPlatformTools.defaultContext().get().get()
-        inline fun <reified T> inject(): Lazy<T> = lazy(mode = LazyThreadSafetyMode.NONE) { APP.di.koin.get(T::class) }
-    }
 }

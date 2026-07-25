@@ -4,8 +4,8 @@ import io.github.smyrgeorge.ktkit.example.test.Test
 import io.github.smyrgeorge.ktkit.sqlx4k.PostgresJsonSupport
 import io.github.smyrgeorge.ktkit.sqlx4k.pgmq.Pgmq
 import io.github.smyrgeorge.log4k.Logger
+import io.github.smyrgeorge.log4k.context.classic
 import io.github.smyrgeorge.log4k.context.info
-import io.github.smyrgeorge.log4k.impl.EmptyTracingContext
 import io.github.smyrgeorge.sqlx4k.ConnectionPool
 import io.github.smyrgeorge.sqlx4k.impl.migrate.utils.readMigrationFilesFromResources
 import io.github.smyrgeorge.sqlx4k.impl.migrate.utils.readSqlFilesFromResources
@@ -34,9 +34,7 @@ fun main() {
         db.migrate(
             supplier = { readMigrationFilesFromResources("db/migrations") },
             afterFileMigration = { m, d ->
-                with(EmptyTracingContext) {
-                    log.info { "Applied migration $m to database (took $d)" }
-                }
+                log.classic.info { "Applied migration $m to database (took $d)" }
             }
         ).getOrThrow()
 

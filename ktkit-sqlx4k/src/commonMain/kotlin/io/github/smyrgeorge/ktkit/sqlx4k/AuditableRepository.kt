@@ -43,9 +43,8 @@ interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>,
             name = operation,
             tags = mapOf(
                 OpenTelemetryAttributes.SERVICE_NAME to app.name,
-                OpenTelemetryAttributes.DB_STATEMENT to statement.toString(),
-                OpenTelemetryAttributes.DB_OPERATION to operation,
-                OpenTelemetryAttributes.DB_DRIVER_NAME to "sqlx4k"
+                OpenTelemetryAttributes.DB_QUERY_TEXT to statement.toString(),
+                OpenTelemetryAttributes.DB_OPERATION_NAME to operation,
             )
         ) {
             when (val res = block()) {

@@ -80,7 +80,7 @@ abstract class AbstractPgmqEventHandler(
         consumer.start()
     }
 
-    fun stop() {
+    fun stop() = runBlocking {
         log.info { "Stopping consumer for queue: $queue" }
         consumer.stop()
     }

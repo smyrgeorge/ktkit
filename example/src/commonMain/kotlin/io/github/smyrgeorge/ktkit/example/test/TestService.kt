@@ -9,13 +9,14 @@ import io.github.smyrgeorge.ktkit.context.ExecContext
 import io.github.smyrgeorge.ktkit.sqlx4k.AuditableDatabaseService
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.db
 import io.github.smyrgeorge.log4k.Logger
-import io.github.smyrgeorge.log4k.TracingContext
+import io.github.smyrgeorge.log4k.annotation.Logged
+import io.github.smyrgeorge.log4k.annotation.Timed
+import io.github.smyrgeorge.log4k.annotation.Traced
 import io.github.smyrgeorge.log4k.context.info
 import io.github.smyrgeorge.sqlx4k.Driver
 import io.github.smyrgeorge.sqlx4k.QueryExecutor
 import io.github.smyrgeorge.sqlx4k.Transaction
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 class TestService(
     override val db: Driver,
@@ -29,6 +30,7 @@ class TestService(
     context(_: Raise<ErrorSpec>, _: QueryExecutor)
     private suspend fun findOneById(id: Int): Test? = db { repo.findOneById(id) }
 
+    @Traced
     context(_: ExecContext, _: Raise<ErrorSpec>, _: Transaction)
     suspend fun test(): List<Test> {
         log.info { "Fetching all tests" }
@@ -37,26 +39,28 @@ class TestService(
         }
     }
 
-    context(_: ExecContext, _:Raise<ErrorSpec>, _: Transaction)
+    @Timed
+    context(_: ExecContext, _: Raise<ErrorSpec>, _: Transaction)
     suspend fun createAndFetchAll(fail: Boolean = false): List<Test> {
         val row = Test(test = "Test", data = Test.Data())
         db { repo.save(row) }
 
         // Fail on purpose
-        if(fail) raise(UnknownError("Failed on purpose via flag to test transaction"))
+        if (fail) raise(UnknownError("Failed on purpose via flag to test transaction"))
         return findAll().also {
             log.info { "Fetched ${it.size} tests" }
         }
     }
 
+    @Logged
     context(_: ExecContext, _: Raise<ErrorSpec>, _: Transaction)
     suspend fun updateAndFetchAll(id: Int, fail: Boolean = false): List<Test> {
         val existing = findOneById(id) ?: raise(NotFound("Test with id $id not found"))
         val updated = existing.copy(test = "Updated ${Clock.System.now()}")
-        db { repo.save(updated)}
+        db { repo.save(updated) }
 
         // Fail on purpose
-        if(fail) raise(UnknownError("Failed on purpose via flag to test transaction"))
+        if (fail) raise(UnknownError("Failed on purpose via flag to test transaction"))
         return findAll().also {
             log.info { "Updated ${it.size} tests" }
         }

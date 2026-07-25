@@ -1,14 +1,12 @@
 package io.github.smyrgeorge.ktkit.example.test
 
-import arrow.core.raise.context.raise
 import io.github.smyrgeorge.ktkit.api.rest.impl.XRealNameRestHandler
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.log4k.context.info
 import io.ktor.server.routing.Route
 
 class TestRestHandler(
-    private val testService: TestService,
-    private val serviceVariations: ServiceVariations,
+    private val testService: TestService
 ) : XRealNameRestHandler() {
     override fun String.uri(): String = "/api/v1/test$this"
 
@@ -33,7 +31,7 @@ class TestRestHandler(
             val fail = queryParam("fail").asBooleanOrNull() ?: false
             log.info { "Hello, ${user.username}!" }
             testService.withTransaction {
-                testService.updateAndFetchAll(id, fail).map {it.toDto()}
+                testService.updateAndFetchAll(id, fail).map { it.toDto() }
             }
         }
     }

@@ -7,6 +7,7 @@ dependencies {
     dokka(project(":ktkit-ktor-httpclient"))
     dokka(project(":ktkit-sqlx4k"))
     dokka(project(":ktkit-sqlx4k-pgmq"))
+    dokka(project(":ktkit-sqlx4k-postgres"))
 }
 
 dokka {

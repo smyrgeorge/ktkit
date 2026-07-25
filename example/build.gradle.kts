@@ -4,6 +4,7 @@ plugins {
     id("io.github.smyrgeorge.ktkit.multiplatform.binaries")
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.log4k)
 }
 
 kotlin {

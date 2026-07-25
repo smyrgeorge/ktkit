@@ -65,3 +65,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 pubhish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+log4k = { id = "io.github.smyrgeorge.log4k", version.ref = "log4k" }

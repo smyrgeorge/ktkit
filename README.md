@@ -5,7 +5,7 @@
 ![GitHub License](https://img.shields.io/github/license/smyrgeorge/ktkit)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/smyrgeorge/ktkit)
 ![GitHub issues](https://img.shields.io/github/issues/smyrgeorge/ktkit)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.4.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.4.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 ![](https://img.shields.io/static/v1?label=&message=Platforms&color=grey)
 ![](https://img.shields.io/static/v1?label=&message=Jvm&color=blue)
@@ -27,9 +27,8 @@ implementation("io.github.smyrgeorge:ktkit:x.y.z")
 
 ## Overview
 
-KtKit is a Kotlin multiplatform toolkit designed to speed up server-side application development with Ktor.
-It brings together several libraries into a cohesive set of tools that handle the repetitive aspects of backend
-development.
+KtKit is a Kotlin multiplatform toolkit designed to speed up server-side application development with Ktor. It brings
+together several libraries into a cohesive set of tools that handle the repetitive aspects of backend development.
 
 > [!NOTE]
 > **Early Stage Project**: KtKit is actively evolving. APIs may change between versions as we refine the abstractions
@@ -162,8 +161,8 @@ A multiplatform REST client abstraction built on Ktor's HttpClient with function
 
 ## Ergonomics (Arrow + context-parameters)
 
-The example module shows how Arrow's `Raise` and Kotlin context parameters keep service code compact while
-preserving explicitness around errors and execution context:
+The example module shows how Arrow's `Raise` and Kotlin context parameters keep service code compact while preserving
+explicitness around errors and execution context:
 
 ```kotlin
 class TestService(
@@ -198,8 +197,8 @@ class ExecContext(
 ```
 
 This lets handlers and services raise domain errors, access tracing, and carry request metadata without threading
-parameters manually. The context is propagated in two ways at once: via `CoroutineContext` and via context
-parameters in function signatures.
+parameters manually. The context is propagated in two ways at once: via `CoroutineContext` and via context parameters in
+function signatures.
 
 ## Example
 

@@ -64,3 +64,7 @@ dependencies {
 tasks.withType<KotlinCompilationTask<*>> {
     dependsOn("kspCommonMainKotlinMetadata")
 }
+
+tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata" }.configureEach {
+    dependsOn("kspCommonMainKotlinMetadata")
+}

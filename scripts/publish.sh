@@ -2,7 +2,7 @@
 
 set -e
 
-./gradlew clean build
+./gradlew build
 
 ./gradlew :dokka:dokkaGenerate
 rm -rf ./docs/*

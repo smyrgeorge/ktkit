@@ -8,9 +8,6 @@ plugins {
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
-    }
     sourceSets {
         configureEach {
             languageSettings.progressiveMode = true

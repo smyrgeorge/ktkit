@@ -31,7 +31,6 @@ import kotlinx.coroutines.withContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import kotlin.uuid.ExperimentalUuidApi
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.impl.extensions.archive as archiveWithContext
 import io.github.smyrgeorge.sqlx4k.postgres.pgmq.impl.extensions.send as sendWithContext
 
@@ -110,7 +109,6 @@ abstract class AbstractPgmqEventHandler(
 
         // Add user tags to the span.
         span.tags.apply {
-            @OptIn(ExperimentalUuidApi::class)
             put(OpenTelemetryAttributes.USER_ID, user.id)
             put(OpenTelemetryAttributes.USER_NAME, user.username)
         }

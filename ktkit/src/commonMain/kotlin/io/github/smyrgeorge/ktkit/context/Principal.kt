@@ -1,10 +1,8 @@
 package io.github.smyrgeorge.ktkit.context
 
 import io.github.smyrgeorge.ktkit.api.error.impl.Forbidden
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 interface Principal {
     val id: Uuid
     val username: String

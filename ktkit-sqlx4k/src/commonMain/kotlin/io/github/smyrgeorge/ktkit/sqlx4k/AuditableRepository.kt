@@ -11,7 +11,6 @@ import io.github.smyrgeorge.sqlx4k.SQLError
 import io.github.smyrgeorge.sqlx4k.Statement
 import io.github.smyrgeorge.sqlx4k.arrow.ArrowContextCrudRepository
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * Represents a repository interface for managing entities that implement the [Auditable] interface.
@@ -20,7 +19,6 @@ import kotlin.uuid.ExperimentalUuidApi
  *
  * @param T The type of the entity managed by this repository. Must implement the [Auditable] interface.
  */
-@OptIn(ExperimentalContextParameters::class, ExperimentalUuidApi::class)
 interface AuditableRepository<T : Auditable<*>> : ArrowContextCrudRepository<T>, Component {
     override suspend fun preInsertHook(context: QueryExecutor, entity: T): T {
         val user = ctx().principal

@@ -38,7 +38,6 @@ import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * Abstract base class for creating REST API endpoints with built-in request handling and security.
@@ -139,7 +138,6 @@ abstract class AbstractRestHandler(
 
                 // Add user tags to the span.
                 span.tags.apply {
-                    @OptIn(ExperimentalUuidApi::class)
                     put(OpenTelemetryAttributes.USER_ID, user.id)
                     put(OpenTelemetryAttributes.USER_NAME, user.username)
                 }

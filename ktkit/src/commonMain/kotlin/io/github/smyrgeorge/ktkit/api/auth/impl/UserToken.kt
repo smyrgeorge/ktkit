@@ -2,7 +2,6 @@ package io.github.smyrgeorge.ktkit.api.auth.impl
 
 import io.github.smyrgeorge.ktkit.context.Principal
 import kotlinx.serialization.Serializable
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
@@ -20,7 +19,6 @@ import kotlin.uuid.Uuid
  * @property authTime Authentication timestamp in milliseconds (optional)
  * @property attributes Custom token claims/attributes as a JSON object
  */
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class UserToken(
     val uuid: Uuid,

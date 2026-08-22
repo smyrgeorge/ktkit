@@ -19,7 +19,8 @@ class ExampleApplication
 
 fun start(db: IPostgresSQL, pgmq: Pgmq) {
     Application(
-        name = Application::class.simpleName!!,
+        name = ExampleApplication::class.simpleName!!,
+        description = "This is an example application",
         conf = Application.Conf(
             host = "localhost",
             port = 8080,
@@ -32,8 +33,7 @@ fun start(db: IPostgresSQL, pgmq: Pgmq) {
                 // Configure logging.
                 level = Level.INFO
                 // Log in JSON format:
-                // appenders.unregisterAll()
-                // appenders.register(SimpleJsonConsoleLoggingAppender())
+                // SimpleJsonConsoleLoggingAppender.install()
             }
 
             di {

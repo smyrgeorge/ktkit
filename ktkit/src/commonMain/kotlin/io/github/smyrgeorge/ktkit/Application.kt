@@ -2,6 +2,7 @@ package io.github.smyrgeorge.ktkit
 
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.error.impl.NotFound
+import io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiRestHandler
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktkit.api.rest.ApiError
 import io.github.smyrgeorge.ktkit.api.rest.impl.ApplicationStatusRestHandler
@@ -47,6 +48,7 @@ import io.ktor.server.application.Application as KtorApplication
 @Suppress("unused")
 class Application(
     val name: String,
+    val description: String? = null,
     val conf: Conf,
     private val configure: Configurer.() -> Unit = {},
     private val postConfigure: suspend Application.() -> Unit = {}
@@ -175,6 +177,7 @@ class Application(
      * @property includeTypePropertyInApiError Whether to include the type property in ApiError responses.
      * @property errorTypeHost The base URL used for errors, adhering to RFC 9457.
      *                         It must start with "http://" or "https://" and end with "/errors".
+     * @property openApi Configuration of the OpenAPI documentation endpoints (see [OpenApi]).
      *
      * @constructor Ensures that:
      * - The `port` is a valid number within the acceptable range (1 to 65535).
@@ -189,6 +192,7 @@ class Application(
         val port: Int = 8080,
         val includeTypePropertyInApiError: Boolean = true,
         val errorTypeHost: String = "http://$host:$port/errors", // RFC 9457
+        val openApi: OpenApi = OpenApi(),
     ) {
         init {
             require(port in 1..65535) { "Port must be between 1 and 65535" }
@@ -196,6 +200,77 @@ class Application(
                 "Error Type Host must start with http:// or https://"
             }
             require(errorTypeHost.endsWith("/errors")) { "Error Type Host must end with /errors" }
+        }
+
+        /**
+         * Configuration of the OpenAPI documentation endpoints served by
+         * [io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiRestHandler] (`<basePath>` and
+         * `<basePath>/openapi.json`, `/api/docs` by default).
+         *
+         * The specification itself is generated at compile time by the
+         * `io.github.smyrgeorge.ktkit.openapi` compiler plugin; without the plugin the endpoints
+         * still exist (unless [enabled] is false) but the document contains no paths.
+         *
+         * @property enabled Whether to register the documentation endpoints. Defaults to true.
+         * @property basePath The base path the documentation endpoints are mounted on: the Swagger UI
+         *                    page is served at `<basePath>` and the document at `<basePath>/openapi.json`.
+         *                    Must start with `/` and must not end with `/`. Defaults to `/api/docs`.
+         * @property title The title of the API. Defaults to the application name.
+         * @property version The version of the API, as reported in the specification.
+         * @property description An optional description of the API. Defaults to the application
+         *                       description.
+         * @property servers The server URLs advertised in the specification. Defaults to
+         *                   `http://<host>:<port>` — set this when the application is reached
+         *                   through a reverse proxy or TLS terminator.
+         * @property theme The color theme of the Swagger UI page. [Theme.AUTO] (default) follows
+         *                 the browser/OS preference, [Theme.DARK] and [Theme.LIGHT] force one.
+         * @property swaggerUiCss The URL of the Swagger UI stylesheet. Defaults to the unpkg CDN —
+         *                        point it at a self-hosted copy for air-gapped environments.
+         * @property swaggerUiJs The URL of the Swagger UI bundle script. Defaults to the unpkg CDN —
+         *                       point it at a self-hosted copy for air-gapped environments.
+         */
+        data class OpenApi(
+            val enabled: Boolean = true,
+            val basePath: String = "/api/docs",
+            val title: String? = null,
+            val version: String = "0.0.1",
+            val description: String? = null,
+            val servers: List<String> = emptyList(),
+            val theme: Theme = Theme.AUTO,
+            val swaggerUiCss: String = "https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
+            val swaggerUiJs: String = "https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
+        ) {
+            init {
+                require(basePath.startsWith("/") && basePath.length > 1 && !basePath.endsWith("/")) {
+                    "OpenApi basePath must start with '/' and must not end with '/'"
+                }
+                require(title == null || title.isNotBlank()) { "OpenApi title must not be blank" }
+                require(version.isNotBlank()) { "OpenApi version must not be blank" }
+                require(description == null || description.isNotBlank()) { "OpenApi description must not be blank" }
+                servers.forEach { server ->
+                    require(server.startsWith("http://") || server.startsWith("https://")) {
+                        "OpenApi server '$server' must start with http:// or https://"
+                    }
+                }
+                require(swaggerUiCss.isValidAssetUrl()) {
+                    "OpenApi swaggerUiCss must start with http://, https:// or / (an absolute path)"
+                }
+                require(swaggerUiJs.isValidAssetUrl()) {
+                    "OpenApi swaggerUiJs must start with http://, https:// or / (an absolute path)"
+                }
+            }
+
+            /** Swagger UI assets are either absolute http(s) URLs or absolute paths served by the app itself. */
+            private fun String.isValidAssetUrl(): Boolean =
+                startsWith("http://") || startsWith("https://") || startsWith("/")
+
+            /** Color theme of the Swagger UI documentation page. */
+            enum class Theme {
+                /** Follow the browser/OS preference (`prefers-color-scheme`). */
+                AUTO,
+                LIGHT,
+                DARK,
+            }
         }
     }
 
@@ -265,6 +340,10 @@ class Application(
                 single { app }.bind<Application>()
                 single { app.json }.bind<Json>()
                 singleOf(::ApplicationStatusRestHandler) { bind<AbstractRestHandler>() }
+                // Register the OpenAPI documentation endpoints (if enabled).
+                if (app.conf.openApi.enabled) {
+                    singleOf(::OpenApiRestHandler) { bind<AbstractRestHandler>() }
+                }
             }
 
             // Start Koin.

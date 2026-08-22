@@ -68,3 +68,12 @@ tasks.withType<KotlinCompilationTask<*>> {
 tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata" }.configureEach {
     dependsOn("kspCommonMainKotlinMetadata")
 }
+
+// Wire the ktkit OpenAPI compiler plugin onto every Kotlin compilation, so every REST handler gets
+// its openApiSpec() override generated at compile time (served at /api/docs). External projects
+// would instead apply the published Gradle plugin: id("io.github.smyrgeorge.ktkit").
+afterEvaluate {
+    configurations.names
+        .filter { it.startsWith("kotlinCompilerPluginClasspath") }
+        .forEach { cfg -> dependencies.add(cfg, project(":ktkit-openapi-compiler-plugin")) }
+}

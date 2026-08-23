@@ -199,7 +199,7 @@ ktkit {
         outputPackage = "com.example.generated"
         // Where the sqlx4k-annotated code lives — also: "main" (plain JVM), "jvmMain", ...
         sourceSets = listOf("commonMain") // default
-        pgmq = false           // PGMQ integration (`ktkit-sqlx4k-pgmq`) — PostgreSQL only
+        extensions(Pgmq)       // sqlx4k extensions; Pgmq (`ktkit-sqlx4k-pgmq`) is PostgreSQL only
         // arg("key", "value") // extra sqlx4k codegen (KSP) arguments
     }
 

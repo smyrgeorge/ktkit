@@ -69,10 +69,10 @@ internal object Sqlx4k {
             require(options.driver.isPresent) {
                 "ktkit { sqlx4k { } }: 'driver' must be set (PostgreSQL, MySQL, SQLite, SQLiteCipher)."
             }
-            if (options.pgmq.get()) {
+            if (Sqlx4kExtension.Pgmq in options.enabledExtensions.get()) {
                 require(options.driver.get() == Driver.PostgreSQL) {
-                    "ktkit { sqlx4k { } }: 'pgmq' requires the PostgreSQL driver (PGMQ runs on " +
-                            "Postgres) — the configured driver is ${options.driver.get()}."
+                    "ktkit { sqlx4k { } }: the Pgmq extension requires the PostgreSQL driver " +
+                            "(PGMQ runs on Postgres) — the configured driver is ${options.driver.get()}."
                 }
             }
             // Catch typos and layout mismatches (e.g. 'commonMain' on a plain JVM project, or a
@@ -111,7 +111,7 @@ internal object Sqlx4k {
             val driver = options.driver.get()
             KtkitDependencies.add(project, "ktkit-sqlx4k", BuildConfig.VERSION)
             KtkitDependencies.add(project, driver.artifact, BuildConfig.SQLX4K_VERSION)
-            if (options.pgmq.get()) {
+            if (Sqlx4kExtension.Pgmq in options.enabledExtensions.get()) {
                 KtkitDependencies.add(project, "ktkit-sqlx4k-pgmq", BuildConfig.VERSION)
             }
             // The r2dbc-based integration (health checks, migrations) is JVM-only.

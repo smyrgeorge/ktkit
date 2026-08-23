@@ -13,6 +13,9 @@ public abstract class Sqlx4kOptions {
     public val SQLite: Driver = Driver.SQLite
     public val SQLiteCipher: Driver = Driver.SQLiteCipher
 
+    // The parameterless extensions, exposed directly in the DSL scope: `extensions = listOf(Pgmq)`.
+    public val Pgmq: Sqlx4kExtension.Pgmq = Sqlx4kExtension.Pgmq
+
     /**
      * The sqlx4k database driver (it also determines the SQL dialect of the code generator).
      * Required.
@@ -32,10 +35,18 @@ public abstract class Sqlx4kOptions {
     public abstract val sourceSets: ListProperty<String>
 
     /**
-     * Whether to add the PGMQ integration (`ktkit-sqlx4k-pgmq`). Defaults to false.
-     * PGMQ runs on Postgres — enabling it with a non-PostgreSQL [driver] fails the build.
+     * The enabled sqlx4k extensions, populated via [extensions]. Defaults to none.
+     * (Named to avoid Gradle's reserved `extensions` property of decorated/ExtensionAware types.)
      */
-    public abstract val pgmq: Property<Boolean>
+    public abstract val enabledExtensions: ListProperty<Sqlx4kExtension>
+
+    /**
+     * Enables the given sqlx4k extensions (see [Sqlx4kExtension]), e.g. `extensions(Pgmq)`.
+     * [Pgmq] runs on Postgres — enabling it with a non-PostgreSQL [driver] fails the build.
+     */
+    public fun extensions(vararg extensions: Sqlx4kExtension) {
+        enabledExtensions.addAll(extensions.toList())
+    }
 
     internal val extraArgs: LinkedHashMap<String, String> = LinkedHashMap()
 
@@ -45,7 +56,7 @@ public abstract class Sqlx4kOptions {
     }
 
     init {
-        pgmq.convention(false)
+        enabledExtensions.convention(emptyList())
         sourceSets.convention(listOf("commonMain"))
     }
 }

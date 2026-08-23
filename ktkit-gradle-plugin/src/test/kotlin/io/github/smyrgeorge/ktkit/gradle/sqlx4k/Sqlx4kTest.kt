@@ -38,7 +38,7 @@ class Sqlx4kTest {
 
         assertFalse(options.driver.isPresent) // required — no default
         assertFalse(options.outputPackage.isPresent)
-        assertFalse(options.pgmq.get())
+        assertEquals(emptyList(), options.enabledExtensions.get())
         assertEquals(listOf("commonMain"), options.sourceSets.get())
     }
 
@@ -51,6 +51,7 @@ class Sqlx4kTest {
         assertEquals(Driver.PostgreSQL, options.PostgreSQL)
         assertEquals(Driver.SQLite, options.SQLite)
         assertEquals(Driver.SQLiteCipher, options.SQLiteCipher)
+        assertEquals(Sqlx4kExtension.Pgmq, options.Pgmq)
     }
 
     @Test
@@ -127,14 +128,14 @@ class Sqlx4kTest {
     }
 
     @Test
-    fun `pgmq requires the postgresql driver`() {
+    fun `the pgmq extension requires the postgresql driver`() {
         val project = ProjectBuilder.builder().build()
         project.enableSqlx4k {
             it.driver.set(Driver.SQLite)
             it.outputPackage.set("com.example.generated")
-            it.pgmq.set(true)
+            it.extensions(Sqlx4kExtension.Pgmq)
         }
-        assertEvaluationFails(project, "'pgmq' requires the PostgreSQL driver")
+        assertEvaluationFails(project, "the Pgmq extension requires the PostgreSQL driver")
     }
 
     @Test

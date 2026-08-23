@@ -15,7 +15,7 @@ ktkit {
     sqlx4k {
         driver = PostgreSQL
         outputPackage = "io.github.smyrgeorge.ktkit.example.generated"
-        pgmq = true
+        extensions(Pgmq)
     }
     jar {
         mainClass = "io.github.smyrgeorge.ktkit.example.ExampleApplicationKt"

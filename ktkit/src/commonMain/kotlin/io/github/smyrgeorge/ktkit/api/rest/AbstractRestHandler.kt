@@ -155,8 +155,18 @@ abstract class AbstractRestHandler(
                 val hasAccess = this@AbstractRestHandler.permissions(http) && permissions(http)
                 if (!hasAccess) Forbidden("User does not have the required permissions to access uri='${http.uri()}'").throwRuntimeError()
 
-                val result = executeHandler(exec, http, handler)
-                respondHandlerResult(span, call, onSuccessHttpStatusCode, result)
+                when (val result = executeHandler(exec, http, handler)) {
+                    is Either.Left -> respond(span, call, result.value.toThrowable())
+                    is Either.Right -> {
+                        when (val value = result.value) {
+                            is Result<*> -> value
+                                .onFailure { error -> respond(span, call, error) }
+                                .onSuccess { inner -> respond(span, call, onSuccessHttpStatusCode, inner) }
+
+                            else -> respond(span, call, onSuccessHttpStatusCode, value)
+                        }
+                    }
+                }
             } catch (error: Throwable) {
                 respond(span, call, error)
             }
@@ -220,56 +230,6 @@ abstract class AbstractRestHandler(
 
             else -> Either.Right(value)
         }
-
-    /**
-     * Responds to the current call using a normalized handler result.
-     *
-     * After normalization, response handling becomes a simple split between typed API failures and successful
-     * payloads.
-     *
-     * @param span The tracing span associated with the current request.
-     * @param call The current application call.
-     * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses.
-     * @param result The normalized handler result.
-     */
-    private suspend fun respondHandlerResult(
-        span: Span.Local,
-        call: ApplicationCall,
-        onSuccessHttpStatusCode: HttpStatusCode,
-        result: Either<ErrorSpec, Any?>,
-    ) {
-        when (result) {
-            is Either.Left -> respond(span, call, result.value.toThrowable())
-            is Either.Right -> respondSuccess(span, call, onSuccessHttpStatusCode, result.value)
-        }
-    }
-
-    /**
-     * Responds to a successful handler result.
-     *
-     * This preserves the existing behavior for Kotlin [Result] values by unwrapping them before producing the
-     * final HTTP response. Any other value is treated as a regular successful payload.
-     *
-     * @param span The tracing span associated with the current request.
-     * @param call The current application call.
-     * @param status The HTTP status code indicating a successful response.
-     * @param value The successful handler payload.
-     */
-    private suspend fun respondSuccess(
-        span: Span.Local,
-        call: ApplicationCall,
-        status: HttpStatusCode,
-        value: Any?,
-    ) {
-        when (value) {
-            is Result<*> ->
-                value
-                    .onFailure { error -> respond(span, call, error) }
-                    .onSuccess { inner -> respond(span, call, status, inner) }
-
-            else -> respond(span, call, status, value)
-        }
-    }
 
     /**
      * Responds to an HTTP request based on the type of the provided result.

@@ -25,16 +25,24 @@ fun start(db: IPostgresSQL, pgmq: Pgmq) {
             port = 8080,
         ),
         configure = {
-            tracing {
-                // Configure tracing.
-            }
             logging {
                 // Configure logging.
                 level = Level.INFO
                 // Log in JSON format:
                 // SimpleJsonConsoleLoggingAppender.install()
             }
-
+            tracing {
+                // Configure tracing.
+            }
+            metering {
+                // Configure metering.
+            }
+            json {
+                // Configure JSON serialization.
+            }
+            ktor {
+                // Additional Ktor configuration.
+            }
             di {
                 single { db }.bind<Driver>()
                 single { pgmq }.bind<Pgmq>()

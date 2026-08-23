@@ -25,7 +25,7 @@ A comprehensive Kotlin multiplatform toolkit for building server applications wi
 - [Usage](#usage)
 - [Ergonomics](#ergonomics)
 - [Modules and features](#modules-and-features)
-    - [Gradle plugin (`ktkit-gradle-plugin`)](#gradle-plugin-ktkit-gradle-plugin)
+    - [Gradle plugin (ktkit-gradle-plugin)](#gradle-plugin-ktkit-gradle-plugin)
     - [Application bootstrap & configuration](#application-bootstrap--configuration)
     - [Kotlinx serialization](#kotlinx-serialization)
     - [API errors (RFC 9457)](#api-errors-rfc-9457)
@@ -35,7 +35,7 @@ A comprehensive Kotlin multiplatform toolkit for building server applications wi
     - [TOML Configuration Loading](#toml-configuration-loading)
     - [Database support (sqlx4k)](#database-support-sqlx4k)
     - [Queue support (PGMQ)](#queue-support-pgmq)
-    - [OpenAPI generation (`ktkit-compiler-openapi`)](#openapi-generation-ktkit-compiler-openapi)
+    - [OpenAPI generation (ktkit-compiler-openapi)](#openapi-generation-ktkit-compiler-openapi)
 - [Example](#example)
 - [Building & Development](#building--development)
     - [Build](#build)
@@ -132,7 +132,7 @@ errors are raised through the `Raise<ErrorSpec>` context parameter. The context 
 
 ## Modules and features
 
-### Gradle plugin (`ktkit-gradle-plugin`)
+### Gradle plugin (ktkit-gradle-plugin)
 
 The Gradle plugin is the single entry point of a ktkit service build. A typical service build script (see
 the [example module](example/build.gradle.kts)):
@@ -183,14 +183,30 @@ Application(
     name = "ExampleApplication",
     conf = Application.Conf(host = "localhost", port = 8080),
     configure = {
-        tracing { /* ... */ }
-        logging { level = Level.INFO }
+        logging {
+            // Configure logging.
+            level = Level.INFO
+            // Log in JSON format:
+            // SimpleJsonConsoleLoggingAppender.install()
+        }
+        tracing {
+            // Configure tracing.
+        }
+        json {
+            // Configure JSON serialization.
+        }
+        ktor {
+            // Additional Ktor configuration.
+        }
         di {
             single { db }.bind<Driver>()
             singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
             singleOf(::TestService)
         }
     },
+    postConfigure = {
+        // After configuration, perform any necessary post-configuration tasks.
+    }
 ).start()
 ```
 
@@ -323,7 +339,7 @@ shutdown. Enabled via `sqlx4k { extensions(Pgmq) }` in the Gradle plugin.
 - How the integration works: [ktkit-sqlx4k-pgmq](ktkit-sqlx4k-pgmq/README.md)
 - The PGMQ project: [pgmq/pgmq](https://github.com/pgmq/pgmq)
 
-### OpenAPI generation (`ktkit-compiler-openapi`)
+### OpenAPI generation (ktkit-compiler-openapi)
 
 A Kotlin compiler plugin that generates the OpenAPI 3.1 specification of your REST handlers at compile time — no
 reflection, works on every KMP target (JVM and Native). It is attached automatically by

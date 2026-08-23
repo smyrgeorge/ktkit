@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     dokka(project(":ktkit"))
+    dokka(project(":ktkit-compiler-openapi"))
     dokka(project(":ktkit-ktor-httpclient"))
     dokka(project(":ktkit-sqlx4k"))
     dokka(project(":ktkit-sqlx4k-pgmq"))

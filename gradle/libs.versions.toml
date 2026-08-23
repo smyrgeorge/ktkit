@@ -38,6 +38,7 @@ gradle-ksp-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.
 gradle-log4k-plugin = { module = "io.github.smyrgeorge.log4k:io.github.smyrgeorge.log4k.gradle.plugin", version.ref = "log4k" }
 gradle-dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktoml-core = { module = "com.akuleshov7:ktoml-core", version.ref = "ktoml" }

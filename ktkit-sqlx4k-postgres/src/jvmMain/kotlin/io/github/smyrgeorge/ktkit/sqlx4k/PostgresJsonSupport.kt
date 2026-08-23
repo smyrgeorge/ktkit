@@ -26,7 +26,7 @@ import io.r2dbc.postgresql.codec.Json as PgJson
  * The default JSON configuration includes:
  * - Snake-case naming strategy for property names.
  * - Ignoring unknown keys during deserialization.
- * - Omitting defaults and explicit nulls while encoding.
+ * - Encoding default values, omitting explicit nulls while encoding.
  *
  * Functions:
  * - `encoders`: Creates a `ValueEncoderRegistry` by generating encoders for a set of classes.

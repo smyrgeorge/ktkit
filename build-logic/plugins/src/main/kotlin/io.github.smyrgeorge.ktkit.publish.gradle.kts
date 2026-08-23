@@ -12,7 +12,7 @@ val descriptions = mapOf(
     "ktkit" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
     "ktkit-ktor-httpclient" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
     "ktkit-gradle-plugin" to "Gradle plugin that wires the ktkit OpenAPI Kotlin compiler plugin onto every Kotlin compilation.",
-    "ktkit-openapi-compiler-plugin" to "Kotlin compiler plugin for ktkit: compile-time OpenAPI specification generation for REST handlers.",
+    "ktkit-compiler-openapi" to "Kotlin compiler plugin for ktkit: compile-time OpenAPI specification generation for REST handlers.",
     "ktkit-sqlx4k" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
     "ktkit-sqlx4k-pgmq" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",
     "ktkit-sqlx4k-postgres" to "A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.",

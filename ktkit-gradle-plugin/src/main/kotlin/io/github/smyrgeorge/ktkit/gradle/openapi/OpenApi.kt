@@ -45,6 +45,6 @@ internal class OpenApi : KotlinCompilerPluginSupportPlugin {
     private companion object {
         const val COMPILER_PLUGIN_ID = "io.github.smyrgeorge.ktkit.openapi"
         const val COMPILER_PLUGIN_GROUP = "io.github.smyrgeorge"
-        const val COMPILER_PLUGIN_ARTIFACT = "ktkit-openapi-compiler-plugin"
+        const val COMPILER_PLUGIN_ARTIFACT = "ktkit-compiler-openapi"
     }
 }

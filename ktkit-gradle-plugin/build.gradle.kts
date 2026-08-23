@@ -63,7 +63,7 @@ gradlePlugin {
 }
 
 // Generate a BuildConfig carrying this module's version, so the plugin can request the matching
-// ktkit-openapi-compiler-plugin artifact via SubpluginArtifact at consumer build time.
+// ktkit-compiler-openapi artifact via SubpluginArtifact at consumer build time.
 val generatedSourcesDir = layout.buildDirectory.dir("generated/ktkit/kotlin")
 val generateBuildConfig = tasks.register("generateBuildConfig") {
     group = "build"

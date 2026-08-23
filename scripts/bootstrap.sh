@@ -13,7 +13,7 @@ set -e
 # (excluding the sign tasks with -x is NOT enough — publishing then fails on the missing .asc
 # files on a clean workspace).
 ./gradlew \
+    :ktkit-compiler-openapi:publishToMavenLocal \
     :ktkit-gradle-plugin:publishToMavenLocal \
-    :ktkit-openapi-compiler-plugin:publishToMavenLocal \
     --configure-on-demand \
     -PRELEASE_SIGNING_ENABLED=false

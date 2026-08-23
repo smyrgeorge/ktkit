@@ -27,7 +27,7 @@ class OpenApiTest {
         assertEquals("io.github.smyrgeorge.ktkit.openapi", integration.getCompilerPluginId())
         val artifact = integration.getPluginArtifact()
         assertEquals("io.github.smyrgeorge", artifact.groupId)
-        assertEquals("ktkit-openapi-compiler-plugin", artifact.artifactId)
+        assertEquals("ktkit-compiler-openapi", artifact.artifactId)
         assertEquals(BuildConfig.VERSION, artifact.version)
     }
 }

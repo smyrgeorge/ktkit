@@ -163,7 +163,7 @@ A multiplatform REST client abstraction built on Ktor's HttpClient with function
 - `Pgmq` wrapper and `AbstractPgmqEventHandler` with trace/user propagation
 - Consumer lifecycle helpers with retry + shutdown handling
 
-### OpenAPI generation (`ktkit-gradle-plugin` + `ktkit-openapi-compiler-plugin`)
+### OpenAPI generation (`ktkit-gradle-plugin` + `ktkit-compiler-openapi`)
 
 A Kotlin compiler plugin (similar
 to [Ktor's OpenAPI spec generation](https://ktor.io/docs/openapi-spec-generation.html))

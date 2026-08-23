@@ -48,6 +48,7 @@ together several libraries into a cohesive set of tools that handle the repetiti
 
 **Planned features:**
 
+- [x] Gradle Plugin
 - [ ] Write extensive examples
 - [ ] Write extensive tests
 - [ ] Write extensive documentation

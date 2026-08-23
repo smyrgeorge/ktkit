@@ -18,6 +18,6 @@ ktkit {
         generatedCodePackage = "io.github.smyrgeorge.ktkit.example.generated"
     }
     jar {
-        mainClass = "io.github.smyrgeorge.ktkit.example.ExampleApplicationKt"
+        mainClass = "io.github.smyrgeorge.ktkit.example.MainKt"
     }
 }

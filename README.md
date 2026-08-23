@@ -158,7 +158,7 @@ ktkit {
     }
     // Optional: package the jvm target as a runnable, self-contained ("fat") jar (configures `jvmJar`).
     jar {
-        mainClass = "io.github.smyrgeorge.ktkit.example.ExampleApplicationKt"
+        mainClass = "io.github.smyrgeorge.ktkit.example.MainKt"
     }
 }
 ```

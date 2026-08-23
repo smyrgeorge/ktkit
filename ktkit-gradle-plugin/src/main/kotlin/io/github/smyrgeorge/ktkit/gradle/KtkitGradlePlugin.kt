@@ -1,24 +1,46 @@
 package io.github.smyrgeorge.ktkit.gradle
 
+import io.github.smyrgeorge.ktkit.gradle.openapi.OpenApi
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 /**
- * A Gradle plugin that facilitates the application and configuration of ktkit compiler plugins
- * within a Gradle project. This plugin creates the `ktkit` extension for build scripts, which
- * allows users to configure specific ktkit compiler plugins, such as the OpenAPI plugin.
- *
- * The `ktkit` extension provides options to manage the behavior of the ktkit compiler plugins
- * as part of the Kotlin compilation process.
+ * The ktkit Gradle plugin: applies everything a ktkit service needs and exposes the `ktkit { }`
+ * DSL to configure the ktkit compiler plugins and modules from one place.
  *
  * When applied, this plugin:
- * - Creates the `ktkit` DSL extension to enable configuration of ktkit compiler plugins.
- * - Applies the [OpenApiSubplugin] to attach the ktkit OpenAPI compiler plugin to the project's
+ * - Creates the `ktkit` DSL extension (see [KtkitExtension]).
+ * - Applies the [OpenApi] to attach the ktkit OpenAPI compiler plugin to the project's
  *   Kotlin compilations.
+ * - Applies the `kotlinx.serialization` and `log4k` Gradle plugins once a Kotlin plugin
+ *   (multiplatform or JVM) is present — every ktkit service relies on both.
+ * - Adds the ktkit core and log4k-context dependencies (unless [KtkitExtension.addDependencies]
+ *   is disabled).
+ *
+ * Modules (e.g. sqlx4k) are opt-in through the DSL and wire their own plugins, code generation
+ * and dependencies — see [KtkitExtension.sqlx4k].
  */
 public class KtkitGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        target.extensions.create("ktkit", KtkitExtension::class.java)
-        target.pluginManager.apply(OpenApiSubplugin::class.java)
+        val extension = target.extensions.create("ktkit", KtkitExtension::class.java, target)
+        target.pluginManager.apply(OpenApi::class.java)
+
+        // Every ktkit service serializes with kotlinx.serialization and logs with log4k.
+        KOTLIN_PLUGIN_IDS.forEach { kotlinPluginId ->
+            target.pluginManager.withPlugin(kotlinPluginId) {
+                target.pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
+                target.pluginManager.apply("io.github.smyrgeorge.log4k")
+            }
+        }
+
+        target.afterEvaluate {
+            if (!extension.addDependencies.get()) return@afterEvaluate
+            KtkitDependencies.add(target, "ktkit", BuildConfig.VERSION)
+            KtkitDependencies.add(target, "log4k-context", BuildConfig.LOG4K_VERSION)
+        }
+    }
+
+    private companion object {
+        val KOTLIN_PLUGIN_IDS = listOf("org.jetbrains.kotlin.multiplatform", "org.jetbrains.kotlin.jvm")
     }
 }

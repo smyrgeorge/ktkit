@@ -169,18 +169,44 @@ to [Ktor's OpenAPI spec generation](https://ktor.io/docs/openapi-spec-generation
 that generates the OpenAPI 3.1 specification of your REST handlers at compile time — no reflection, works on every KMP
 target (JVM and Native).
 
-Apply the Gradle plugin to the module (s) containing your REST handlers:
+Apply the Gradle plugin to the module (s) containing your REST handlers. The plugin is the single
+entry point of a ktkit service build: it attaches the ktkit compiler plugins, automatically applies
+the `kotlinx.serialization` and `log4k` Gradle plugins, adds the ktkit core dependency, and exposes
+the `ktkit { }` DSL where the optional modules/integrations are enabled and configured from one
+place:
 
 ```kotlin
 plugins {
+    org.jetbrains.kotlin.multiplatform // or org.jetbrains.kotlin.jvm
     id("io.github.smyrgeorge.ktkit") version "x.y.z"
 }
 
-// Optional: the plugin is an umbrella for the ktkit compiler plugins,
-// each configurable (and disableable) through the `ktkit { }` extension.
 ktkit {
+    // Whether enabling a module also adds its ktkit library dependencies
+    // (at the versions the plugin was built with). Defaults to true.
+    addDependencies = true
+
     openApi {
         enabled = true // default
+    }
+
+    // Optional: database access via sqlx4k — applies KSP, registers the sqlx4k code generator
+    // on commonMain (wiring the generated sources and task ordering), and adds `ktkit-sqlx4k`
+    // plus the dialect's driver.
+    sqlx4k {
+        driver = PostgreSQL // required (also: MySQL, SQLite, SQLiteCipher)
+        outputPackage = "com.example.generated"
+        // Where the sqlx4k-annotated code lives — also: "main" (plain JVM), "jvmMain", ...
+        sourceSets = listOf("commonMain") // default
+        pgmq = false           // PGMQ integration (`ktkit-sqlx4k-pgmq`) — PostgreSQL only
+        // arg("key", "value") // extra sqlx4k codegen (KSP) arguments
+    }
+
+    // Optional: package the jvm target as a runnable, self-contained jar (configures `jvmJar`).
+    jar {
+        mainClass = "com.example.MainKt"
+        // archiveFileName = "<project-name>.jar" // default
+        // duplicatesStrategy = EXCLUDE           // default
     }
 }
 ```

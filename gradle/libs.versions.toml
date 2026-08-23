@@ -33,6 +33,9 @@ gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 gradle-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "publish" }
+gradle-kotlin-serialization-plugin = { module = "org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
+gradle-ksp-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+gradle-log4k-plugin = { module = "io.github.smyrgeorge.log4k:io.github.smyrgeorge.log4k.gradle.plugin", version.ref = "log4k" }
 gradle-dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }

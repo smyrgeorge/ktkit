@@ -1,5 +1,7 @@
-package io.github.smyrgeorge.ktkit.gradle
+package io.github.smyrgeorge.ktkit.gradle.openapi
 
+import io.github.smyrgeorge.ktkit.gradle.BuildConfig
+import io.github.smyrgeorge.ktkit.gradle.KtkitExtension
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -8,22 +10,15 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 /**
- * A Kotlin compiler plugin support class that integrates the ktkit OpenAPI compiler plugin
- * into the Kotlin compilation process. This is used for enabling and managing the OpenAPI
- * plugin functionality through the Gradle build scripts.
+ * Attaches the ktkit OpenAPI compiler plugin to the project's Kotlin compilations, generating
+ * the `openApiSpec()` overrides of the REST handlers at compile time.
  *
- * The OpenAPI plugin is configured using the `ktkit` extension defined by the `KtkitGradlePlugin`.
- *
- * Responsibilities:
- * - Matches the plugin ID to connect with the corresponding compiler plugin module.
- * - Defines the artifact details (group ID, artifact ID, and version) for resolving the compiler plugin.
- * - Determines whether the plugin is applicable to the Kotlin compilations based on the project configuration.
- * - Provides additional configuration options for the compilation process, if necessary.
- *
- * This class ensures that the OpenAPI compiler plugin is conditionally applied based on
- * the `openApi` configuration of the `ktkit` extension.
+ * Implemented as a [KotlinCompilerPluginSupportPlugin] (what the Kotlin Gradle plugin calls a
+ * "subplugin"): it matches the compiler plugin's id, points at the compiler-plugin artifact, and
+ * decides applicability per compilation from the `openApi` options of the `ktkit` extension
+ * (see [KtkitExtension.openApi]).
  */
-internal class OpenApiSubplugin : KotlinCompilerPluginSupportPlugin {
+internal class OpenApi : KotlinCompilerPluginSupportPlugin {
     override fun apply(target: Project) {
         // Configuration lives on the `ktkit` extension, created by KtkitGradlePlugin.
     }

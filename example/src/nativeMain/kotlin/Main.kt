@@ -1,4 +1,6 @@
+import io.github.smyrgeorge.ktkit.api.props.ConfigPropertiesToml
 import io.github.smyrgeorge.ktkit.example.ExampleApplication
+import io.github.smyrgeorge.ktkit.example.config.Props
 import io.github.smyrgeorge.ktkit.example.start
 import io.github.smyrgeorge.ktkit.example.test.Test
 import io.github.smyrgeorge.ktkit.sqlx4k.JsonSupport
@@ -14,12 +16,14 @@ import kotlinx.coroutines.runBlocking
 fun main() {
     val log = Logger.of(ExampleApplication::class)
 
+    val props = ConfigPropertiesToml.loadFromFileSystem<Props>("src/commonMain/resources/application.toml")
+
     val db = postgreSQL(
-        url = "postgresql://localhost:35432/test",
-        username = "postgres",
-        password = "postgres",
+        url = props.database.url,
+        username = props.database.username,
+        password = props.database.password,
         options = ConnectionPool.Options.builder()
-            .maxConnections(10)
+            .maxConnections(props.database.maxConnections)
             .build(),
         encoders = JsonSupport.encoders(
             types = setOf(
@@ -42,5 +46,5 @@ fun main() {
 
     val pgmq = Pgmq(db)
 
-    start(db, pgmq)
+    start(props, db, pgmq)
 }

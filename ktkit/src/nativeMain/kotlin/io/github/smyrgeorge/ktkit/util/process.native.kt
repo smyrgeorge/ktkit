@@ -20,7 +20,6 @@ actual fun registerShutdownHook() {
     signal(SIGINT, staticCFunction<Int, Unit> {
         runBlocking {
             Application.INSTANCE_OR_NULL?.shutdown()
-            println("Triggered shutdown hook.")
         }
     })
 }

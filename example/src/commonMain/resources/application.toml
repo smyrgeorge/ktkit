@@ -1,0 +1,9 @@
+[server]
+host = "localhost"
+port = 8080
+
+[database]
+url = "postgresql://localhost:35432/test"
+username = "postgres"
+password = "postgres"
+maxConnections = 10

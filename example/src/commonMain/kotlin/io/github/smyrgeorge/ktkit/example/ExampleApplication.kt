@@ -2,6 +2,7 @@ package io.github.smyrgeorge.ktkit.example
 
 import io.github.smyrgeorge.ktkit.Application
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
+import io.github.smyrgeorge.ktkit.example.config.Props
 import io.github.smyrgeorge.ktkit.example.generated.TestRepositoryImpl
 import io.github.smyrgeorge.ktkit.example.test.TestRepository
 import io.github.smyrgeorge.ktkit.example.test.TestRestHandler
@@ -16,13 +17,13 @@ import org.koin.dsl.bind
 
 class ExampleApplication
 
-fun start(db: IPostgresSQL, pgmq: Pgmq) {
+fun start(props: Props, db: IPostgresSQL, pgmq: Pgmq) {
     Application(
         name = ExampleApplication::class.simpleName!!,
         description = "This is an example application",
         conf = Application.Conf(
-            host = "localhost",
-            port = 8080,
+            host = props.server.host,
+            port = props.server.port,
         ),
         configure = {
             logging {
@@ -44,6 +45,7 @@ fun start(db: IPostgresSQL, pgmq: Pgmq) {
                 // Additional Ktor configuration.
             }
             di {
+                single { props }.bind<Props>()
                 single { db }.bind<Driver>()
                 single { pgmq }.bind<Pgmq>()
                 singleOf(::TestRestHandler) { bind<AbstractRestHandler>() }
@@ -53,6 +55,7 @@ fun start(db: IPostgresSQL, pgmq: Pgmq) {
         },
         postConfigure = {
             // After configuration, perform any necessary post-configuration tasks.
+            db.close()
         }
     ).start()
 }

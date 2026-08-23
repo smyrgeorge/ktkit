@@ -1,5 +1,5 @@
 group = "io.github.smyrgeorge"
-version = "0.3.0"
+version = libs.versions.ktkit.get()
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
@@ -18,7 +18,6 @@ subprojects {
 
     repositories {
         mavenCentral()
-        // IMPORTANT: must be last.
         mavenLocal()
     }
 }

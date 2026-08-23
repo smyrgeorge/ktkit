@@ -2,6 +2,10 @@
 
 set -e
 
+# Publish the ktkit Gradle/compiler plugins to mavenLocal first — the example module needs them
+# at the (possibly just bumped) current version before the build can configure.
+./scripts/bootstrap.sh
+
 ./gradlew build
 
 ./gradlew :dokka:dokkaGenerate

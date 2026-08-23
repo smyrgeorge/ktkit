@@ -74,6 +74,7 @@ configure<MavenPublishBaseExtension> {
     // Configure publishing to Maven Central
     publishToMavenCentral()
 
-    // Enable GPG signing for all publications
-    signAllPublications()
+    if (providers.gradleProperty("RELEASE_SIGNING_ENABLED").getOrElse("true").toBoolean()) {
+        signAllPublications()
+    }
 }

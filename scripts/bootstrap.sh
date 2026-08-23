@@ -8,14 +8,12 @@ set -e
 # the compiler-plugin artifact from there too), so both must be published before the main build
 # can even configure — run this after a clean checkout and after every version bump.
 # --configure-on-demand keeps Gradle from configuring the example module (which would need the
-# not-yet-published plugin). The sign tasks are excluded: mavenLocal artifacts need no signatures,
-# and the CI build job has no signing keys.
-# NOTE: the list is per publication — a new/renamed publication in these modules must be reflected here.
+# not-yet-published plugin). RELEASE_SIGNING_ENABLED=false leaves signing out of the publications
+# entirely: mavenLocal artifacts need no signatures, and the CI build job has no signing keys
+# (excluding the sign tasks with -x is NOT enough — publishing then fails on the missing .asc
+# files on a clean workspace).
 ./gradlew \
     :ktkit-gradle-plugin:publishToMavenLocal \
     :ktkit-openapi-compiler-plugin:publishToMavenLocal \
     --configure-on-demand \
-    -x signKtkitPluginMarkerMavenPublication \
-    -x signPluginMavenPublication \
-    -x signKotlinMultiplatformPublication \
-    -x signJvmPublication
+    -PRELEASE_SIGNING_ENABLED=false

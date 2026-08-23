@@ -2,10 +2,10 @@ package io.github.smyrgeorge.ktkit
 
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.error.impl.NotFound
-import io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiRestHandler
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.ktkit.api.rest.ApiError
 import io.github.smyrgeorge.ktkit.api.rest.impl.ApplicationStatusRestHandler
+import io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiRestHandler
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.util.applicationLogger
 import io.github.smyrgeorge.ktkit.util.defaultSerializersModule
@@ -30,6 +30,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
 import kotlinx.serialization.modules.plus
@@ -62,7 +63,7 @@ class Application(
     private var _ktor: KtorApplication? = null
     private var _server: EmbeddedServer<ApplicationEngine, ApplicationEngine.Configuration>? = null
 
-    internal val shutdownHooks = mutableListOf<() -> Unit>()
+    internal val shutdownHooks = mutableListOf<suspend () -> Unit>()
     internal val metrics = SimpleMeteringCollectorAppender()
 
     val status: Status get() = _status
@@ -118,7 +119,7 @@ class Application(
         log.info { "Shutting down..." }
         _status = Status.DOWN
         _startedAt = null
-        shutdownHooks.forEach { it() }
+        shutdownHooks.forEach { runBlocking { it() } }
         di.close()
         server.stop(gracePeriod.inWholeMilliseconds, timeout.inWholeMilliseconds)
     }
@@ -128,7 +129,7 @@ class Application(
      *
      * @param hook A lambda function to be executed during the shutdown process.
      */
-    fun onShutdown(hook: () -> Unit) {
+    fun onShutdown(hook: suspend () -> Unit) {
         shutdownHooks.add(hook)
     }
 

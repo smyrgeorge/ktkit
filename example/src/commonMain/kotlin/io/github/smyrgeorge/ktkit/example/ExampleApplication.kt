@@ -52,10 +52,12 @@ fun start(props: Props, db: IPostgresSQL, pgmq: Pgmq) {
                 singleOf(::TestService)
                 single { TestRepositoryImpl }.bind<TestRepository>()
             }
+            app.onShutdown {
+                db.close()
+            }
         },
         postConfigure = {
             // After configuration, perform any necessary post-configuration tasks.
-            db.close()
         }
     ).start()
 }

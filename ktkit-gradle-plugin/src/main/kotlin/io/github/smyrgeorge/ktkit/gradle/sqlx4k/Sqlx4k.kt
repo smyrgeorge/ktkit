@@ -63,8 +63,8 @@ internal object Sqlx4k {
         // The KSP arguments are read after the build script is fully evaluated, so later
         // re-configuration of the options is still picked up.
         project.afterEvaluate {
-            require(options.outputPackage.isPresent) {
-                "ktkit { sqlx4k { } }: 'outputPackage' must be set."
+            require(options.generatedCodePackage.isPresent) {
+                "ktkit { sqlx4k { } }: 'generatedCodePackage' must be set."
             }
             require(options.driver.isPresent) {
                 "ktkit { sqlx4k { } }: 'driver' must be set (PostgreSQL, MySQL, SQLite, SQLiteCipher)."
@@ -85,7 +85,7 @@ internal object Sqlx4k {
             }
             project.extensions.configure(KspExtension::class.java) { ksp ->
                 ksp.arg("dialect", options.driver.get().dialect)
-                ksp.arg("output-package", options.outputPackage.get())
+                ksp.arg("output-package", options.generatedCodePackage.get())
                 options.extraArgs.forEach { (key, value) -> ksp.arg(key, value) }
             }
         }

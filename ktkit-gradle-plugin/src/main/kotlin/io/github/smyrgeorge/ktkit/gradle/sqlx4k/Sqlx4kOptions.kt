@@ -23,7 +23,7 @@ public abstract class Sqlx4kOptions {
     public abstract val driver: Property<Driver>
 
     /** The package the generated sources are placed in. Required. */
-    public abstract val outputPackage: Property<String>
+    public abstract val generatedCodePackage: Property<String>
 
     /**
      * The source sets whose code the sqlx4k code generator processes. Defaults to `commonMain`

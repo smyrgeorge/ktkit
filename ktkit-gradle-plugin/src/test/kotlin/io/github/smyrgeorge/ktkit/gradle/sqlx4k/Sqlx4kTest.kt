@@ -37,7 +37,7 @@ class Sqlx4kTest {
         val options = project.objects.newInstance(Sqlx4kOptions::class.java)
 
         assertFalse(options.driver.isPresent) // required — no default
-        assertFalse(options.outputPackage.isPresent)
+        assertFalse(options.generatedCodePackage.isPresent)
         assertEquals(emptyList(), options.enabledExtensions.get())
         assertEquals(listOf("commonMain"), options.sourceSets.get())
     }
@@ -84,7 +84,7 @@ class Sqlx4kTest {
         val metadataKsp = project.configurations.create("kspCommonMainMetadata")
         project.enableSqlx4k {
             it.driver.set(Driver.PostgreSQL)
-            it.outputPackage.set("com.example.generated")
+            it.generatedCodePackage.set("com.example.generated")
         }
 
         val codegen = metadataKsp.dependencies.single() as ExternalDependency
@@ -98,7 +98,7 @@ class Sqlx4kTest {
         val project = ProjectBuilder.builder().build()
         val extension = project.enableSqlx4k {
             it.driver.set(Driver.PostgreSQL)
-            it.outputPackage.set("com.example.generated")
+            it.generatedCodePackage.set("com.example.generated")
         }
 
         assertFailsWith<IllegalStateException> { extension.sqlx4k.sourceSets.set(listOf("jvmMain")) }
@@ -114,16 +114,16 @@ class Sqlx4kTest {
     }
 
     @Test
-    fun `a missing outputPackage fails the evaluation`() {
+    fun `a missing generatedCodePackage fails the evaluation`() {
         val project = ProjectBuilder.builder().build()
         project.enableSqlx4k { it.driver.set(Driver.PostgreSQL) }
-        assertEvaluationFails(project, "'outputPackage' must be set")
+        assertEvaluationFails(project, "'generatedCodePackage' must be set")
     }
 
     @Test
     fun `a missing driver fails the evaluation`() {
         val project = ProjectBuilder.builder().build()
-        project.enableSqlx4k { it.outputPackage.set("com.example.generated") }
+        project.enableSqlx4k { it.generatedCodePackage.set("com.example.generated") }
         assertEvaluationFails(project, "'driver' must be set")
     }
 
@@ -132,7 +132,7 @@ class Sqlx4kTest {
         val project = ProjectBuilder.builder().build()
         project.enableSqlx4k {
             it.driver.set(Driver.SQLite)
-            it.outputPackage.set("com.example.generated")
+            it.generatedCodePackage.set("com.example.generated")
             it.extensions(Sqlx4kExtension.Pgmq)
         }
         assertEvaluationFails(project, "the Pgmq extension requires the PostgreSQL driver")
@@ -143,7 +143,7 @@ class Sqlx4kTest {
         val project = ProjectBuilder.builder().build()
         project.enableSqlx4k {
             it.driver.set(Driver.PostgreSQL)
-            it.outputPackage.set("com.example.generated")
+            it.generatedCodePackage.set("com.example.generated")
             it.sourceSets.set(listOf("jvmMain"))
         }
         assertEvaluationFails(project, "no KSP configuration 'kspJvm' exists")

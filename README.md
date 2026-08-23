@@ -196,7 +196,7 @@ ktkit {
     // plus the dialect's driver.
     sqlx4k {
         driver = PostgreSQL // required (also: MySQL, SQLite, SQLiteCipher)
-        outputPackage = "com.example.generated"
+        generatedCodePackage = "com.example.generated"
         // Where the sqlx4k-annotated code lives — also: "main" (plain JVM), "jvmMain", ...
         sourceSets = listOf("commonMain") // default
         extensions(Pgmq)       // sqlx4k extensions; Pgmq (`ktkit-sqlx4k-pgmq`) is PostgreSQL only

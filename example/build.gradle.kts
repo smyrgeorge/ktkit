@@ -13,9 +13,9 @@ kotlin {
 
 ktkit {
     sqlx4k {
-        driver = PostgreSQL
-        outputPackage = "io.github.smyrgeorge.ktkit.example.generated"
         extensions(Pgmq)
+        driver = PostgreSQL
+        generatedCodePackage = "io.github.smyrgeorge.ktkit.example.generated"
     }
     jar {
         mainClass = "io.github.smyrgeorge.ktkit.example.ExampleApplicationKt"

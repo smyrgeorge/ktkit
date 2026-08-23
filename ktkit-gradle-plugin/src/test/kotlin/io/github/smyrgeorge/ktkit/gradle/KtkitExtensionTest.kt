@@ -38,7 +38,7 @@ class KtkitExtensionTest {
 
         extension.sqlx4k {
             it.driver.set(io.github.smyrgeorge.ktkit.gradle.sqlx4k.Driver.PostgreSQL)
-            it.outputPackage.set("com.example.generated")
+            it.generatedCodePackage.set("com.example.generated")
         }
         assertTrue(project.pluginManager.hasPlugin("com.google.devtools.ksp"))
         assertEquals(1, metadataKsp.dependencies.size)

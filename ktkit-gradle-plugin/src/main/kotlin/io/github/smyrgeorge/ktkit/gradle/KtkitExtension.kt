@@ -22,7 +22,7 @@ import javax.inject.Inject
  *     }
  *     sqlx4k {
  *         driver = PostgreSQL
- *         outputPackage = "com.example.generated"
+ *         generatedCodePackage = "com.example.generated"
  *     }
  * }
  * ```
@@ -63,7 +63,7 @@ public abstract class KtkitExtension @Inject constructor(
      * Enables and configures the sqlx4k module (database access via sqlx4k with compile-time
      * query validation):
      * - applies the KSP Gradle plugin and registers the sqlx4k code generator for commonMain,
-     * - passes the [Sqlx4kOptions.driver] / [Sqlx4kOptions.outputPackage] KSP arguments,
+     * - passes the [Sqlx4kOptions.driver] / [Sqlx4kOptions.generatedCodePackage] KSP arguments,
      * - adds the generated sources to commonMain and orders the KSP tasks accordingly,
      * - unless [addDependencies] is false, adds `ktkit-sqlx4k` and the sqlx4k driver.
      */

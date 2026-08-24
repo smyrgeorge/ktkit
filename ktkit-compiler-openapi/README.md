@@ -22,8 +22,9 @@ Per route:
 
 - Full paths (the `uri()` prefix applied to each `GET`/`POST`/... call) and success status codes (including explicit
   `onSuccessHttpStatusCode` arguments)
-- Path/query/header parameters from `pathVariable`/`queryParam`/`header` usage — `asInt()`, `asBooleanOrNull()`, ...
-  determine the type, and `*OrNull` conversions mark a parameter optional
+- Path/query/header parameters from `pathVariable`/`queryParam`/`header` usage — `asInt()`, `asUuid()`,
+  `asBooleanOrNull()`, ... determine the type (e.g. `asUuid()` documents a `string` with `format: uuid`), and
+  `*OrNull` conversions mark a parameter optional
 - Request bodies from `body<T>()` and response schemas from the handler's return type (unwrapping `Either`/`Result`/
   `Flow`), generated from `@Serializable` classes (`@SerialName`, `@Transient`, default values, nullability, enums and
   sealed hierarchies with the `@type` discriminator are respected)
@@ -33,6 +34,8 @@ Per route:
   error responses are defined once as shared `components.responses` entries (`BadRequest`, `Unauthorized`, ...) and
   referenced from each operation
 - Ktor `route("...") { }` groups nested inside `routes()` (their path segments prefix the documented paths)
+- Deterministic operationIds of the form `<HandlerClass>__<METHOD>__<path>` with `/` replaced by `_` and `{param}`
+  segments by `by_param` — e.g. `TestRestHandler__PUT__api_v1_test_update-and-fetch-all_by_id`
 
 ## Enriching route metadata
 
@@ -50,8 +53,17 @@ GET("/{id}") {
 ```
 
 Besides the fields shown above, the annotation supports `deprecated` (marks the operation deprecated, with the given
-text as the reason). A single route can be excluded with `@OpenApiIgnore` placed directly above the route call, and a
-whole handler by annotating its class.
+text as the reason).
+
+A single route can be excluded from the specification with `@OpenApiIgnore` placed directly above the route call, and a
+whole handler by annotating its class (no `openApiSpec()` is generated at all in that case):
+
+```kotlin
+@OpenApiIgnore
+GET("/internal") {
+    // excluded from the specification
+}
+```
 
 ## Runtime configuration
 
@@ -87,6 +99,9 @@ Application(
 - The fragment baked into a handler is refreshed when the handler's file is recompiled. Kotlin's incremental compilation
   tracks the types a handler references, but an edit that changes only an `@OpenApi` annotation in a *different*
   file (e.g. a base class) may require a clean build to be picked up.
+- `@OpenApi` and `@OpenApiIgnore` have SOURCE retention (required for expression annotations), so a class-level
+  `@OpenApiIgnore` on a base class in a *different* Gradle module does not carry the exclusion over to its subclasses —
+  annotate within the module being compiled.
 - Route paths and parameter names must be compile-time string constants; dynamic values produce a warning and the route
   (or parameter) is skipped.
 - Response types that are not `@Serializable` (or use custom serializers) are documented as free-form objects, with a

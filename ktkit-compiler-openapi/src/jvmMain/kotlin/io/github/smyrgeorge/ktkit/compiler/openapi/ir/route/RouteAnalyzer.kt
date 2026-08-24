@@ -49,7 +49,7 @@ class RouteAnalyzer(
     /** An analyzed route: the full path, the lower-case HTTP method, and the operation object. */
     class Route(val path: String, val verb: String, val operation: JsonNode.Obj)
 
-    private val operations = OperationBuilder(schemas, anonymous)
+    private val operations = OperationBuilder(schemas, anonymous, irClass.name.asString())
 
     /** Returns the analyzed route, or `null` when the route is skipped (dynamic path, `@OpenApiIgnore`). */
     fun analyze(groupPrefix: String, call: IrCall): Route? {

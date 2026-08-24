@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.ir.types.IrType
 class OperationBuilder(
     private val schemas: SchemaGenerator,
     private val anonymous: Boolean,
+    private val handlerName: String,
 ) {
     private val usedOperationIds = mutableSetOf<String>()
 
@@ -148,16 +149,16 @@ class OperationBuilder(
         return node
     }
 
+    /**
+     * `TestRestHandler__PUT__api_v1_test_update-and-fetch-all_by_id` for
+     * `PUT /api/v1/test/update-and-fetch-all/{id}` — a `{param}` segment becomes `by_param`.
+     */
     private fun operationId(verb: String, path: String): String {
-        val sb = StringBuilder(verb.lowercase())
-        path.split('/', '-', '_', '.').filter { it.isNotBlank() }.forEach { segment ->
-            if (segment.startsWith("{")) {
-                sb.append("By").append(segment.trim('{', '}').replaceFirstChar { it.uppercaseChar() })
-            } else {
-                sb.append(segment.replaceFirstChar { it.uppercaseChar() })
-            }
+        val segments = path.split('/').filter { it.isNotEmpty() }.joinToString("_") { segment ->
+            if (segment.startsWith("{") && segment.endsWith("}")) "by_${segment.substring(1, segment.length - 1)}"
+            else segment
         }
-        return sb.toString()
+        return "${handlerName}__${verb}__$segments"
     }
 
     private fun uniqueOperationId(candidate: String): String {

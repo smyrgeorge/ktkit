@@ -58,7 +58,6 @@ class MetadataCollector(
             description = args.str("description"),
             tags = args.strings("tags"),
             deprecated = args.str("deprecated"),
-            operationId = args.str("operationId"),
         )
     }
 

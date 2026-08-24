@@ -23,7 +23,6 @@ package io.github.smyrgeorge.ktkit.api.rest.openapi
  * @property description The operation description. Empty = absent.
  * @property tags The operation tags. Empty = the handler-derived default tag.
  * @property deprecated Non-empty marks the operation deprecated, with this text as the reason.
- * @property operationId Overrides the generated operationId. Empty = generated.
  */
 @Target(AnnotationTarget.EXPRESSION)
 @Retention(AnnotationRetention.SOURCE)
@@ -32,5 +31,4 @@ annotation class OpenApi(
     val description: String = "",
     val tags: Array<String> = [],
     val deprecated: String = "",
-    val operationId: String = "",
 )

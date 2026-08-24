@@ -39,8 +39,7 @@ class OperationBuilder(
         val description = listOfNotNull(metadata.description, metadata.deprecated?.let { "Deprecated: $it" })
             .joinToString("\n\n").ifEmpty { null }
         description?.let { operation["description"] = str(it) }
-        operation["operationId"] =
-            str(uniqueOperationId(metadata.operationId ?: operationId(verb, fullPath)))
+        operation["operationId"] = str(uniqueOperationId(operationId(verb, fullPath)))
         if (metadata.deprecated != null) operation["deprecated"] = bool(true)
         if (parameters.items.isNotEmpty()) operation["parameters"] = parameters
         requestBody?.let { operation["requestBody"] = it }

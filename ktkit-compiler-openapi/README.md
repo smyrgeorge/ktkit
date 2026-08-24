@@ -48,8 +48,8 @@ GET("/{id}") {
 ```
 
 Besides the fields shown above, the annotation supports `deprecated` (marks the operation deprecated, with the given
-text as the reason) and `operationId` (overrides the generated operationId). A single route can be excluded with
-`@OpenApiIgnore` placed directly above the route call, and a whole handler by annotating its class.
+text as the reason). A single route can be excluded with `@OpenApiIgnore` placed directly above the route call, and a
+whole handler by annotating its class.
 
 ## Runtime configuration
 

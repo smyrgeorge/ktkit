@@ -3,7 +3,6 @@ package io.github.smyrgeorge.ktkit.compiler.openapi.fir
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.KtkitNames
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.Metadata
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.MetadataStore
-import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -19,7 +18,6 @@ import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.FirWrappedArgumentExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirResolvedArgumentList
-import java.util.concurrent.ConcurrentHashMap
 
 class MetadataCollector(
     private val store: MetadataStore,
@@ -28,42 +26,23 @@ class MetadataCollector(
 
     private class UnsupportedValue(message: String) : Exception(message)
 
-    /** The source text of each visited file, as the compiler sees it (checkers may run in parallel). */
-    private val fileTextCache = ConcurrentHashMap<String, String>()
-
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirFunctionCall) {
         val annotation = expression.annotations
-            .getAnnotationByClassId(KtkitNames.OPEN_API_ANNOTATION, context.session)
-        // Route calls without the annotation are still scanned for a KDoc block.
-        if (annotation == null && expression.calleeReference.name.asString() !in KtkitNames.VERBS) return
+            .getAnnotationByClassId(KtkitNames.OPEN_API_ANNOTATION, context.session) ?: return
 
         val filePath = context.containingFile?.path ?: return
         val source = expression.source ?: return
 
-        val entry = if (annotation != null) {
-            try {
-                MetadataStore.Entry(evaluate(annotation, context.session))
-            } catch (e: UnsupportedValue) {
-                MetadataStore.Entry(
-                    metadata = kdocMetadata(filePath, source),
-                    warning = "could not read the @OpenApi(...) annotation (${e.message}); falling back to the KDoc.",
-                )
-            }
-        } else {
-            val metadata = kdocMetadata(filePath, source)
-            if (metadata == Metadata.EMPTY) return // nothing to hand over — the IR phase defaults to EMPTY
-            MetadataStore.Entry(metadata)
+        val entry = try {
+            MetadataStore.Entry(evaluate(annotation, context.session))
+        } catch (e: UnsupportedValue) {
+            MetadataStore.Entry(
+                metadata = Metadata.EMPTY,
+                warning = "could not read the @OpenApi(...) annotation (${e.message}); the annotation is ignored.",
+            )
         }
         store.put(filePath, source.startOffset, source.endOffset, entry)
-    }
-
-    /** The KDoc metadata of the call at [source], parsed from the compiler's own file text. */
-    private fun kdocMetadata(filePath: String, source: KtSourceElement): Metadata {
-        val fileText = fileTextCache.getOrPut(filePath) {
-            source.treeStructure.toString(source.treeStructure.root).toString()
-        }
-        return KDocParser.parse(KDocParser.extract(fileText, source.startOffset))
     }
 
     // --- Annotation evaluation -------------------------------------------------------------

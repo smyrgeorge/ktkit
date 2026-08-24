@@ -74,7 +74,7 @@ object HttpStatusCodes {
         "InsufficientStorage" to 507,
     )
 
-    /** Default response descriptions by status code (used when no KDoc override is present). */
+    /** Default response descriptions by status code (used when no `@OpenApi` override is present). */
     private val PHRASE_BY_CODE: Map<Int, String> = BY_NAME.entries.associate { (name, code) ->
         code to name.replace(Regex("(?<=[a-z])(?=[A-Z])"), " ")
     }

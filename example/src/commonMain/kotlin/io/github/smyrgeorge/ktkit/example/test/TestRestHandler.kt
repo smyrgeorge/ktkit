@@ -32,11 +32,10 @@ class TestRestHandler(
             }
         }
 
-        /**
-         * Updates a test entity and fetches all.
-         *
-         * Tag: test
-         */
+        @OpenApi(
+            summary = "Updates a test entity and fetches all.",
+            tags = ["test"],
+        )
         PUT("/update-and-fetch-all/{id}") {
             val id = pathVariable("id").asInt()
             val fail = queryParam("fail").asBooleanOrNull() ?: false

@@ -348,7 +348,7 @@ the [Gradle plugin](#gradle-plugin-ktkit-gradle-plugin) (turn it off with `ktkit
 At runtime the framework merges the generated fragments of all registered handlers and serves the interactive Swagger UI
 at `GET /api/docs`, and the merged OpenAPI 3.1 document at `GET /api/docs/openapi.json`.
 
-- What the plugin provides (analysis rules, `@OpenApi`/KDoc metadata, configuration, limitations):
+- What the plugin provides (analysis rules, `@OpenApi` metadata, configuration, limitations):
   [ktkit-compiler-openapi](ktkit-compiler-openapi/README.md)
 
 ## Example

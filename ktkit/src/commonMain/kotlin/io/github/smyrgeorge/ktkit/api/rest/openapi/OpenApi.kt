@@ -1,8 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.rest.openapi
 
 /**
- * Documents a route for the OpenAPI specification — the primary, type-checked alternative to the
- * KDoc tags. Place it directly above the route call:
+ * Documents a route for the OpenAPI specification. Place it directly above the route call:
  *
  * ```
  * @OpenApi(
@@ -17,15 +16,12 @@ package io.github.smyrgeorge.ktkit.api.rest.openapi
  * GET("/{id}") { ... }
  * ```
  *
- * When the annotation is present it is the single source of metadata for the route; without it,
- * the compiler plugin falls back to the KDoc tags (see the ktkit documentation).
- *
  * Expression annotations have SOURCE retention by language rules, so the compiler plugin collects
  * this annotation in its frontend (FIR) phase, where the arguments are already resolved and
  * constant-evaluated — references to `const` values, concatenations etc. are supported.
  *
  * NOTE: the parameter names are part of the contract with the compiler plugin
- * (`OpenApiAnnotationCollector`) — do not rename them without updating the plugin.
+ * (`MetadataCollector`) — do not rename them without updating the plugin.
  *
  * @property summary The operation summary. Empty = absent.
  * @property description The operation description. Empty = absent.

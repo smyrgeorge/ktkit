@@ -29,13 +29,12 @@ Per route:
   sealed hierarchies with the `@type` discriminator are respected)
 - The standard `ApiError` error responses: 400 when the route has inputs, 401/403 for authenticated (non-anonymous)
   handlers, and the ktkit error types constructed directly inside the route lambda — errors raised deeper in your
-  services are not visible to the static analysis; document those with a `Response:` KDoc tag
+  services are not visible to the static analysis; document those with an `OpenApiResponse` in the `@OpenApi` annotation
 - Ktor `route("...") { }` groups nested inside `routes()` (their path segments prefix the documented paths)
 
 ## Enriching route metadata
 
-Route metadata can be enriched in two ways. The primary, type-checked way is the `@OpenApi` annotation placed directly
-above the route call:
+Route metadata is provided with the `@OpenApi` annotation placed directly above the route call:
 
 ```kotlin
 @OpenApi(
@@ -53,27 +52,10 @@ GET("/{id}") {
 }
 ```
 
-When the annotation is absent, the compiler plugin falls back to a KDoc comment above the route call (when both are
-present, the annotation wins — they are never merged):
-
-```kotlin
-/**
- * Returns a single user by id.
- *
- * A longer, multi-line description.
- * Tag: users
- * Path: id [Int] The id of the user.
- * Query: verbose [Boolean] Whether to include details.
- * Response: 404 The user was not found.
- */
-GET("/{id}") {
-    // your code goes here...
-}
-```
-
-Supported KDoc tags: `Tag:`, `Path:`, `Query:`, `Header:`, `Body:`, `Response:`/`Responses:`, `Description:`,
-`Deprecated:`, `OperationId:`, `Security: none` and `Ignore:`. The `@OpenApi` annotation covers the same metadata with
-type-checked parameters. A whole handler can be excluded with `@OpenApiIgnore`.
+Besides the fields shown above, the annotation supports `body` (the request body description), `deprecated` (marks the
+operation deprecated, with the given text as the reason), `operationId` (overrides the generated operationId),
+`securityNone` (suppresses the 401/403 error responses) and `ignore` (excludes the route from the specification). A
+whole handler can be excluded with `@OpenApiIgnore`.
 
 ## Runtime configuration
 
@@ -107,7 +89,7 @@ Application(
   class of the same module) — the compiler plugin cannot read function bodies from dependency modules. An unresolvable
   `uri()` produces a compile warning and the per-route paths are used as-is.
 - The fragment baked into a handler is refreshed when the handler's file is recompiled. Kotlin's incremental compilation
-  tracks the types a handler references, but an edit that changes only a KDoc comment in a *different*
+  tracks the types a handler references, but an edit that changes only an `@OpenApi` annotation in a *different*
   file (e.g. a base class) may require a clean build to be picked up.
 - Route paths and parameter names must be compile-time string constants; dynamic values produce a warning and the route
   (or parameter) is skipped.

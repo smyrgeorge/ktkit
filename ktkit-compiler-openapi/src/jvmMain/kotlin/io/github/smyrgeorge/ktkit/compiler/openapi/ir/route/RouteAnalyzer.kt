@@ -104,9 +104,9 @@ class RouteAnalyzer(
     }
 
     /**
-     * The metadata of [call] — the `@OpenApi(...)` annotation or its KDoc fallback, collected by
-     * the FIR phase ([io.github.smyrgeorge.ktkit.compiler.openapi.fir.MetadataCollector]) — or
-     * [Metadata.EMPTY] when the call has neither.
+     * The metadata of [call] — the `@OpenApi(...)` annotation collected by the FIR phase
+     * ([io.github.smyrgeorge.ktkit.compiler.openapi.fir.MetadataCollector]) — or
+     * [Metadata.EMPTY] when the call is not annotated.
      */
     private fun metadataOf(call: IrCall): Metadata {
         val entry = store.get(file.fileEntry.name, call.startOffset, call.endOffset) ?: return Metadata.EMPTY

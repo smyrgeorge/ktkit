@@ -8,11 +8,9 @@ object Schemas {
     fun stringArray(): JsonNode.Obj = arrayOf(string())
     fun int32(): JsonNode.Obj = obj("type" to str("integer"), "format" to str("int32"))
     fun int64(): JsonNode.Obj = obj("type" to str("integer"), "format" to str("int64"))
-    fun unsignedInt(): JsonNode.Obj = obj("type" to str("integer"), "minimum" to JsonNode.num(0))
     fun float(): JsonNode.Obj = obj("type" to str("number"), "format" to str("float"))
     fun double(): JsonNode.Obj = obj("type" to str("number"), "format" to str("double"))
     fun boolean(): JsonNode.Obj = obj("type" to str("boolean"))
-    fun uuid(): JsonNode.Obj = obj("type" to str("string"), "format" to str("uuid"))
 
     /** An array schema of [items]. */
     fun arrayOf(items: JsonNode.Obj): JsonNode.Obj = obj("type" to str("array"), "items" to items)
@@ -25,20 +23,6 @@ object Schemas {
         "asFloat" -> float()
         "asDouble" -> double()
         "asBoolean" -> boolean()
-        else -> null
-    }
-
-    /** The schema of a metadata `type` override (`"int"`, `"boolean"`, ...), or `null` for unknown names. */
-    fun fromTypeName(type: String?): JsonNode.Obj? = when (type?.lowercase()) {
-        null -> null
-        "string" -> string()
-        "int", "integer" -> int32()
-        "long" -> int64()
-        "ulong", "uint" -> unsignedInt()
-        "boolean", "bool" -> boolean()
-        "float" -> float()
-        "double", "number" -> double()
-        "uuid" -> uuid()
         else -> null
     }
 }

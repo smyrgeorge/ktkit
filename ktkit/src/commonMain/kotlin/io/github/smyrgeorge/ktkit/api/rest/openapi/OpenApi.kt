@@ -6,12 +6,8 @@ package io.github.smyrgeorge.ktkit.api.rest.openapi
  * ```
  * @OpenApi(
  *     summary = "Returns a single user by id.",
+ *     description = "A longer, multi-line description.",
  *     tags = ["users"],
- *     params = [
- *         OpenApiParam(name = "id", location = "path", type = "int", description = "The id of the user."),
- *         OpenApiParam(name = "verbose", type = "boolean", description = "Whether to include details."),
- *     ],
- *     responses = [OpenApiResponse(code = 404, description = "The user was not found.")],
  * )
  * GET("/{id}") { ... }
  * ```
@@ -28,11 +24,6 @@ package io.github.smyrgeorge.ktkit.api.rest.openapi
  * @property tags The operation tags. Empty = the handler-derived default tag.
  * @property deprecated Non-empty marks the operation deprecated, with this text as the reason.
  * @property operationId Overrides the generated operationId. Empty = generated.
- * @property securityNone Suppresses the authentication error responses (401/403) of the operation.
- * @property params Documentation of the operation's parameters (see [OpenApiParam]).
- * @property responses Additional/overriding responses (see [OpenApiResponse]).
- * @property body The request body description. Empty = absent.
- * @property ignore Excludes the route from the specification.
  */
 @Target(AnnotationTarget.EXPRESSION)
 @Retention(AnnotationRetention.SOURCE)
@@ -42,9 +33,4 @@ annotation class OpenApi(
     val tags: Array<String> = [],
     val deprecated: String = "",
     val operationId: String = "",
-    val securityNone: Boolean = false,
-    val params: Array<OpenApiParam> = [],
-    val responses: Array<OpenApiResponse> = [],
-    val body: String = "",
-    val ignore: Boolean = false,
 )

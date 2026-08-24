@@ -76,10 +76,11 @@ abstract class AbstractRestHandler(
      * Returns the OpenAPI fragment (a JSON object as a string) describing the routes of this handler,
      * or `null` when the handler was compiled without the ktkit OpenAPI compiler plugin.
      *
-     * This method is not meant to be implemented by hand: the `io.github.smyrgeorge.ktkit.openapi`
+     * This method is normally not implemented by hand: the `io.github.smyrgeorge.ktkit.openapi`
      * compiler plugin generates an override for every concrete handler at compile time by statically
-     * analyzing [uri] and [routes]. The fragment contains the `paths` and `components` of this handler
-     * only; the fragments of all registered handlers are merged and served by
+     * analyzing [uri] and [routes]. A hand-written override is respected (the plugin skips such
+     * handlers). The fragment contains the `paths` and `components` of this handler only; the
+     * fragments of all registered handlers are merged and served by
      * [io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiRestHandler].
      */
     open fun openApiSpec(): String? = null

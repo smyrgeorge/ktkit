@@ -28,9 +28,9 @@ class OperationBuilder(
         metadata: Metadata,
         defaultTag: String,
     ): JsonNode.Obj {
-        val parameters = parameters(pathParams, scan, metadata)
-        val requestBody = requestBody(scan, metadata)
-        val responses = responses(verb, successCode, responseType, streaming, parameters, requestBody, scan, metadata)
+        val parameters = parameters(pathParams, scan)
+        val requestBody = requestBody(scan)
+        val responses = responses(verb, successCode, responseType, streaming, parameters, requestBody, scan)
 
         val operation = JsonNode.Obj()
         val tags = metadata.tags.ifEmpty { listOf(defaultTag) }
@@ -49,19 +49,17 @@ class OperationBuilder(
     }
 
     /** The operation's parameters: every `{param}` of the path first, then query and header parameters. */
-    private fun parameters(pathParams: List<String>, scan: HandlerLambdaScan, metadata: Metadata): JsonNode.Arr {
+    private fun parameters(pathParams: List<String>, scan: HandlerLambdaScan): JsonNode.Arr {
         val parameters = JsonNode.Arr()
         val emitted = mutableSetOf<String>()
         pathParams.forEach { name ->
             val info = scan.params["path:$name"]
-            val doc = metadata.param("path", name)
             parameters.add(
                 paramNode(
                     location = "path",
                     name = name,
                     required = true,
-                    schema = Schemas.fromTypeName(doc?.type) ?: info?.schema ?: Schemas.string(),
-                    description = doc?.description
+                    schema = info?.schema ?: Schemas.string(),
                 )
             )
             emitted += "path:$name"
@@ -69,29 +67,12 @@ class OperationBuilder(
         scan.params.values.forEach { info ->
             val key = "${info.location}:${info.name}"
             if (key in emitted || info.location == "path") return@forEach
-            val doc = metadata.param(info.location, info.name)
             parameters.add(
                 paramNode(
                     location = info.location,
                     name = info.name,
                     required = info.required,
-                    schema = Schemas.fromTypeName(doc?.type) ?: info.schema,
-                    description = doc?.description
-                )
-            )
-            emitted += key
-        }
-        // Metadata-documented parameters the static analysis did not detect.
-        metadata.params.forEach { doc ->
-            val key = "${doc.location}:${doc.name}"
-            if (key in emitted || doc.location == "path") return@forEach
-            parameters.add(
-                paramNode(
-                    location = doc.location,
-                    name = doc.name,
-                    required = false,
-                    schema = Schemas.fromTypeName(doc.type) ?: Schemas.string(),
-                    description = doc.description
+                    schema = info.schema,
                 )
             )
             emitted += key
@@ -99,10 +80,9 @@ class OperationBuilder(
         return parameters
     }
 
-    private fun requestBody(scan: HandlerLambdaScan, metadata: Metadata): JsonNode.Obj? =
+    private fun requestBody(scan: HandlerLambdaScan): JsonNode.Obj? =
         scan.bodyType?.let { bodyType ->
             val body = JsonNode.Obj()
-            metadata.bodyDescription?.let { body["description"] = str(it) }
             body["required"] = bool(true)
             body["content"] = obj("application/json" to obj("schema" to schemas.schemaFor(bodyType)))
             body
@@ -116,14 +96,11 @@ class OperationBuilder(
         parameters: JsonNode.Arr,
         requestBody: JsonNode.Obj?,
         scan: HandlerLambdaScan,
-        metadata: Metadata,
     ): JsonNode.Obj {
-        val metadataResponses = metadata.responses.associateBy { it.code }
         val responses = JsonNode.Obj()
 
         // The success response.
-        val successDescription = metadataResponses[successCode]?.description?.ifEmpty { null }
-            ?: HttpStatusCodes.phraseOf(successCode) ?: "Success"
+        val successDescription = HttpStatusCodes.phraseOf(successCode) ?: "Success"
         val responseTypeFq = responseType?.classFq()?.asString()
         val successContent: JsonNode.Obj? = when {
             verb == "HEAD" -> null
@@ -142,27 +119,20 @@ class OperationBuilder(
             .also { if (successContent != null) it["content"] = successContent }
 
         // The error responses (all referencing ktkit's standard ApiError schema).
-        val secured = !anonymous && !metadata.securityNone
         val errorCodes = sortedSetOf<Int>()
         if (parameters.items.isNotEmpty() || requestBody != null) errorCodes += 400
-        if (secured) {
+        if (!anonymous) {
             errorCodes += 401
             errorCodes += 403
         }
         errorCodes += scan.errorCodes
-        errorCodes += metadataResponses.keys.filter { it >= 400 }
         errorCodes -= successCode
         errorCodes.forEach { code ->
-            val description = metadataResponses[code]?.description?.ifEmpty { null }
-                ?: HttpStatusCodes.phraseOf(code) ?: "Error"
+            val description = HttpStatusCodes.phraseOf(code) ?: "Error"
             responses[code.toString()] = obj(
                 "description" to str(description),
                 "content" to obj("application/json" to obj("schema" to schemas.apiErrorRef())),
             )
-        }
-        // Metadata-documented non-error responses (redirects etc.) — description only.
-        metadataResponses.keys.filter { it < 400 && it != successCode }.sorted().forEach { code ->
-            responses[code.toString()] = obj("description" to str(metadataResponses.getValue(code).description))
         }
         return responses
     }
@@ -172,10 +142,8 @@ class OperationBuilder(
         name: String,
         required: Boolean,
         schema: JsonNode.Obj,
-        description: String?,
     ): JsonNode.Obj {
         val node = obj("name" to str(name), "in" to str(location))
-        description?.let { node["description"] = str(it) }
         node["required"] = bool(required || location == "path")
         node["schema"] = schema
         return node

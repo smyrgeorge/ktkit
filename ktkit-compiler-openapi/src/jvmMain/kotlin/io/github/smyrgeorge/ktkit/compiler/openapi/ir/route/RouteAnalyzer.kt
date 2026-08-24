@@ -51,12 +51,11 @@ class RouteAnalyzer(
 
     private val operations = OperationBuilder(schemas, anonymous)
 
-    /** Returns the analyzed route, or `null` when the route is skipped (dynamic path, ignored via metadata). */
+    /** Returns the analyzed route, or `null` when the route is skipped (dynamic path). */
     fun analyze(groupPrefix: String, call: IrCall): Route? {
         val verb = call.calleeName()
 
         val metadata = metadataOf(call)
-        if (metadata.ignore) return null
 
         val rawPath = call.regularArgument("path")?.constString()
         if (rawPath == null) {

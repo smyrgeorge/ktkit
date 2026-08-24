@@ -29,7 +29,7 @@ Per route:
   sealed hierarchies with the `@type` discriminator are respected)
 - The standard `ApiError` error responses: 400 when the route has inputs, 401/403 for authenticated (non-anonymous)
   handlers, and the ktkit error types constructed directly inside the route lambda — errors raised deeper in your
-  services are not visible to the static analysis; document those with an `OpenApiResponse` in the `@OpenApi` annotation
+  services are not visible to the static analysis and are not documented
 - Ktor `route("...") { }` groups nested inside `routes()` (their path segments prefix the documented paths)
 
 ## Enriching route metadata
@@ -41,21 +41,15 @@ Route metadata is provided with the `@OpenApi` annotation placed directly above 
     summary = "Returns a single user by id.",
     description = "A longer, multi-line description.",
     tags = ["users"],
-    params = [
-        OpenApiParam(name = "id", location = "path", type = "int", description = "The id of the user."),
-        OpenApiParam(name = "verbose", type = "boolean", description = "Whether to include details."),
-    ],
-    responses = [OpenApiResponse(code = 404, description = "The user was not found.")],
 )
 GET("/{id}") {
     // your code goes here...
 }
 ```
 
-Besides the fields shown above, the annotation supports `body` (the request body description), `deprecated` (marks the
-operation deprecated, with the given text as the reason), `operationId` (overrides the generated operationId),
-`securityNone` (suppresses the 401/403 error responses) and `ignore` (excludes the route from the specification). A
-whole handler can be excluded with `@OpenApiIgnore`.
+Besides the fields shown above, the annotation supports `deprecated` (marks the operation deprecated, with the given
+text as the reason) and `operationId` (overrides the generated operationId). A whole handler can be excluded with
+`@OpenApiIgnore`.
 
 ## Runtime configuration
 

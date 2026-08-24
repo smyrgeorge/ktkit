@@ -4,12 +4,10 @@ import io.github.smyrgeorge.ktkit.compiler.openapi.utils.KtkitNames
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.Metadata
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.MetadataStore
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirExpressionChecker
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
-import org.jetbrains.kotlin.fir.declarations.toAnnotationClassIdSafe
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.expressions.FirCall
 import org.jetbrains.kotlin.fir.expressions.FirExpression
@@ -17,7 +15,6 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.FirWrappedArgumentExpression
-import org.jetbrains.kotlin.fir.expressions.impl.FirResolvedArgumentList
 
 class MetadataCollector(
     private val store: MetadataStore,
@@ -35,7 +32,7 @@ class MetadataCollector(
         val source = expression.source ?: return
 
         val entry = try {
-            MetadataStore.Entry(evaluate(annotation, context.session))
+            MetadataStore.Entry(evaluate(annotation))
         } catch (e: UnsupportedValue) {
             MetadataStore.Entry(
                 metadata = Metadata.EMPTY,
@@ -47,7 +44,7 @@ class MetadataCollector(
 
     // --- Annotation evaluation -------------------------------------------------------------
 
-    private fun evaluate(annotation: FirAnnotation, session: FirSession): Metadata {
+    private fun evaluate(annotation: FirAnnotation): Metadata {
         val args = annotation.namedArguments()
         return Metadata(
             summary = args.str("summary"),
@@ -55,30 +52,8 @@ class MetadataCollector(
             tags = args.strings("tags"),
             deprecated = args.str("deprecated"),
             operationId = args.str("operationId"),
-            ignore = args.bool("ignore"),
-            securityNone = args.bool("securityNone"),
-            params = args.nested("params", KtkitNames.OPEN_API_PARAM, session).map { toParam(it) },
-            responses = args.nested("responses", KtkitNames.OPEN_API_RESPONSE, session).map { toResponse(it) },
-            bodyDescription = args.str("body"),
         )
     }
-
-    private fun toParam(args: Map<String, FirExpression>): Metadata.Param {
-        val location = (args.str("location") ?: "query").lowercase()
-        if (location !in PARAM_LOCATIONS) throw UnsupportedValue("unsupported OpenApiParam location '$location'")
-        return Metadata.Param(
-            location = location,
-            name = args.str("name") ?: throw UnsupportedValue("OpenApiParam requires a name"),
-            type = args.str("type"),
-            description = args.str("description"),
-        )
-    }
-
-    private fun toResponse(args: Map<String, FirExpression>): Metadata.Response =
-        Metadata.Response(
-            code = args.int("code") ?: throw UnsupportedValue("OpenApiResponse requires a code"),
-            description = args.str("description") ?: "",
-        )
 
     /** The annotation's explicitly passed arguments by parameter name (defaults are simply absent). */
     private fun FirAnnotation.namedArguments(): Map<String, FirExpression> =
@@ -95,61 +70,15 @@ class MetadataCollector(
         else -> throw UnsupportedValue("'$name' is not a constant")
     }
 
-    private fun Map<String, FirExpression>.int(name: String): Int? = when (val e = this[name]) {
-        null -> null
-        is FirLiteralExpression -> (e.value as? Number)?.toInt()
-            ?: throw UnsupportedValue("'$name' is not an integer constant")
-
-        else -> throw UnsupportedValue("'$name' is not a constant")
-    }
-
-    private fun Map<String, FirExpression>.bool(name: String): Boolean = when (val e = this[name]) {
-        null -> false
-        is FirLiteralExpression -> (e.value as? Boolean)
-            ?: throw UnsupportedValue("'$name' is not a boolean constant")
-
-        else -> throw UnsupportedValue("'$name' is not a constant")
-    }
-
     private fun Map<String, FirExpression>.strings(name: String): List<String> =
         this[name]?.elements(name)?.map { element ->
             ((element as? FirLiteralExpression)?.value as? String)
                 ?: throw UnsupportedValue("'$name' contains a non-string element")
         } ?: emptyList()
 
-    /** The nested `OpenApiParam(...)`/`OpenApiResponse(...)` entries of an array argument. */
-    private fun Map<String, FirExpression>.nested(
-        name: String,
-        expected: String,
-        session: FirSession,
-    ): List<Map<String, FirExpression>> =
-        this[name]?.elements(name)?.map { element ->
-            when (element) {
-                is FirAnnotation -> {
-                    val short = element.toAnnotationClassIdSafe(session)?.shortClassName?.asString()
-                    if (short != expected) throw UnsupportedValue("expected $expected(...) inside '$name', found '$short'")
-                    element.namedArguments()
-                }
-
-                is FirFunctionCall -> {
-                    val callee = element.calleeReference.name.asString()
-                    if (callee != expected) throw UnsupportedValue("expected $expected(...) inside '$name', found '$callee'")
-                    val arguments = element.argumentList as? FirResolvedArgumentList
-                        ?: throw UnsupportedValue("unresolved arguments of $expected(...)")
-                    arguments.mapping.entries.associate { (expr, param) -> param.name.asString() to expr.unwrap() }
-                }
-
-                else -> throw UnsupportedValue("expected $expected(...) inside '$name'")
-            }
-        } ?: emptyList()
-
     private fun FirExpression.elements(name: String): List<FirExpression> = when (this) {
         is FirVarargArgumentsExpression -> arguments.map { it.unwrap() }
         is FirCall -> argumentList.arguments.map { it.unwrap() }
         else -> throw UnsupportedValue("'$name' is not an array literal")
-    }
-
-    private companion object {
-        val PARAM_LOCATIONS = setOf("path", "query", "header")
     }
 }

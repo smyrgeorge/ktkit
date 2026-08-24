@@ -25,7 +25,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 class HttpContextTest {
@@ -113,6 +116,25 @@ class HttpContextTest {
         assertEquals("ok", result)
     }
 
+    @Test
+    fun pathVariableFallsBackToASameNamedQueryParameter() {
+        // `call.parameters` merges query and path parameters, so pathVariable() resolves a
+        // same-named query parameter when the path segment is absent.
+        val result = handle("/opt/{id?}", "/opt?id=from-query") {
+            it.pathVariable("id").asString()
+        }
+        assertEquals("from-query", result)
+    }
+
+    @Test
+    fun pathVariableIsShadowedByASameNamedQueryParameter() {
+        // In the merged `call.parameters`, query parameters take precedence over path ones.
+        val result = handle("/shadow/{id}", "/shadow/from-path?id=from-query") {
+            it.pathVariable("id").asString()
+        }
+        assertEquals("from-query", result)
+    }
+
     // --- queryParam / queryParams ------------------------------------------------------------
 
     @Test
@@ -178,6 +200,25 @@ class HttpContextTest {
     }
 
     @Test
+    fun headerNamesAreCaseInsensitive() {
+        val result = handle("/h", "/h", headers = mapOf("X-Request-Id" to listOf("abc-123"))) {
+            it.header("x-request-id").asString()
+        }
+        assertEquals("abc-123", result)
+    }
+
+    @Test
+    fun repeatedHeadersArriveAsASingleFoldedValue() {
+        // The client transport folds repeated headers into one comma-separated entry
+        // (HTTP header folding), so header() and headers() both see the single folded value.
+        val result = handle("/h", "/h", headers = mapOf("X-Multi" to listOf("a", "b"))) {
+            val all = it.headers("X-Multi")
+            "${all.size}:${all.joinToString("|")}:${it.header("X-Multi").asString()}"
+        }
+        assertEquals("1:a,b:a,b", result)
+    }
+
+    @Test
     fun headerMissingThrowsMissingParameter() {
         val result = handle("/h", "/h") {
             val error = assertFailsWith<RuntimeError> { it.header("X-Request-Id").asString() }
@@ -188,13 +229,6 @@ class HttpContextTest {
         assertEquals("ok", result)
     }
 
-    @Test
-    fun headersReturnsAllValues() {
-        val result = handle("/h", "/h", headers = mapOf("X-Multi" to listOf("a", "b"))) {
-            it.headers("X-Multi").joinToString(",")
-        }
-        assertEquals("a,b", result)
-    }
 
     @Test
     fun headersReturnsEmptyListWhenAbsent() {
@@ -235,7 +269,12 @@ class HttpContextTest {
                     post("/body") {
                         val ctx = HttpContext(user, call)
                         val error = assertFailsWith<RuntimeError> { ctx.body<TestBody>() }
-                        assertIs<MalformedRequestBody>(error.error)
+                        val spec = assertIs<MalformedRequestBody>(error.error)
+                        // The original deserialization failure is preserved on both the
+                        // error spec and the thrown RuntimeError, and drives the message.
+                        assertNotNull(error.cause)
+                        assertSame(error.cause, spec.cause)
+                        assertTrue(error.message!!.startsWith("Could not parse request body:"))
                         call.respondText("caught")
                     }
                 }

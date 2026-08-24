@@ -7,7 +7,9 @@ import io.github.smyrgeorge.ktkit.api.rest.HttpContext.Var
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 class HttpContextVarTest {
@@ -144,6 +146,20 @@ class HttpContextVarTest {
     }
 
     @Test
+    fun asFloatAndAsDoubleParseIeeeSpecialValues() {
+        // Unlike asInt/asLong, the floating-point conversions do not throw on overflow —
+        // they saturate to Infinity — and the IEEE literals parse successfully.
+        assertEquals(Float.POSITIVE_INFINITY, of("1e40").asFloat())
+        assertEquals(Double.POSITIVE_INFINITY, of("1e400").asDouble())
+        assertEquals(Double.NEGATIVE_INFINITY, of("-1e400").asDouble())
+        assertEquals(Float.POSITIVE_INFINITY, of("Infinity").asFloat())
+        assertTrue(of("NaN").asDouble().isNaN())
+        // The OrNull variants saturate as well (they do not return null on overflow).
+        assertEquals(Float.POSITIVE_INFINITY, of("1e40").asFloatOrNull())
+        assertEquals(Double.POSITIVE_INFINITY, of("1e400").asDoubleOrNull())
+    }
+
+    @Test
     fun asDoubleParsesValidValues() {
         assertEquals(1.5, of("1.5").asDouble())
         assertEquals(-0.25, of("-0.25").asDouble())
@@ -251,6 +267,8 @@ class HttpContextVarTest {
         val error = assertFailsWith<RuntimeError> { of("PURPLE").asEnum<Color>() }
         assertEquals(UnsupportedEnumValue("Color", "PURPLE"), error.error)
         assertEquals("Unsupported enum value 'PURPLE' for type 'Color'", error.message)
+        // The underlying enumValueOf failure is preserved as the cause.
+        assertNotNull(error.cause)
     }
 
     @Test

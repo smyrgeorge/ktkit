@@ -2,6 +2,7 @@
 
 package io.github.smyrgeorge.ktkit.api.rest
 
+import io.github.smyrgeorge.ktkit.api.error.impl.MalformedParameter
 import io.github.smyrgeorge.ktkit.api.error.impl.MalformedRequestBody
 import io.github.smyrgeorge.ktkit.api.error.impl.MissingParameter
 import io.github.smyrgeorge.ktkit.api.error.impl.UnsupportedEnumValue
@@ -43,26 +44,26 @@ class HttpContext(
         fun asString(): String = value ?: MissingParameter(kind.name, name).throwRuntimeError()
         fun asStringOrNull(): String? = value
 
-        fun asLong(): Long = asString().toLong()
-        fun asLongOrNull(): Long? = value?.toLongOrNull()
+        fun asLong(): Long = safe("Long") { it.toLongOrNull() }
+        fun asLongOrNull(): Long? = safeOrNull("Long") { it.toLongOrNull() }
 
-        fun asInt(): Int = asString().toInt()
-        fun asIntOrNull(): Int? = value?.toIntOrNull()
+        fun asInt(): Int = safe("Int") { it.toIntOrNull() }
+        fun asIntOrNull(): Int? = safeOrNull("Int") { it.toIntOrNull() }
 
-        fun asFloat(): Float = asString().toFloat()
-        fun asFloatOrNull(): Float? = value?.toFloatOrNull()
+        fun asFloat(): Float = safe("Float") { it.toFloatOrNull() }
+        fun asFloatOrNull(): Float? = safeOrNull("Float") { it.toFloatOrNull() }
 
-        fun asDouble(): Double = asString().toDouble()
-        fun asDoubleOrNull(): Double? = value?.toDoubleOrNull()
+        fun asDouble(): Double = safe("Double") { it.toDoubleOrNull() }
+        fun asDoubleOrNull(): Double? = safeOrNull("Double") { it.toDoubleOrNull() }
 
-        fun asBoolean(): Boolean = asString().toBoolean()
-        fun asBooleanOrNull(): Boolean? = value?.toBooleanStrictOrNull()
+        fun asBoolean(): Boolean = safe("Boolean") { it.toBooleanStrictOrNull() }
+        fun asBooleanOrNull(): Boolean? = safeOrNull("Boolean") { it.toBooleanStrictOrNull() }
 
-        fun asUuid(): Uuid = Uuid.parse(asString())
-        fun asUuidOrNull(): Uuid? = value?.let { Uuid.parseOrNull(it) }
+        fun asUuid(): Uuid = safe("Uuid") { Uuid.parseOrNull(it) }
+        fun asUuidOrNull(): Uuid? = safeOrNull("Uuid") { Uuid.parseOrNull(it) }
 
         inline fun <reified T : Enum<T>> asEnum(): T = asString().toEnum<T>()
-        inline fun <reified T : Enum<T>> asEnumOrNull(): T? = asStringOrNull()?.toEnumOrNull<T>()
+        inline fun <reified T : Enum<T>> asEnumOrNull(): T? = asStringOrNull()?.toEnum<T>()
 
         inline fun <reified T : Enum<T>> String.toEnum(): T =
             try {
@@ -76,6 +77,30 @@ class HttpContext(
                 enumValueOf<T>(this)
             } catch (_: Exception) {
                 null
+            }
+
+        /**
+         * Attempts to safely parse a value using the provided function.
+         * Throws a runtime error if the value is missing or cannot be parsed.
+         *
+         * @param expected The name of the expected type, used in error reporting if parsing fails.
+         * @param parse A function that attempts to parse the value, returning null if the value is invalid.
+         * @return The parsed value if successful.
+         */
+        private fun <T : Any> safe(expected: String, parse: (String) -> T?): T =
+            safeOrNull(expected, parse) ?: MissingParameter(kind.name, name).throwRuntimeError()
+
+        /**
+         * Attempts to parse the current value using the provided parsing function.
+         * If parsing fails, returns null or throws a runtime error when the value is malformed.
+         *
+         * @param expected The name of the target type, used for error reporting when parsing fails.
+         * @param parse A function that attempts to parse the value and returns null if the value is not valid.
+         * @return The parsed value if successful, or null if the value does not exist or cannot be parsed.
+         */
+        private fun <T : Any> safeOrNull(expected: String, parse: (String) -> T?): T? =
+            value?.let { raw ->
+                parse(raw) ?: MalformedParameter(kind.name, name, expected, raw).throwRuntimeError()
             }
 
         /**

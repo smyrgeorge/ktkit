@@ -42,6 +42,7 @@ object KtkitNames {
         "io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized" to 401,
         "io.github.smyrgeorge.ktkit.api.error.impl.Forbidden" to 403,
         "io.github.smyrgeorge.ktkit.api.error.impl.MalformedRequestBody" to 400,
+        "io.github.smyrgeorge.ktkit.api.error.impl.MalformedParameter" to 400,
         "io.github.smyrgeorge.ktkit.api.error.impl.MissingParameter" to 400,
         "io.github.smyrgeorge.ktkit.api.error.impl.UnsupportedEnumValue" to 400,
         "io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError" to 500,

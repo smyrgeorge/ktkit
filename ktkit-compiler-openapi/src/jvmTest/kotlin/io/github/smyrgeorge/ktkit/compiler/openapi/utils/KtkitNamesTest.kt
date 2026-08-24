@@ -2,6 +2,7 @@ package io.github.smyrgeorge.ktkit.compiler.openapi.utils
 
 import io.github.smyrgeorge.ktkit.api.error.impl.DatabaseError
 import io.github.smyrgeorge.ktkit.api.error.impl.Forbidden
+import io.github.smyrgeorge.ktkit.api.error.impl.MalformedParameter
 import io.github.smyrgeorge.ktkit.api.error.impl.MalformedRequestBody
 import io.github.smyrgeorge.ktkit.api.error.impl.MissingParameter
 import io.github.smyrgeorge.ktkit.api.error.impl.NotFound
@@ -60,6 +61,7 @@ class KtkitNamesTest {
             Unauthorized::class to Unauthorized("").httpStatus.code,
             Forbidden::class to Forbidden("").httpStatus.code,
             MalformedRequestBody::class to MalformedRequestBody(IllegalArgumentException()).httpStatus.code,
+            MalformedParameter::class to MalformedParameter("", "", "", "").httpStatus.code,
             MissingParameter::class to MissingParameter("", "").httpStatus.code,
             UnsupportedEnumValue::class to UnsupportedEnumValue("", "").httpStatus.code,
             DatabaseError::class to DatabaseError("", null, "").httpStatus.code,

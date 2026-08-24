@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.util
 import io.github.smyrgeorge.ktkit.api.auth.impl.UserToken
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
+import io.github.smyrgeorge.ktkit.api.error.impl.details.MalformedParameterErrorData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.MissingParameterErrorData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.UnsupportedEnumValueErrorData
 import io.github.smyrgeorge.ktkit.context.Principal
@@ -19,6 +20,7 @@ fun JsonBuilder.defaultWithErrors() {
 val defaultSerializersModule = SerializersModule {
     polymorphic(ErrorSpecData::class) {
         subclass(EmptyErrorData::class)
+        subclass(MalformedParameterErrorData::class)
         subclass(MissingParameterErrorData::class)
         subclass(UnsupportedEnumValueErrorData::class)
     }

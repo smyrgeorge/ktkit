@@ -223,10 +223,10 @@ automatically.
 ### API errors (RFC 9457)
 
 Domain errors are typed `ErrorSpec` values (e.g. `NotFound`, `Unauthorized`, `Forbidden`, `MissingParameter`,
-`DatabaseError`), raised through the `Raise<ErrorSpec>` context parameter instead of thrown. At the REST boundary they
-are serialized as [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html) problem-details responses (`ApiError`:
-`type`, `title`, `status`, `detail`, plus the `requestId` and `data` extensions), so every service built on the toolkit
-reports errors in the same format.
+`MalformedParameter`, `DatabaseError`), raised through the `Raise<ErrorSpec>` context parameter instead of thrown.
+`AbstractRestHandler` maps each onto an [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html) `ApiError`:
+`httpStatus` sets the status, the class name the `title`, `message` the `detail`, `data()` the `data` extension, the
+span id the `requestId`. Any other throwable is an `UnknownError`.
 
 ### Security & permissions
 

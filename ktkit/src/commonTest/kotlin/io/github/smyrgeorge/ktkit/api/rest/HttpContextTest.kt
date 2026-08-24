@@ -319,12 +319,14 @@ class HttpContextTest {
 
     @Test
     fun varConversionsWorkThroughARealCall() {
-        val result = handle("/full/{id}", "/full/9?ratio=2.5&flag=TRUE&level=GREEN") {
+        val result = handle("/full/{id}", "/full/9?ratio=2.5&flag=true&level=GREEN") {
             val id = it.pathVariable("id").asLong()
             val ratio = it.queryParam("ratio").asDouble()
-            val flag = it.queryParam("flag").asBoolean() // lenient: case-insensitive
-            val strict = it.queryParam("flag").asBooleanOrNull() // strict: "TRUE" is not accepted
-            "$id|$ratio|$flag|$strict"
+            val flag = it.queryParam("flag").asBoolean()
+            // OrNull means "optional", not "lenient": absent is null, but a provided value is
+            // still parsed strictly.
+            val absent = it.queryParam("absent").asBooleanOrNull()
+            "$id|$ratio|$flag|$absent"
         }
         assertEquals("9|2.5|true|null", result)
     }

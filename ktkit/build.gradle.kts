@@ -17,7 +17,6 @@ kotlin {
                 implementation(libs.log4k.classic)
                 api(libs.koin.core)
                 api(libs.arrow.core)
-                api(libs.arrow.resilience)
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
                 api(libs.kotlinx.serialization.json)

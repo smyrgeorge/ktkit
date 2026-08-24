@@ -121,12 +121,12 @@ abstract class AbstractRestHandler(
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses
      * @param handler The function to execute
      */
-    private suspend inline fun <T> handle(
+    private suspend fun <T> handle(
         call: RoutingCall,
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
-        crossinline handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
+        handler: suspend context(ExecContext, Raise<ErrorSpec>) HttpContext.() -> T,
     ): Unit =
         call.trace { span ->
             try {
@@ -245,7 +245,7 @@ abstract class AbstractRestHandler(
      * @param status The HTTP status code indicating a successful response.
      * @param result The response body or stream to return to the client.
      */
-    private suspend inline fun respond(
+    private suspend fun respond(
         span: Span.Local,
         call: RoutingCall,
         status: HttpStatusCode,

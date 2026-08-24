@@ -10,6 +10,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.receive
 import io.ktor.server.request.uri
+import kotlin.uuid.Uuid
 
 /**
  * Represents an HTTP request, encapsulating user authentication information and
@@ -27,7 +28,7 @@ class HttpContext(
     /**
      * Represents a variable with a type, name, and an optional value. The variable can be used
      * to retrieve its value in various formats such as String, Long, Int, Float, Double, Boolean,
-     * or as an enum value.
+     * Uuid, or as an enum value.
      *
      * @constructor Creates an instance of Var with a specified type, name, and optional value.
      * @param kind The type of the variable. It can be one of the values from [Kind].
@@ -56,6 +57,9 @@ class HttpContext(
 
         fun asBoolean(): Boolean = asString().toBoolean()
         fun asBooleanOrNull(): Boolean? = value?.toBooleanStrictOrNull()
+
+        fun asUuid(): Uuid = Uuid.parse(asString())
+        fun asUuidOrNull(): Uuid? = value?.let { Uuid.parseOrNull(it) }
 
         inline fun <reified T : Enum<T>> asEnum(): T = asString().toEnum<T>()
         inline fun <reified T : Enum<T>> asEnumOrNull(): T? = asStringOrNull()?.toEnumOrNull<T>()

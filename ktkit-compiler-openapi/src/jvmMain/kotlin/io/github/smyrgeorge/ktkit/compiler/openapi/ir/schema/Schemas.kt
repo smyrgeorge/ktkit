@@ -11,6 +11,7 @@ object Schemas {
     fun float(): JsonNode.Obj = obj("type" to str("number"), "format" to str("float"))
     fun double(): JsonNode.Obj = obj("type" to str("number"), "format" to str("double"))
     fun boolean(): JsonNode.Obj = obj("type" to str("boolean"))
+    fun uuid(): JsonNode.Obj = obj("type" to str("string"), "format" to str("uuid"))
 
     /** An array schema of [items]. */
     fun arrayOf(items: JsonNode.Obj): JsonNode.Obj = obj("type" to str("array"), "items" to items)
@@ -23,6 +24,7 @@ object Schemas {
         "asFloat" -> float()
         "asDouble" -> double()
         "asBoolean" -> boolean()
+        "asUuid" -> uuid()
         else -> null
     }
 }

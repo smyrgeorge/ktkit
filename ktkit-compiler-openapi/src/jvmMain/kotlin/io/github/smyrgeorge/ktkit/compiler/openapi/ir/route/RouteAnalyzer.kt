@@ -128,9 +128,12 @@ class RouteAnalyzer(
      * - `body<T>()` calls — the request body type.
      * - Constructor calls of ktkit's built-in error types — documented as error responses.
      */
+    /** A recognized parameter-source call: its location, name and `@OpenApiInfo` description. */
+    private class Source(val location: String, val name: String, val info: String?)
+
     private fun scanHandlerLambda(body: IrBody): HandlerLambdaScan {
         val scan = HandlerLambdaScan()
-        val varSources = mutableMapOf<IrValueSymbol, Pair<String, String>>()
+        val varSources = mutableMapOf<IrValueSymbol, Source>()
 
         body.acceptVoid(object : IrVisitorVoid() {
             override fun visitElement(element: IrElement) = element.acceptChildrenVoid(this)
@@ -156,8 +159,14 @@ class RouteAnalyzer(
                 when (call.calleeParentClassFq()) {
                     KtkitNames.HTTP_CONTEXT -> when (call.calleeName()) {
                         "pathVariable", "queryParam", "header" -> sourceOf(call)?.let { record(it, null, null) }
-                        "queryParams" -> nameArg(call)?.let { record("query" to it, Schemas.stringArray(), false) }
-                        "headers" -> nameArg(call)?.let { record("header" to it, Schemas.stringArray(), false) }
+                        "queryParams" -> nameArg(call)?.let {
+                            record(Source("query", it, infoOf(call)), Schemas.stringArray(), false)
+                        }
+
+                        "headers" -> nameArg(call)?.let {
+                            record(Source("header", it, infoOf(call)), Schemas.stringArray(), false)
+                        }
+
                         "body" -> scan.bodyType = call.typeArguments.getOrNull(0) ?: scan.bodyType
                     }
 
@@ -174,14 +183,14 @@ class RouteAnalyzer(
                 }
             }
 
-            private fun receiverSource(call: IrCall): Pair<String, String>? =
+            private fun receiverSource(call: IrCall): Source? =
                 when (val receiver = call.dispatchReceiverExpression()?.unwrapCasts()) {
                     is IrCall -> sourceOf(receiver)
                     is IrGetValue -> varSources[receiver.symbol]
                     else -> null
                 }
 
-            private fun sourceOf(call: IrCall): Pair<String, String>? {
+            private fun sourceOf(call: IrCall): Source? {
                 if (call.calleeParentClassFq() != KtkitNames.HTTP_CONTEXT) return null
                 val location = when (call.calleeName()) {
                     "pathVariable" -> "path"
@@ -190,8 +199,12 @@ class RouteAnalyzer(
                     else -> return null
                 }
                 val name = nameArg(call) ?: return null
-                return location to name
+                return Source(location, name, infoOf(call))
             }
+
+            /** The `@OpenApiInfo` description collected by the FIR phase for this call, or `null`. */
+            private fun infoOf(call: IrCall): String? =
+                store.getInfo(file.fileEntry.name, call.startOffset, call.endOffset)
 
             private fun nameArg(call: IrCall): String? = call.regularArgument("name")?.constString()
 
@@ -203,15 +216,21 @@ class RouteAnalyzer(
                         ?.takeIf { it.kind == ClassKind.ENUM_CLASS }
                         ?.let { schemas.enumParamSchema(it) }
 
-            private fun record(source: Pair<String, String>, schema: JsonNode.Obj?, required: Boolean?) {
-                val (location, name) = source
-                val key = "$location:$name"
+            private fun record(source: Source, schema: JsonNode.Obj?, required: Boolean?) {
+                val key = "${source.location}:${source.name}"
                 val existing = scan.params[key]
                 if (existing == null) {
-                    scan.params[key] = ParamInfo(location, name, schema ?: Schemas.string(), required ?: false)
+                    scan.params[key] = ParamInfo(
+                        location = source.location,
+                        name = source.name,
+                        schema = schema ?: Schemas.string(),
+                        required = required ?: false,
+                        description = source.info,
+                    )
                 } else {
                     schema?.let { existing.schema = it }
                     required?.let { existing.required = existing.required || it }
+                    source.info?.let { existing.description = it }
                 }
             }
         })

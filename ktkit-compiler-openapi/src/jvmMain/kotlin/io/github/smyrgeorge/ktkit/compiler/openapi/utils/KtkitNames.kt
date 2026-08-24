@@ -9,6 +9,8 @@ object KtkitNames {
     val ANONYMOUS_REST_HANDLER = FqName("io.github.smyrgeorge.ktkit.api.rest.impl.AnonymousRestHandler")
     val OPEN_API_IGNORE = FqName("io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiIgnore")
     val OPEN_API_IGNORE_ANNOTATION = ClassId.topLevel(OPEN_API_IGNORE)
+    val OPEN_API_INFO = FqName("io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiInfo")
+    val OPEN_API_INFO_ANNOTATION = ClassId.topLevel(OPEN_API_INFO)
     val OPEN_API_ANNOTATION = ClassId(FqName("io.github.smyrgeorge.ktkit.api.rest.openapi"), Name.identifier("OpenApi"))
     val HTTP_CONTEXT = FqName("io.github.smyrgeorge.ktkit.api.rest.HttpContext")
     val HTTP_CONTEXT_VAR = FqName("io.github.smyrgeorge.ktkit.api.rest.HttpContext.Var")
@@ -19,6 +21,9 @@ object KtkitNames {
     const val OPEN_API_SPEC = "openApiSpec"
     const val URI = "uri"
     const val ROUTES = "routes"
+
+    /** HttpContext members that source a request parameter (documentable via `@OpenApiInfo`). */
+    val PARAM_SOURCES = setOf("pathVariable", "queryParam", "header", "queryParams", "headers")
 
     /** Route-defining member functions of AbstractRestHandler, mapped to their default success status code. */
     val VERBS: Map<String, Int> = mapOf(

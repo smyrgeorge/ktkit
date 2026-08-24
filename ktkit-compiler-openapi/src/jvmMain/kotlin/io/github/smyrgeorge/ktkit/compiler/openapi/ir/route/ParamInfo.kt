@@ -8,4 +8,5 @@ class ParamInfo(
     val name: String,
     var schema: JsonNode.Obj,
     var required: Boolean,
+    var description: String? = null,
 )

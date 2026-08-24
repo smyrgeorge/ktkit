@@ -25,6 +25,8 @@ class MetadataCollector(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirFunctionCall) {
+        collectParamInfo(expression)
+
         val session = context.session
         val openApi = expression.annotations.getAnnotationByClassId(KtkitNames.OPEN_API_ANNOTATION, session)
         val ignored = expression.annotations
@@ -47,6 +49,17 @@ class MetadataCollector(
             }
         }
         store.put(filePath, source.startOffset, source.endOffset, entry)
+    }
+
+    context(context: CheckerContext)
+    private fun collectParamInfo(expression: FirFunctionCall) {
+        val annotation = expression.annotations
+            .getAnnotationByClassId(KtkitNames.OPEN_API_INFO_ANNOTATION, context.session) ?: return
+        val description = annotation.openApiInfoDescription() ?: return
+        val target = findParamSourceCall(expression) ?: return
+        val filePath = context.containingFile?.path ?: return
+        val source = target.source ?: return
+        store.putInfo(filePath, source.startOffset, source.endOffset, description)
     }
 
     // --- Annotation evaluation -------------------------------------------------------------

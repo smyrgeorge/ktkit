@@ -63,6 +63,7 @@ class OperationBuilder(
                     name = name,
                     required = true,
                     schema = info?.schema ?: Schemas.string(),
+                    description = info?.description,
                 )
             )
             emitted += "path:$name"
@@ -76,6 +77,7 @@ class OperationBuilder(
                     name = info.name,
                     required = info.required,
                     schema = info.schema,
+                    description = info.description,
                 )
             )
             emitted += key
@@ -148,8 +150,10 @@ class OperationBuilder(
         name: String,
         required: Boolean,
         schema: JsonNode.Obj,
+        description: String?,
     ): JsonNode.Obj {
         val node = obj("name" to str(name), "in" to str(location))
+        description?.let { node["description"] = str(it) }
         node["required"] = bool(required || location == "path")
         node["schema"] = schema
         return node

@@ -345,8 +345,9 @@ A Kotlin compiler plugin that generates the OpenAPI 3.1 specification of your RE
 reflection, works on every KMP target (JVM and Native). It is attached automatically by
 the [Gradle plugin](#gradle-plugin-ktkit-gradle-plugin) (turn it off with `ktkit { openApi { enabled = false } }`).
 
-At runtime the framework merges the generated fragments of all registered handlers and serves the interactive Swagger UI
-at `GET /api/docs`, and the merged OpenAPI 3.1 document at `GET /api/docs/openapi.json`.
+At runtime the framework merges the generated fragments of all registered handlers and serves an interactive
+documentation UI — Swagger UI (default) or Scalar, selected via `Application.Conf.OpenApi.ui` — at `GET /api/docs`, and
+the merged OpenAPI 3.1 document at `GET /api/docs/openapi.json`.
 
 - What the plugin provides (analysis rules, `@OpenApi` metadata, configuration, limitations):
   [ktkit-compiler-openapi](ktkit-compiler-openapi/README.md)

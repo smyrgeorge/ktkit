@@ -65,6 +65,28 @@ GET("/internal") {
 }
 ```
 
+Schemas and parameters are documented with the `@OpenApiInfo` annotation. On a `@Serializable` class or one of its
+properties it adds a `description` to the generated schema; inside a route lambda — on the local variable or directly
+on the expression — it documents the parameter read by a `pathVariable`/`queryParam`/`header`/`queryParams`/`headers`
+call:
+
+```kotlin
+@OpenApiInfo("A user of the system.")
+@Serializable
+data class UserDto(
+    @OpenApiInfo("The unique id of the user.")
+    val id: String,
+)
+
+GET("/{id}") {
+    @OpenApiInfo("The id of the user.")
+    val id = pathVariable("id").asUuid()
+
+    val verbose = @OpenApiInfo("Whether to include details.") queryParam("verbose").asBooleanOrNull()
+    // ...
+}
+```
+
 ## Runtime configuration
 
 The documentation endpoints are enabled by default, **served without authentication** (disable them via
@@ -99,9 +121,10 @@ Application(
 - The fragment baked into a handler is refreshed when the handler's file is recompiled. Kotlin's incremental compilation
   tracks the types a handler references, but an edit that changes only an `@OpenApi` annotation in a *different*
   file (e.g. a base class) may require a clean build to be picked up.
-- `@OpenApi` and `@OpenApiIgnore` have SOURCE retention (required for expression annotations), so a class-level
-  `@OpenApiIgnore` on a base class in a *different* Gradle module does not carry the exclusion over to its subclasses —
-  annotate within the module being compiled.
+- `@OpenApi`, `@OpenApiIgnore` and `@OpenApiInfo` have SOURCE retention (required for expression annotations), so they
+  are only visible within the module being compiled: a class-level `@OpenApiIgnore` on a base class in a *different*
+  Gradle module does not carry the exclusion over, and `@OpenApiInfo` on classes/properties of a different module is
+  not picked up.
 - Route paths and parameter names must be compile-time string constants: a dynamic route path produces a compile
   warning and the route is skipped; a dynamic parameter name is skipped silently.
 - Security schemes and per-operation security requirements are not emitted (yet): authenticated handlers are documented

@@ -27,9 +27,9 @@ import io.github.smyrgeorge.log4k.TracingEvent.Span
 import io.github.smyrgeorge.log4k.classic.error
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.RoutingCall
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.head
@@ -92,7 +92,7 @@ abstract class AbstractRestHandler(
      * @param f A lambda function to be executed within the tracing context. It takes a `Span.Local`
      *          as a parameter and performs tracing-related logic.
      */
-    private inline fun ApplicationCall.trace(f: TracingContext.(Span.Local) -> Unit) {
+    private inline fun RoutingCall.trace(f: TracingContext.(Span.Local) -> Unit) {
         // Extract the parent span from the OpenTelemetry trace header.
         val parent = extractOpenTelemetryHeader()?.let { trace.span(it.spanId, it.traceId) }
         // Create the logging-context.
@@ -115,14 +115,14 @@ abstract class AbstractRestHandler(
      * - Regular objects (responds with JSON)
      * - Unit (responds with 200 OK)
      *
-     * @param call The Ktor ApplicationCall
+     * @param call The Ktor RoutingCall
      * @param defaultUser The default principal to use if none is provided in the request
      * @param permissions Optional permission check function
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses
      * @param handler The function to execute
      */
     private suspend inline fun <T> handle(
-        call: ApplicationCall,
+        call: RoutingCall,
         defaultUser: Principal? = null,
         permissions: HttpContext.() -> Boolean,
         onSuccessHttpStatusCode: HttpStatusCode,
@@ -241,13 +241,13 @@ abstract class AbstractRestHandler(
      * - Any other type: Responds with the provided success code and the result serialized as the response body.
      *
      * @param span The tracing span for the operation.
-     * @param call The Ktor ApplicationCall.
+     * @param call The Ktor RoutingCall.
      * @param status The HTTP status code indicating a successful response.
      * @param result The response body or stream to return to the client.
      */
     private suspend inline fun respond(
         span: Span.Local,
-        call: ApplicationCall,
+        call: RoutingCall,
         status: HttpStatusCode,
         result: Any?,
     ) {
@@ -265,12 +265,12 @@ abstract class AbstractRestHandler(
      * generated API error as a response with the corresponding HTTP status code.
      *
      * @param span The tracing span associated with the current context to assist with observability.
-     * @param call The application call representing the HTTP request and response context.
+     * @param call The call representing the HTTP request and response context.
      * @param error The throwable that triggered the error response handling.
      */
     private suspend fun respond(
         span: Span.Local,
-        call: ApplicationCall,
+        call: RoutingCall,
         error: Throwable,
     ) {
         val cause: ErrorSpec =

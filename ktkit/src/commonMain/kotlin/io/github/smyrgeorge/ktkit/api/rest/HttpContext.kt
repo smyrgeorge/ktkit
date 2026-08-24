@@ -6,10 +6,10 @@ import io.github.smyrgeorge.ktkit.api.error.impl.MalformedRequestBody
 import io.github.smyrgeorge.ktkit.api.error.impl.MissingParameter
 import io.github.smyrgeorge.ktkit.api.error.impl.UnsupportedEnumValue
 import io.github.smyrgeorge.ktkit.context.Principal
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.receive
 import io.ktor.server.request.uri
+import io.ktor.server.routing.RoutingCall
 import kotlin.uuid.Uuid
 
 /**
@@ -17,11 +17,11 @@ import kotlin.uuid.Uuid
  * providing methods for retrieving various HTTP request parameters and headers.
  *
  * @property user The authenticated user's principal containing user data and permissions
- * @property call The application call associated with this request
+ * @property call The call associated with this request
  */
 class HttpContext(
     val user: Principal,
-    val call: ApplicationCall,
+    val call: RoutingCall,
 ) {
     val request: ApplicationRequest get() = call.request
 

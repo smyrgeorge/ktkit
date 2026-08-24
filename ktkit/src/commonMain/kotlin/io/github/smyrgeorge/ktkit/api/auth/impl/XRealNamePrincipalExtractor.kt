@@ -3,7 +3,7 @@ package io.github.smyrgeorge.ktkit.api.auth.impl
 import io.github.smyrgeorge.ktkit.api.auth.PrincipalExtractor
 import io.github.smyrgeorge.ktkit.api.error.impl.Unauthorized
 import io.github.smyrgeorge.ktkit.context.Principal
-import io.ktor.server.application.ApplicationCall
+import io.ktor.server.routing.RoutingCall
 import io.ktor.utils.io.core.toByteArray
 import kotlin.io.encoding.Base64
 
@@ -31,7 +31,7 @@ import kotlin.io.encoding.Base64
 object XRealNamePrincipalExtractor : PrincipalExtractor {
     const val HEADER_NAME: String = "x-real-name"
 
-    override fun extract(call: ApplicationCall): Result<UserToken?> {
+    override fun extract(call: RoutingCall): Result<UserToken?> {
         return runCatching {
             val header = call.request.headers[HEADER_NAME] ?: return@runCatching null
             extract(header).getOrThrow()

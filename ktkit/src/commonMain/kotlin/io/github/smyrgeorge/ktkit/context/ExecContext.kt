@@ -42,7 +42,7 @@ class ExecContext(
 
     companion object : CoroutineContext.Key<ExecContext> {
         /**
-         * Creates a Context from an ApplicationCall with a user principal.
+         * Creates a Context from an RoutingCall with a user principal.
          *
          * @param principal The user principal associated with the request.
          * @param http The HttpContext

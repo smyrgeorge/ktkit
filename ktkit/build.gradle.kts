@@ -31,6 +31,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.ktor.server.test.host)
             }
         }
         jvmMain {

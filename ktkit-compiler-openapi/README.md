@@ -11,7 +11,8 @@ The compiler plugin statically analyzes every concrete `AbstractRestHandler` and
 class (a generated `openApiSpec()` override). At runtime, the framework merges the fragments of all registered handlers
 and serves:
 
-- `GET /api/docs` — interactive Swagger UI
+- `GET /api/docs` — an interactive documentation UI, either [Swagger UI](https://swagger.io/tools/swagger-ui/)
+  (default) or [Scalar](https://scalar.com/products/api-references), selectable via `openApi.ui`
 - `GET /api/docs/openapi.json` — the merged OpenAPI 3.1 document
 
 (the `/api/docs` base path is configurable via `openApi.basePath`, see [Runtime configuration](#runtime-configuration))
@@ -105,9 +106,14 @@ Application(
             description = "...",
             servers = listOf("https://api.example.com"), // defaults to http://<host>:<port>
             theme = Application.Conf.OpenApi.Theme.AUTO, // AUTO (follows the OS), LIGHT or DARK
-            // Self-host the Swagger UI assets (defaults to the unpkg CDN):
-            // swaggerUiCss = "/assets/swagger-ui.css",
-            // swaggerUiJs = "/assets/swagger-ui-bundle.js",
+            // The documentation UI: Ui.Swagger (default) or Ui.Scalar, each carrying the URLs
+            // of its own assets (defaulting to a CDN — point them at self-hosted copies for
+            // air-gapped environments):
+            ui = Application.Conf.OpenApi.Ui.Swagger(
+                // css = "/assets/swagger-ui.css",
+                // js = "/assets/swagger-ui-bundle.js",
+            ),
+            // or: ui = Application.Conf.OpenApi.Ui.Scalar(/* js = "/assets/scalar.js" */),
         )
     ),
 )
@@ -128,7 +134,7 @@ Application(
 - Route paths and parameter names must be compile-time string constants: a dynamic route path produces a compile
   warning and the route is skipped; a dynamic parameter name is skipped silently.
 - Security schemes and per-operation security requirements are not emitted (yet): authenticated handlers are documented
-  with their 401/403 responses, but the Swagger UI offers no Authorize button and "Try it out" requests carry no
+  with their 401/403 responses, but the documentation UI offers no Authorize button and "Try it out" requests carry no
   credentials.
 - Response types that are not `@Serializable` (or use custom serializers) are documented as free-form objects, with a
   compile warning.

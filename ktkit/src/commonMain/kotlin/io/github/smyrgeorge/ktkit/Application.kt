@@ -213,7 +213,7 @@ class Application(
          * still exist (unless [enabled] is false) but the document contains no paths.
          *
          * @property enabled Whether to register the documentation endpoints. Defaults to true.
-         * @property basePath The base path the documentation endpoints are mounted on: the Swagger UI
+         * @property basePath The base path the documentation endpoints are mounted on: the documentation
          *                    page is served at `<basePath>` and the document at `<basePath>/openapi.json`.
          *                    Must start with `/` and must not end with `/`. Defaults to `/api/docs`.
          * @property title The title of the API. Defaults to the application name.
@@ -223,12 +223,10 @@ class Application(
          * @property servers The server URLs advertised in the specification. Defaults to
          *                   `http://<host>:<port>` — set this when the application is reached
          *                   through a reverse proxy or TLS terminator.
-         * @property theme The color theme of the Swagger UI page. [Theme.AUTO] (default) follows
+         * @property theme The color theme of the documentation page. [Theme.AUTO] (default) follows
          *                 the browser/OS preference, [Theme.DARK] and [Theme.LIGHT] force one.
-         * @property swaggerUiCss The URL of the Swagger UI stylesheet. Defaults to the unpkg CDN —
-         *                        point it at a self-hosted copy for air-gapped environments.
-         * @property swaggerUiJs The URL of the Swagger UI bundle script. Defaults to the unpkg CDN —
-         *                       point it at a self-hosted copy for air-gapped environments.
+         * @property ui The documentation UI served at `<basePath>`: [Ui.Swagger] (default) or
+         *              [Ui.Scalar], each carrying the URLs of its own assets.
          */
         data class OpenApi(
             val enabled: Boolean = true,
@@ -238,8 +236,7 @@ class Application(
             val description: String? = null,
             val servers: List<String> = emptyList(),
             val theme: Theme = Theme.AUTO,
-            val swaggerUiCss: String = "https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
-            val swaggerUiJs: String = "https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
+            val ui: Ui = Ui.Swagger(),
         ) {
             init {
                 require(basePath.startsWith("/") && basePath.length > 1 && !basePath.endsWith("/")) {
@@ -253,24 +250,58 @@ class Application(
                         "OpenApi server '$server' must start with http:// or https://"
                     }
                 }
-                require(swaggerUiCss.isValidAssetUrl()) {
-                    "OpenApi swaggerUiCss must start with http://, https:// or / (an absolute path)"
-                }
-                require(swaggerUiJs.isValidAssetUrl()) {
-                    "OpenApi swaggerUiJs must start with http://, https:// or / (an absolute path)"
-                }
             }
 
-            /** Swagger UI assets are either absolute http(s) URLs or absolute paths served by the app itself. */
-            private fun String.isValidAssetUrl(): Boolean =
-                startsWith("http://") || startsWith("https://") || startsWith("/")
-
-            /** Color theme of the Swagger UI documentation page. */
+            /** Color theme of the documentation page. */
             enum class Theme {
                 /** Follow the browser/OS preference (`prefers-color-scheme`). */
                 AUTO,
                 LIGHT,
                 DARK,
+            }
+
+            /** The interactive documentation UI served at [basePath]. */
+            sealed interface Ui {
+                /**
+                 * [Swagger UI](https://swagger.io/tools/swagger-ui/).
+                 *
+                 * @property css The URL of the Swagger UI stylesheet. Defaults to the unpkg CDN —
+                 *               point it at a self-hosted copy for air-gapped environments.
+                 * @property js The URL of the Swagger UI bundle script. Defaults to the unpkg CDN —
+                 *              point it at a self-hosted copy for air-gapped environments.
+                 */
+                data class Swagger(
+                    val css: String = "https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
+                    val js: String = "https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
+                ) : Ui {
+                    init {
+                        requireAssetUrl(css, "Ui.Swagger css")
+                        requireAssetUrl(js, "Ui.Swagger js")
+                    }
+                }
+
+                /**
+                 * [Scalar API Reference](https://scalar.com/products/api-references).
+                 *
+                 * @property js The URL of the Scalar API Reference script. Defaults to the jsDelivr
+                 *              CDN — point it at a self-hosted copy for air-gapped environments.
+                 */
+                data class Scalar(
+                    val js: String = "https://cdn.jsdelivr.net/npm/@scalar/api-reference",
+                ) : Ui {
+                    init {
+                        requireAssetUrl(js, "Ui.Scalar js")
+                    }
+                }
+
+                companion object {
+                    /** UI assets are either absolute http(s) URLs or absolute paths served by the app itself. */
+                    private fun requireAssetUrl(url: String, name: String) {
+                        require(url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) {
+                            "OpenApi $name must start with http://, https:// or / (an absolute path)"
+                        }
+                    }
+                }
             }
         }
     }

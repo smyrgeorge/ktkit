@@ -3,6 +3,7 @@ package io.github.smyrgeorge.ktkit.example.test
 import io.github.smyrgeorge.ktkit.api.rest.impl.XRealNameRestHandler
 import io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApi
 import io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiIgnore
+import io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiInfo
 import io.github.smyrgeorge.ktkit.sqlx4k.DatabaseService.Companion.withTransaction
 import io.github.smyrgeorge.log4k.context.info
 import io.ktor.server.routing.Route
@@ -23,6 +24,7 @@ class TestRestHandler(
 
         @OpenApi("Creates a test entity and fetches all.")
         GET("/create-and-fetch-all") {
+            @OpenApiInfo("Fail on purpose")
             val fail = queryParam("fail").asBooleanOrNull() ?: false
             log.info { "Hello, ${user.username}!" }
             testService.withTransaction {

@@ -28,8 +28,10 @@ Per route:
   `Flow`), generated from `@Serializable` classes (`@SerialName`, `@Transient`, default values, nullability, enums and
   sealed hierarchies with the `@type` discriminator are respected)
 - The standard `ApiError` error responses: 400 when the route has inputs, 401/403 for authenticated (non-anonymous)
-  handlers, and the ktkit error types constructed directly inside the route lambda — errors raised deeper in your
-  services are not visible to the static analysis and are not documented
+  handlers, 500 on every route (unexpected errors), and the ktkit error types constructed directly inside the route
+  lambda — errors raised deeper in your services are not visible to the static analysis and are not documented. The
+  error responses are defined once as shared `components.responses` entries (`BadRequest`, `Unauthorized`, ...) and
+  referenced from each operation
 - Ktor `route("...") { }` groups nested inside `routes()` (their path segments prefix the documented paths)
 
 ## Enriching route metadata

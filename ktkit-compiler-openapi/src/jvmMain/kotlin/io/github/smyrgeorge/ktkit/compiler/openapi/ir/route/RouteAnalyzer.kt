@@ -51,6 +51,9 @@ class RouteAnalyzer(
 
     private val operations = OperationBuilder(schemas, anonymous, irClass.name.asString())
 
+    /** The shared error responses referenced by the analyzed operations (component name → status code). */
+    val errorResponses: Map<String, Int> get() = operations.usedErrorResponses
+
     /** Returns the analyzed route, or `null` when the route is skipped (dynamic path, `@OpenApiIgnore`). */
     fun analyze(groupPrefix: String, call: IrCall): Route? {
         val verb = call.calleeName()
@@ -61,8 +64,9 @@ class RouteAnalyzer(
         val rawPath = call.regularArgument("path")?.constString()
         if (rawPath == null) {
             messageCollector.reportWarning(
-                file, call.startOffset,
-                "non-constant path for $verb route in ${irClass.name}; route skipped."
+                file = file,
+                offset = call.startOffset,
+                message = "non-constant path for $verb route in ${irClass.name}; route skipped."
             )
             return null
         }
@@ -80,8 +84,9 @@ class RouteAnalyzer(
         // pathVariable() names that are not part of the final route path cannot be documented.
         scan.params.values.filter { it.location == "path" && it.name !in pathParams }.forEach { orphan ->
             messageCollector.reportWarning(
-                file, call.startOffset,
-                "pathVariable(\"${orphan.name}\") is not part of path '$fullPath'; parameter skipped."
+                file = file,
+                offset = call.startOffset,
+                message = "pathVariable(\"${orphan.name}\") is not part of path '$fullPath'; parameter skipped."
             )
             scan.params.remove("path:${orphan.name}")
         }
@@ -233,8 +238,9 @@ class RouteAnalyzer(
         val statusArg = call.regularArgument("onSuccessHttpStatusCode") ?: return defaultStatus
         return HttpStatusCodes.resolve(statusArg) ?: run {
             messageCollector.reportWarning(
-                file, call.startOffset,
-                "could not resolve onSuccessHttpStatusCode of '$verb $fullPath'; assuming $defaultStatus."
+                file = file,
+                offset = call.startOffset,
+                message = "could not resolve onSuccessHttpStatusCode of '$verb $fullPath'; assuming $defaultStatus."
             )
             defaultStatus
         }

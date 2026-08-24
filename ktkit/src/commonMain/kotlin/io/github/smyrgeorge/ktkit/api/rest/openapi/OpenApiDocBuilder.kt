@@ -24,6 +24,7 @@ object OpenApiDocBuilder {
     private val json: Json = Json { prettyPrint = true }
 
     private const val SCHEMA_REF_PREFIX = "#/components/schemas/"
+    private const val RESPONSE_REF_PREFIX = "#/components/responses/"
 
     /**
      * Builds an OpenAPI specification document in JSON format based on the provided application and REST handlers.
@@ -35,6 +36,7 @@ object OpenApiDocBuilder {
     fun build(app: Application, handlers: List<AbstractRestHandler>): String {
         val paths = mutableMapOf<String, MutableMap<String, JsonElement>>()
         val schemas = mutableMapOf<String, JsonElement>()
+        val responses = mutableMapOf<String, JsonElement>()
         val usedOperationIds = mutableSetOf<String>()
 
         // Deterministic merge order, independent of DI discovery order.
@@ -45,7 +47,7 @@ object OpenApiDocBuilder {
 
         fragments.forEach { (handlerName, fragment) ->
             try {
-                merge(handlerName, fragment, paths, schemas, usedOperationIds)
+                merge(handlerName, fragment, paths, schemas, responses, usedOperationIds)
             } catch (e: Exception) {
                 log.warn { "Could not merge OpenAPI fragment of $handlerName: ${e.message}" }
             }
@@ -71,11 +73,15 @@ object OpenApiDocBuilder {
                     put(path, JsonObject(operations))
                 }
             }
-            if (schemas.isNotEmpty()) {
+            if (schemas.isNotEmpty() || responses.isNotEmpty()) {
                 putJsonObject("components") {
-                    put(
+                    if (schemas.isNotEmpty()) put(
                         "schemas",
                         JsonObject(schemas.entries.sortedBy { it.key }.associate { it.key to it.value })
+                    )
+                    if (responses.isNotEmpty()) put(
+                        "responses",
+                        JsonObject(responses.entries.sortedBy { it.key }.associate { it.key to it.value })
                     )
                 }
             }
@@ -88,6 +94,7 @@ object OpenApiDocBuilder {
         fragment: String,
         paths: MutableMap<String, MutableMap<String, JsonElement>>,
         schemas: MutableMap<String, JsonElement>,
+        responses: MutableMap<String, JsonElement>,
         usedOperationIds: MutableSet<String>,
     ) {
         var parsed = Json.parseToJsonElement(fragment).jsonObject
@@ -106,12 +113,33 @@ object OpenApiDocBuilder {
                 log.warn { "OpenAPI schema '$name' of $handlerName conflicts with another handler's; renamed to '$candidate'." }
             }
         }
-        if (renames.isNotEmpty()) parsed = rewriteRefs(parsed, renames).jsonObject
+        if (renames.isNotEmpty()) parsed = rewriteRefs(parsed, renames, SCHEMA_REF_PREFIX).jsonObject
 
         parsed["components"]?.jsonObject?.get("schemas")?.jsonObject?.forEach { (name, schema) ->
             val key = renames[name] ?: name
             // Keep the displayed name (the `title` keyword) in sync with the renamed key.
             if (key !in schemas) schemas[key] = if (key != name) retitle(schema, key) else schema
+        }
+
+        // Shared component responses — compared after the schema rewrite, so two fragments whose
+        // responses reference the same (possibly renamed) schemas dedupe cleanly.
+        val fragmentResponses = parsed["components"]?.jsonObject?.get("responses")?.jsonObject ?: JsonObject(emptyMap())
+        val responseRenames = mutableMapOf<String, String>()
+        fragmentResponses.forEach { (name, response) ->
+            val existing = responses[name]
+            if (existing != null && existing != response) {
+                var counter = 2
+                var candidate = "${name}_$counter"
+                while (candidate in responses || candidate in fragmentResponses) candidate = "${name}_${++counter}"
+                responseRenames[name] = candidate
+                log.warn { "OpenAPI response '$name' of $handlerName conflicts with another handler's; renamed to '$candidate'." }
+            }
+        }
+        if (responseRenames.isNotEmpty()) parsed = rewriteRefs(parsed, responseRenames, RESPONSE_REF_PREFIX).jsonObject
+
+        parsed["components"]?.jsonObject?.get("responses")?.jsonObject?.forEach { (name, response) ->
+            val key = responseRenames[name] ?: name
+            if (key !in responses) responses[key] = response
         }
 
         parsed["paths"]?.jsonObject?.forEach { (path, item) ->
@@ -141,15 +169,14 @@ object OpenApiDocBuilder {
         return JsonObject(obj.toMutableMap().apply { put("title", JsonPrimitive(title)) })
     }
 
-    private fun rewriteRefs(element: JsonElement, renames: Map<String, String>): JsonElement = when (element) {
-        is JsonObject -> JsonObject(element.mapValues { (_, value) -> rewriteRefs(value, renames) })
-        is JsonArray -> JsonArray(element.map { rewriteRefs(it, renames) })
-        is JsonPrimitive ->
-            if (element.isString
-                && element.content.startsWith(SCHEMA_REF_PREFIX)
-            ) {
-                val key = element.content.removePrefix(SCHEMA_REF_PREFIX)
-                renames[key]?.let { JsonPrimitive(SCHEMA_REF_PREFIX + it) } ?: element
-            } else element
-    }
+    private fun rewriteRefs(element: JsonElement, renames: Map<String, String>, prefix: String): JsonElement =
+        when (element) {
+            is JsonObject -> JsonObject(element.mapValues { (_, value) -> rewriteRefs(value, renames, prefix) })
+            is JsonArray -> JsonArray(element.map { rewriteRefs(it, renames, prefix) })
+            is JsonPrimitive ->
+                if (element.isString && element.content.startsWith(prefix)) {
+                    val key = element.content.removePrefix(prefix)
+                    renames[key]?.let { JsonPrimitive(prefix + it) } ?: element
+                } else element
+        }
 }

@@ -18,6 +18,9 @@ class OperationBuilder(
 ) {
     private val usedOperationIds = mutableSetOf<String>()
 
+    /** The shared `components.responses` entries referenced by the built operations (name → status code). */
+    val usedErrorResponses = sortedMapOf<String, Int>()
+
     fun build(
         verb: String,
         fullPath: String,
@@ -125,14 +128,17 @@ class OperationBuilder(
             errorCodes += 401
             errorCodes += 403
         }
+        // Every route can fail unexpectedly (ktkit's UnknownError maps to 500).
+        errorCodes += 500
         errorCodes += scan.errorCodes
         errorCodes -= successCode
+        // Error responses are identical everywhere, so each operation only references the shared
+        // definition; the referenced components are emitted once into the fragment's
+        // `components.responses` (see HandlerAnalyzer).
         errorCodes.forEach { code ->
-            val description = HttpStatusCodes.phraseOf(code) ?: "Error"
-            responses[code.toString()] = obj(
-                "description" to str(description),
-                "content" to obj("application/json" to obj("schema" to schemas.apiErrorRef())),
-            )
+            val name = HttpStatusCodes.nameOf(code) ?: "Error$code"
+            usedErrorResponses[name] = code
+            responses[code.toString()] = obj($$"$ref" to str("#/components/responses/$name"))
         }
         return responses
     }

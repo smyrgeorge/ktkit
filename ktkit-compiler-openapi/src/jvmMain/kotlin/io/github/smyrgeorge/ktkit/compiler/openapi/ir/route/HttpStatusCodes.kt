@@ -78,7 +78,12 @@ object HttpStatusCodes {
         code to name.replace(Regex("(?<=[a-z])(?=[A-Z])"), " ")
     }
 
+    private val NAME_BY_CODE: Map<Int, String> = BY_NAME.entries.associate { (name, code) -> code to name }
+
     fun phraseOf(code: Int): String? = PHRASE_BY_CODE[code]
+
+    /** The CamelCase status name (`BadRequest` for 400) — used as the shared component-response key. */
+    fun nameOf(code: Int): String? = NAME_BY_CODE[code]
 
     /**
      * Statically resolves an `HttpStatusCode` expression: a companion property (`HttpStatusCode.Created`)

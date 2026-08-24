@@ -1,5 +1,6 @@
 package io.github.smyrgeorge.ktkit.compiler.openapi.ir
 
+import io.github.smyrgeorge.ktkit.compiler.openapi.ir.route.HttpStatusCodes
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.route.RouteAnalyzer
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.route.UriParser
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode
@@ -89,7 +90,7 @@ class HandlerAnalyzer(
         }
         if (paths.isEmpty()) return null
 
-        return fragment(classFq, paths, schemas)
+        return fragment(classFq, paths, schemas, routeAnalyzer.errorResponses)
     }
 
     /**
@@ -136,11 +137,26 @@ class HandlerAnalyzer(
         return routeCalls
     }
 
-    private fun fragment(classFq: String, paths: Map<String, JsonNode.Obj>, schemas: SchemaGenerator): String {
+    private fun fragment(
+        classFq: String,
+        paths: Map<String, JsonNode.Obj>,
+        schemas: SchemaGenerator,
+        errorResponses: Map<String, Int>,
+    ): String {
         val fragment = obj("x-handler" to str(classFq))
         val pathsObj = JsonNode.Obj()
         paths.forEach { (path, item) -> pathsObj[path] = item }
         fragment["paths"] = pathsObj
+
+        // The shared error responses referenced by the operations. Built before the schemas are
+        // rendered — referencing ApiError registers its schema.
+        val responsesObj = JsonNode.Obj()
+        errorResponses.forEach { (name, code) ->
+            responsesObj[name] = obj(
+                "description" to str(HttpStatusCodes.phraseOf(code) ?: "Error"),
+                "content" to obj("application/json" to obj("schema" to schemas.apiErrorRef())),
+            )
+        }
 
         val components = JsonNode.Obj()
         if (schemas.components.isNotEmpty()) {
@@ -148,6 +164,7 @@ class HandlerAnalyzer(
             schemas.components.forEach { (key, schema) -> schemasObj[key] = schema }
             components["schemas"] = schemasObj
         }
+        if (responsesObj.isNotEmpty()) components["responses"] = responsesObj
         if (components.isNotEmpty()) fragment["components"] = components
         return fragment.renderToString()
     }

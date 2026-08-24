@@ -102,8 +102,11 @@ Application(
 - `@OpenApi` and `@OpenApiIgnore` have SOURCE retention (required for expression annotations), so a class-level
   `@OpenApiIgnore` on a base class in a *different* Gradle module does not carry the exclusion over to its subclasses —
   annotate within the module being compiled.
-- Route paths and parameter names must be compile-time string constants; dynamic values produce a warning and the route
-  (or parameter) is skipped.
+- Route paths and parameter names must be compile-time string constants: a dynamic route path produces a compile
+  warning and the route is skipped; a dynamic parameter name is skipped silently.
+- Security schemes and per-operation security requirements are not emitted (yet): authenticated handlers are documented
+  with their 401/403 responses, but the Swagger UI offers no Authorize button and "Try it out" requests carry no
+  credentials.
 - Response types that are not `@Serializable` (or use custom serializers) are documented as free-form objects, with a
   compile warning.
 

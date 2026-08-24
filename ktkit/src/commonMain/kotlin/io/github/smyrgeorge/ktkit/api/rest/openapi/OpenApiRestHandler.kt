@@ -20,11 +20,7 @@ import io.ktor.server.routing.get
  * The document is assembled lazily on first request (and cached) by merging the compile-time
  * fragments of all registered handlers (see [OpenApiDocBuilder]). Registered automatically by the
  * framework unless disabled via [Application.Conf.OpenApi.enabled].
- *
- * The routes are mounted as plain Ktor routes (no authentication, non-JSON content types) and are
- * excluded from the specification itself.
  */
-@OpenApiIgnore
 class OpenApiRestHandler : AnonymousRestHandler() {
     override fun String.uri(): String = "${app.conf.openApi.basePath}$this"
 

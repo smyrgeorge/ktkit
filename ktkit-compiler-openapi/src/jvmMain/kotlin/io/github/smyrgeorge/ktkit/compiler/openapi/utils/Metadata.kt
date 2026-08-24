@@ -6,6 +6,7 @@ data class Metadata(
     val tags: List<String>,
     val deprecated: String?,
     val operationId: String?,
+    val ignore: Boolean = false,
 ) {
     companion object {
         val EMPTY = Metadata(

@@ -8,6 +8,7 @@ object KtkitNames {
     val ABSTRACT_REST_HANDLER = FqName("io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler")
     val ANONYMOUS_REST_HANDLER = FqName("io.github.smyrgeorge.ktkit.api.rest.impl.AnonymousRestHandler")
     val OPEN_API_IGNORE = FqName("io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiIgnore")
+    val OPEN_API_IGNORE_ANNOTATION = ClassId.topLevel(OPEN_API_IGNORE)
     val OPEN_API_ANNOTATION = ClassId(FqName("io.github.smyrgeorge.ktkit.api.rest.openapi"), Name.identifier("OpenApi"))
     val HTTP_CONTEXT = FqName("io.github.smyrgeorge.ktkit.api.rest.HttpContext")
     val HTTP_CONTEXT_VAR = FqName("io.github.smyrgeorge.ktkit.api.rest.HttpContext.Var")

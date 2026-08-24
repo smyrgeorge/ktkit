@@ -25,19 +25,26 @@ class MetadataCollector(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirFunctionCall) {
-        val annotation = expression.annotations
-            .getAnnotationByClassId(KtkitNames.OPEN_API_ANNOTATION, context.session) ?: return
+        val session = context.session
+        val openApi = expression.annotations.getAnnotationByClassId(KtkitNames.OPEN_API_ANNOTATION, session)
+        val ignored = expression.annotations
+            .getAnnotationByClassId(KtkitNames.OPEN_API_IGNORE_ANNOTATION, session) != null
+        if (openApi == null && !ignored) return
 
         val filePath = context.containingFile?.path ?: return
         val source = expression.source ?: return
 
-        val entry = try {
-            MetadataStore.Entry(evaluate(annotation))
-        } catch (e: UnsupportedValue) {
-            MetadataStore.Entry(
-                metadata = Metadata.EMPTY,
-                warning = "could not read the @OpenApi(...) annotation (${e.message}); the annotation is ignored.",
-            )
+        val entry = if (openApi == null) {
+            MetadataStore.Entry(Metadata.EMPTY.copy(ignore = true))
+        } else {
+            try {
+                MetadataStore.Entry(evaluate(openApi).copy(ignore = ignored))
+            } catch (e: UnsupportedValue) {
+                MetadataStore.Entry(
+                    metadata = Metadata.EMPTY.copy(ignore = ignored),
+                    warning = "could not read the @OpenApi(...) annotation (${e.message}); the annotation is ignored.",
+                )
+            }
         }
         store.put(filePath, source.startOffset, source.endOffset, entry)
     }

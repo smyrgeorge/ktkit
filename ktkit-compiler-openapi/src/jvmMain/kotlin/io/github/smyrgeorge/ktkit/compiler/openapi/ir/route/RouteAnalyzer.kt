@@ -51,11 +51,12 @@ class RouteAnalyzer(
 
     private val operations = OperationBuilder(schemas, anonymous)
 
-    /** Returns the analyzed route, or `null` when the route is skipped (dynamic path). */
+    /** Returns the analyzed route, or `null` when the route is skipped (dynamic path, `@OpenApiIgnore`). */
     fun analyze(groupPrefix: String, call: IrCall): Route? {
         val verb = call.calleeName()
 
         val metadata = metadataOf(call)
+        if (metadata.ignore) return null
 
         val rawPath = call.regularArgument("path")?.constString()
         if (rawPath == null) {
@@ -103,8 +104,8 @@ class RouteAnalyzer(
     }
 
     /**
-     * The metadata of [call] — the `@OpenApi(...)` annotation collected by the FIR phase
-     * ([io.github.smyrgeorge.ktkit.compiler.openapi.fir.MetadataCollector]) — or
+     * The metadata of [call] — the `@OpenApi(...)`/`@OpenApiIgnore` annotations collected by the
+     * FIR phase ([io.github.smyrgeorge.ktkit.compiler.openapi.fir.MetadataCollector]) — or
      * [Metadata.EMPTY] when the call is not annotated.
      */
     private fun metadataOf(call: IrCall): Metadata {

@@ -114,6 +114,15 @@ Application(
                 // js = "/assets/swagger-ui-bundle.js",
             ),
             // or: ui = Application.Conf.OpenApi.Ui.Scalar(/* js = "/assets/scalar.js" */),
+            
+            // The authentication schemes advertised in the document — none by default. Every
+            // configured scheme is published under components.securitySchemes and required
+            // globally as an alternative, so the UI offers an Authorize dialog and "Try it out"
+            // requests carry credentials:
+            security = listOf(
+                Application.Conf.OpenApi.SecurityScheme.ApiKey(paramName = "x-real-name"),
+                // or: SecurityScheme.HttpBasic(), SecurityScheme.HttpBearer(bearerFormat = "JWT")
+            ),
         )
     ),
 )
@@ -133,9 +142,6 @@ Application(
   not picked up.
 - Route paths and parameter names must be compile-time string constants: a dynamic route path produces a compile
   warning and the route is skipped; a dynamic parameter name is skipped silently.
-- Security schemes and per-operation security requirements are not emitted (yet): authenticated handlers are documented
-  with their 401/403 responses, but the documentation UI offers no Authorize button and "Try it out" requests carry no
-  credentials.
 - Response types that are not `@Serializable` (or use custom serializers) are documented as free-form objects, with a
   compile warning.
 

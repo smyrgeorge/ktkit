@@ -204,29 +204,18 @@ class Application(
         }
 
         /**
-         * Configuration of the OpenAPI documentation endpoints served by
-         * [io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiRestHandler] (`<basePath>` and
-         * `<basePath>/openapi.json`, `/api/docs` by default).
+         * Configuration for generating and serving OpenAPI documentation.
          *
-         * The specification itself is generated at compile time by the
-         * `io.github.smyrgeorge.ktkit.openapi` compiler plugin; without the plugin the endpoints
-         * still exist (unless [enabled] is false) but the document contains no paths.
-         *
-         * @property enabled Whether to register the documentation endpoints. Defaults to true.
-         * @property basePath The base path the documentation endpoints are mounted on: the documentation
-         *                    page is served at `<basePath>` and the document at `<basePath>/openapi.json`.
+         * @property enabled Determines if the OpenAPI documentation is enabled. Defaults to `true`.
+         * @property basePath The base path where the documentation will be served.
          *                    Must start with `/` and must not end with `/`. Defaults to `/api/docs`.
-         * @property title The title of the API. Defaults to the application name.
-         * @property version The version of the API, as reported in the specification.
-         * @property description An optional description of the API. Defaults to the application
-         *                       description.
-         * @property servers The server URLs advertised in the specification. Defaults to
-         *                   `http://<host>:<port>` — set this when the application is reached
-         *                   through a reverse proxy or TLS terminator.
-         * @property theme The color theme of the documentation page. [Theme.AUTO] (default) follows
-         *                 the browser/OS preference, [Theme.DARK] and [Theme.LIGHT] force one.
-         * @property ui The documentation UI served at `<basePath>`: [Ui.Swagger] (default) or
-         *              [Ui.Scalar], each carrying the URLs of its own assets.
+         * @property title The title of the API documentation. Optional. Must not be blank if specified.
+         * @property version The version of the API. Defaults to `0.0.1`. Must not be blank.
+         * @property description An optional description of the API documentation. Must not be blank if specified.
+         * @property servers A list of server URLs associated with the API. Each URL must start with `http://` or `https://`.
+         * @property theme The color theme of the documentation page. Defaults to [Theme.AUTO].
+         * @property ui The interactive documentation UI served at the base path. Defaults to [Ui.Swagger].
+         * @property security A list of authentication schemes advertised in the specification. Scheme names must be unique.
          */
         data class OpenApi(
             val enabled: Boolean = true,
@@ -237,6 +226,7 @@ class Application(
             val servers: List<String> = emptyList(),
             val theme: Theme = Theme.AUTO,
             val ui: Ui = Ui.Swagger(),
+            val security: List<SecurityScheme> = emptyList(),
         ) {
             init {
                 require(basePath.startsWith("/") && basePath.length > 1 && !basePath.endsWith("/")) {
@@ -250,9 +240,17 @@ class Application(
                         "OpenApi server '$server' must start with http:// or https://"
                     }
                 }
+                require(security.map { it.name }.toSet().size == security.size) {
+                    "OpenApi security scheme names must be unique"
+                }
             }
 
-            /** Color theme of the documentation page. */
+            /**
+             * Represents visual themes that can be applied to the user interface.
+             *
+             * Used to define UI appearance preferences such as light, dark, or automatic
+             * theme switching based on system settings.
+             */
             enum class Theme {
                 /** Follow the browser/OS preference (`prefers-color-scheme`). */
                 AUTO,
@@ -260,7 +258,10 @@ class Application(
                 DARK,
             }
 
-            /** The interactive documentation UI served at [basePath]. */
+            /**
+             * Represents the different types of user interface (UI) integrations that can be used
+             * for rendering OpenAPI specifications.
+             */
             sealed interface Ui {
                 /**
                  * [Swagger UI](https://swagger.io/tools/swagger-ui/).
@@ -299,6 +300,89 @@ class Application(
                     private fun requireAssetUrl(url: String, name: String) {
                         require(url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) {
                             "OpenApi $name must start with http://, https:// or / (an absolute path)"
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Represents a security scheme in an OpenAPI specification. A security scheme defines a method
+             * of authentication or authorization for accessing the API's resources.
+             */
+            sealed interface SecurityScheme {
+                /**
+                 * The name of the scheme — its key under `components.securitySchemes`. Must be
+                 * unique across the configured schemes and match `[a-zA-Z0-9._-]+`.
+                 */
+                val name: String
+
+                /** An optional human-readable description of the scheme. */
+                val description: String?
+
+                /**
+                 * An API key sent in a header or query parameter (`type: apiKey`).
+                 *
+                 * For example, the `x-real-name` header of [XRealNamePrincipalExtractor][io.github.smyrgeorge.ktkit.api.auth.impl.XRealNamePrincipalExtractor]:
+                 * `ApiKey(paramName = "x-real-name")`.
+                 *
+                 * @property paramName The name of the header or query parameter carrying the key.
+                 * @property location Where the key is sent: [Location.HEADER] (default) or [Location.QUERY].
+                 */
+                data class ApiKey(
+                    val paramName: String,
+                    val location: Location = Location.HEADER,
+                    override val name: String = "apiKey",
+                    override val description: String? = null,
+                ) : SecurityScheme {
+                    init {
+                        requireNameAndDescription(name, description)
+                        require(paramName.isNotBlank()) { "OpenApi security scheme '$name' paramName must not be blank" }
+                    }
+
+                    /** Where the API key is sent. */
+                    enum class Location {
+                        HEADER,
+                        QUERY,
+                    }
+                }
+
+                /** HTTP Basic authentication (`type: http`, `scheme: basic`). */
+                data class HttpBasic(
+                    override val name: String = "basicAuth",
+                    override val description: String? = null,
+                ) : SecurityScheme {
+                    init {
+                        requireNameAndDescription(name, description)
+                    }
+                }
+
+                /**
+                 * HTTP Bearer-token authentication (`type: http`, `scheme: bearer`).
+                 *
+                 * @property bearerFormat An optional hint at how the token is formatted (e.g. "JWT").
+                 */
+                data class HttpBearer(
+                    val bearerFormat: String? = null,
+                    override val name: String = "bearerAuth",
+                    override val description: String? = null,
+                ) : SecurityScheme {
+                    init {
+                        requireNameAndDescription(name, description)
+                        require(bearerFormat == null || bearerFormat.isNotBlank()) {
+                            "OpenApi security scheme '$name' bearerFormat must not be blank"
+                        }
+                    }
+                }
+
+                companion object {
+                    private val NAME_REGEX = Regex("[a-zA-Z0-9._-]+")
+
+                    private fun requireNameAndDescription(name: String, description: String?) {
+                        require(name.matches(NAME_REGEX)) {
+                            "OpenApi security scheme name '$name' must match [a-zA-Z0-9._-]+"
+                        }
+                        require(description == null || description.isNotBlank()) {
+                            "OpenApi security scheme '$name' description must not be blank"
                         }
                     }
                 }

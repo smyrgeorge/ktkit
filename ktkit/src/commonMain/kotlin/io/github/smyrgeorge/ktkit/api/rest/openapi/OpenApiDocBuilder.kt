@@ -1,6 +1,7 @@
 package io.github.smyrgeorge.ktkit.api.rest.openapi
 
 import io.github.smyrgeorge.ktkit.Application
+import io.github.smyrgeorge.ktkit.Application.Conf.OpenApi.SecurityScheme
 import io.github.smyrgeorge.ktkit.api.rest.AbstractRestHandler
 import io.github.smyrgeorge.log4k.Logger
 import io.github.smyrgeorge.log4k.classic.warn
@@ -68,12 +69,19 @@ object OpenApiDocBuilder {
                 }
                 servers.forEach { add(buildJsonObject { put("url", it) }) }
             }
+            if (conf.security.isNotEmpty()) {
+                putJsonArray("security") {
+                    conf.security.forEach { scheme ->
+                        add(buildJsonObject { putJsonArray(scheme.name) {} })
+                    }
+                }
+            }
             putJsonObject("paths") {
                 paths.entries.sortedBy { it.key }.forEach { (path, operations) ->
                     put(path, JsonObject(operations))
                 }
             }
-            if (schemas.isNotEmpty() || responses.isNotEmpty()) {
+            if (schemas.isNotEmpty() || responses.isNotEmpty() || conf.security.isNotEmpty()) {
                 putJsonObject("components") {
                     if (schemas.isNotEmpty()) put(
                         "schemas",
@@ -83,6 +91,9 @@ object OpenApiDocBuilder {
                         "responses",
                         JsonObject(responses.entries.sortedBy { it.key }.associate { it.key to it.value })
                     )
+                    if (conf.security.isNotEmpty()) putJsonObject("securitySchemes") {
+                        conf.security.forEach { scheme -> put(scheme.name, securityScheme(scheme)) }
+                    }
                 }
             }
         }
@@ -152,6 +163,28 @@ object OpenApiDocBuilder {
                 }
             }
         }
+    }
+
+    private fun securityScheme(scheme: SecurityScheme): JsonObject = buildJsonObject {
+        when (scheme) {
+            is SecurityScheme.ApiKey -> {
+                put("type", "apiKey")
+                put("name", scheme.paramName)
+                put("in", scheme.location.name.lowercase())
+            }
+
+            is SecurityScheme.HttpBasic -> {
+                put("type", "http")
+                put("scheme", "basic")
+            }
+
+            is SecurityScheme.HttpBearer -> {
+                put("type", "http")
+                put("scheme", "bearer")
+                scheme.bearerFormat?.let { put("bearerFormat", it) }
+            }
+        }
+        scheme.description?.let { put("description", it) }
     }
 
     private fun uniqueOperationId(operation: JsonElement, used: MutableSet<String>): JsonElement {

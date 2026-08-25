@@ -5,6 +5,7 @@ package io.github.smyrgeorge.ktkit.compiler.openapi.ir
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.declarations.IrAnnotationContainer
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrParameterKind
@@ -23,6 +24,7 @@ import org.jetbrains.kotlin.ir.types.IrTypeProjection
 import org.jetbrains.kotlin.ir.types.SimpleTypeNullability
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.name.FqName
 
 /**
@@ -41,6 +43,13 @@ fun IrClass.allSuperClasses(): List<IrClass> {
     }
     return out
 }
+
+/** The [fq] ancestor of this class (see [allSuperClasses]), or `null`. */
+fun IrClass.findSuperClass(fq: FqName): IrClass? =
+    allSuperClasses().firstOrNull { it.fqNameWhenAvailable == fq }
+
+/** Whether [fq] is among this class's ancestors (see [allSuperClasses]). */
+fun IrClass.hasSuperClass(fq: FqName): Boolean = findSuperClass(fq) != null
 
 /**
  * The first non-fake-override function matching [predicate], searching this class chain in order.
@@ -92,6 +101,21 @@ tailrec fun IrExpression.unwrapCasts(): IrExpression =
     if (this is IrTypeOperatorCall) argument.unwrapCasts() else this
 
 /**
+ * The `(receiver, argument)` operands of a binary `plus` call, or `null` for any other call.
+ * The two-parameter guard intentionally rejects `plus` overloads with extra parameters.
+ */
+fun IrCall.plusOperands(): Pair<IrExpression, IrExpression>? {
+    if (calleeName() != "plus") return null
+    val params = symbol.owner.parameters
+    if (params.size != 2) return null
+    val receiverParam = params.firstOrNull { it.kind != IrParameterKind.Regular } ?: return null
+    val argParam = params.firstOrNull { it.kind == IrParameterKind.Regular } ?: return null
+    val receiver = arguments[receiverParam] ?: return null
+    val argument = arguments[argParam] ?: return null
+    return receiver to argument
+}
+
+/**
  * Statically evaluates this expression as a String, supporting constants, string templates of
  * constants and `String.plus` chains. Returns `null` for anything dynamic.
  */
@@ -102,24 +126,30 @@ fun IrExpression.constString(): String? = when (val e = unwrapCasts()) {
         parts.joinToString("")
     }
 
-    is IrCall ->
-        if (e.calleeName() == "plus" && e.symbol.owner.parameters.size == 2) {
-            val receiver = e.symbol.owner.parameters.firstOrNull { it.kind != IrParameterKind.Regular }
-                ?.let { e.arguments[it] } ?: return null
-            val arg = e.symbol.owner.parameters.firstOrNull { it.kind == IrParameterKind.Regular }
-                ?.let { e.arguments[it] } ?: return null
-            val left = receiver.constString() ?: return null
-            val right = arg.constString() ?: return null
-            left + right
-        } else null
+    is IrCall -> {
+        val (receiver, argument) = e.plusOperands() ?: return null
+        val left = receiver.constString() ?: return null
+        val right = argument.constString() ?: return null
+        left + right
+    }
 
     else -> null
 }
+
+/**
+ * The [index]-th argument of this declaration's [fq] annotation, or `null` — the annotation is
+ * absent, or the parameter is defaulted (a defaulted parameter yields a null argument slot).
+ */
+fun IrAnnotationContainer.annotationArgument(fq: FqName, index: Int = 0): IrExpression? =
+    getAnnotation(fq)?.arguments?.getOrNull(index)
 
 val IrType.simpleArguments: List<IrTypeArgument>
     get() = (this as? IrSimpleType)?.arguments ?: emptyList()
 
 fun IrTypeArgument.typeOrNull(): IrType? = (this as? IrTypeProjection)?.type
+
+/** The [index]-th type argument as a type, or `null` (missing argument or star projection). */
+fun IrType.typeArgumentOrNull(index: Int): IrType? = simpleArguments.getOrNull(index)?.typeOrNull()
 
 fun IrType.isNullableType(): Boolean =
     (this as? IrSimpleType)?.nullability == SimpleTypeNullability.MARKED_NULLABLE

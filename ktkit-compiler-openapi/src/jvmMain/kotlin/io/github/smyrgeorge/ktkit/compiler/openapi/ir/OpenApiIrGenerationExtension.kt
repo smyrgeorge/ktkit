@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.visitors.IrVisitorVoid
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
@@ -71,7 +70,7 @@ class OpenApiIrGenerationExtension(
         (kind == ClassKind.CLASS || kind == ClassKind.OBJECT) &&
                 modality != Modality.ABSTRACT &&
                 modality != Modality.SEALED &&
-                allSuperClasses().any { it.fqNameWhenAvailable == KtkitNames.ABSTRACT_REST_HANDLER }
+                hasSuperClass(KtkitNames.ABSTRACT_REST_HANDLER)
 
     private fun IrClass.isOpenApiIgnored(): Boolean =
         hasAnnotation(KtkitNames.OPEN_API_IGNORE) ||

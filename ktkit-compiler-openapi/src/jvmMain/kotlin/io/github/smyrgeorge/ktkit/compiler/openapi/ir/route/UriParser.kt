@@ -2,10 +2,9 @@
 
 package io.github.smyrgeorge.ktkit.compiler.openapi.ir.route
 
-import io.github.smyrgeorge.ktkit.compiler.openapi.ir.calleeName
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.extensionReceiverParam
+import io.github.smyrgeorge.ktkit.compiler.openapi.ir.plusOperands
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.unwrapCasts
-import org.jetbrains.kotlin.ir.declarations.IrParameterKind
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -40,12 +39,7 @@ object UriParser {
                 is IrStringConcatenation -> e.arguments.forEach { if (!eval(it)) return false }
                 is IrReturn -> return eval(e.value)
                 is IrCall -> {
-                    if (e.calleeName() != "plus") return false
-                    val params = e.symbol.owner.parameters
-                    val receiverParam = params.firstOrNull { it.kind != IrParameterKind.Regular } ?: return false
-                    val argParam = params.firstOrNull { it.kind == IrParameterKind.Regular } ?: return false
-                    val left = e.arguments[receiverParam] ?: return false
-                    val right = e.arguments[argParam] ?: return false
+                    val (left, right) = e.plusOperands() ?: return false
                     if (!eval(left)) return false
                     if (!eval(right)) return false
                 }

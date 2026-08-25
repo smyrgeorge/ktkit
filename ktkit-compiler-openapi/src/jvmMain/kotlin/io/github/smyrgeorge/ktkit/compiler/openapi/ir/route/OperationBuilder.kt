@@ -56,7 +56,8 @@ class OperationBuilder(
         val parameters = JsonNode.Arr()
         val emitted = mutableSetOf<String>()
         pathParams.forEach { name ->
-            val info = scan.params["path:$name"]
+            val key = ParamInfo.key("path", name)
+            val info = scan.params[key]
             parameters.add(
                 paramNode(
                     location = "path",
@@ -66,11 +67,10 @@ class OperationBuilder(
                     description = info?.description,
                 )
             )
-            emitted += "path:$name"
+            emitted += key
         }
         scan.params.values.forEach { info ->
-            val key = "${info.location}:${info.name}"
-            if (key in emitted || info.location == "path") return@forEach
+            if (info.key in emitted || info.location == "path") return@forEach
             parameters.add(
                 paramNode(
                     location = info.location,
@@ -80,7 +80,7 @@ class OperationBuilder(
                     description = info.description,
                 )
             )
-            emitted += key
+            emitted += info.key
         }
         return parameters
     }
@@ -89,7 +89,7 @@ class OperationBuilder(
         scan.bodyType?.let { bodyType ->
             val body = JsonNode.Obj()
             body["required"] = bool(true)
-            body["content"] = obj("application/json" to obj("schema" to schemas.schemaFor(bodyType)))
+            body["content"] = Schemas.jsonContent(schemas.schemaFor(bodyType))
             body
         }
 
@@ -117,7 +117,7 @@ class OperationBuilder(
             else -> {
                 var schema: JsonNode.Obj = schemas.schemaFor(responseType)
                 if (streaming) schema = Schemas.arrayOf(schema)
-                obj("application/json" to obj("schema" to schema))
+                Schemas.jsonContent(schema)
             }
         }
         responses[successCode.toString()] = obj("description" to str(successDescription))

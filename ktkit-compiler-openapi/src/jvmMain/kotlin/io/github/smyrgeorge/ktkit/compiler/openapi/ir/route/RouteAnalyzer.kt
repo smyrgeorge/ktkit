@@ -12,8 +12,7 @@ import io.github.smyrgeorge.ktkit.compiler.openapi.ir.reportWarning
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.SchemaGenerator
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.Schemas
-import io.github.smyrgeorge.ktkit.compiler.openapi.ir.simpleArguments
-import io.github.smyrgeorge.ktkit.compiler.openapi.ir.typeOrNull
+import io.github.smyrgeorge.ktkit.compiler.openapi.ir.typeArgumentOrNull
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.unwrapCasts
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.KtkitNames
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.Metadata
@@ -88,7 +87,7 @@ class RouteAnalyzer(
                 offset = call.startOffset,
                 message = "pathVariable(\"${orphan.name}\") is not part of path '$fullPath'; parameter skipped."
             )
-            scan.params.remove("path:${orphan.name}")
+            scan.params.remove(orphan.key)
         }
 
         return Route(
@@ -217,7 +216,7 @@ class RouteAnalyzer(
                         ?.let { schemas.enumParamSchema(it) }
 
             private fun record(source: Source, schema: JsonNode.Obj?, required: Boolean?) {
-                val key = "${source.location}:${source.name}"
+                val key = ParamInfo.key(source.location, source.name)
                 val existing = scan.params[key]
                 if (existing == null) {
                     scan.params[key] = ParamInfo(
@@ -272,11 +271,11 @@ class RouteAnalyzer(
         unwrap@ while (true) {
             val current = responseType ?: break@unwrap
             when (current.classFq()?.asString()) {
-                "arrow.core.Either" -> responseType = current.simpleArguments.getOrNull(1)?.typeOrNull()
-                "kotlin.Result" -> responseType = current.simpleArguments.getOrNull(0)?.typeOrNull()
+                "arrow.core.Either" -> responseType = current.typeArgumentOrNull(1)
+                "kotlin.Result" -> responseType = current.typeArgumentOrNull(0)
                 "kotlinx.coroutines.flow.Flow" -> {
                     streaming = true
-                    responseType = current.simpleArguments.getOrNull(0)?.typeOrNull()
+                    responseType = current.typeArgumentOrNull(0)
                 }
 
                 else -> break@unwrap

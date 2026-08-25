@@ -2,11 +2,14 @@
 
 package io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema
 
+import io.github.smyrgeorge.ktkit.compiler.openapi.ir.annotationArgument
+import io.github.smyrgeorge.ktkit.compiler.openapi.ir.constString
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.isNullableType
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode.Companion.arr
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode.Companion.obj
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode.Companion.str
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.simpleArguments
+import io.github.smyrgeorge.ktkit.compiler.openapi.ir.typeArgumentOrNull
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.typeOrNull
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.KtkitNames
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -15,7 +18,6 @@ import org.jetbrains.kotlin.ir.declarations.IrAnnotationContainer
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
 import org.jetbrains.kotlin.ir.declarations.IrParameterKind
-import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.IrSimpleType
@@ -24,7 +26,6 @@ import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.classId
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
-import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.ir.util.properties
@@ -130,14 +131,11 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
         primitiveSchema(fq)?.let { return it }
 
         return when {
-            fq in ARRAY_FQS -> obj(
-                "type" to str("array"),
-                "items" to schemaFor(type.simpleArguments.getOrNull(0)?.typeOrNull(), bindings),
-            )
+            fq in ARRAY_FQS -> Schemas.arrayOf(schemaFor(type.typeArgumentOrNull(0), bindings))
 
             fq in MAP_FQS -> obj(
                 "type" to str("object"),
-                "additionalProperties" to schemaFor(type.simpleArguments.getOrNull(1)?.typeOrNull(), bindings),
+                "additionalProperties" to schemaFor(type.typeArgumentOrNull(1), bindings),
             )
 
             cls.kind == ClassKind.ENUM_CLASS -> enumSchema(cls)
@@ -177,8 +175,7 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
 
         // Bindings of this instantiation: class type parameter → concrete type argument.
         val ownBindings = cls.typeParameters.mapIndexed { i, tp ->
-            val argType = type?.arguments?.getOrNull(i)?.typeOrNull()
-            tp.symbol to Binding(argType, bindings)
+            tp.symbol to Binding(type?.typeArgumentOrNull(i), bindings)
         }.toMap()
 
         val argsSuffix = argsSuffix(cls, ownBindings)
@@ -190,7 +187,7 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
         components[key] = obj()
         val schema = when {
             cls.modality == Modality.SEALED -> sealedSchema(cls, fq)
-            cls.kind == ClassKind.OBJECT -> obj("type" to str("object"))
+            cls.kind == ClassKind.OBJECT -> Schemas.objectType()
             else -> objectSchema(cls, ownBindings)
         }
         // Swagger UI's OpenAPI 3.1 renderer displays schema names from the `title` keyword only
@@ -239,7 +236,7 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
         if ((component["type"] as? JsonNode.Str)?.value != "object") return
         val properties = component["properties"] as? JsonNode.Obj
             ?: JsonNode.Obj().also { component["properties"] = it }
-        if (properties["@type"] == null) properties["@type"] = obj("type" to str("string"))
+        if (properties["@type"] == null) properties["@type"] = Schemas.string()
     }
 
     private fun objectSchema(cls: IrClass, bindings: Map<IrTypeParameterSymbol, Binding>): JsonNode.Obj {
@@ -256,7 +253,7 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
             if (!superClass.hasAnnotation(KtkitNames.SERIALIZABLE)) break
             val outer = currentBindings
             currentBindings = superClass.typeParameters.mapIndexed { i, tp ->
-                tp.symbol to Binding(superType.arguments.getOrNull(i)?.typeOrNull(), outer)
+                tp.symbol to Binding(superType.typeArgumentOrNull(i), outer)
             }.toMap()
             current = superClass
         }
@@ -296,7 +293,7 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
             }
         }
 
-        val out = obj("type" to str("object"))
+        val out = Schemas.objectType()
         if (properties.isNotEmpty()) out["properties"] = properties
         val required = requiredByName.filterValues { it }.keys
         if (required.isNotEmpty()) out["required"] = arr(required.map { str(it) })
@@ -318,15 +315,15 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
     }
 
     private fun serialNameOf(annotated: IrAnnotationContainer): String? =
-        (annotated.getAnnotation(KtkitNames.SERIAL_NAME)?.arguments?.getOrNull(0) as? IrConst)?.value as? String
+        annotated.annotationArgument(KtkitNames.SERIAL_NAME)?.constString()
 
     /** The `@OpenApiInfo` description of a class or property, or `null`. */
     private fun infoOf(annotated: IrAnnotationContainer): String? =
-        ((annotated.getAnnotation(KtkitNames.OPEN_API_INFO)?.arguments?.getOrNull(0) as? IrConst)?.value as? String)
-            ?.ifEmpty { null }
+        annotated.annotationArgument(KtkitNames.OPEN_API_INFO)?.constString()?.ifEmpty { null }
 
+    /** `@Serializable(with = CustomSerializer::class)` — a present first argument is the custom serializer. */
     private fun hasCustomSerializer(annotated: IrAnnotationContainer): Boolean =
-        annotated.getAnnotation(KtkitNames.SERIALIZABLE)?.arguments?.getOrNull(0) != null
+        annotated.annotationArgument(KtkitNames.SERIALIZABLE) != null
 
     /** Component-key suffix rendering the type arguments of a generic instantiation, e.g. `OfTestDto`. */
     private fun argsSuffix(cls: IrClass, bindings: Map<IrTypeParameterSymbol, Binding>): String {
@@ -381,24 +378,24 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
 
     //@formatter:off
     private fun primitiveSchema(fq: String): JsonNode.Obj? = when (fq) {
-        "kotlin.String", "kotlin.Char", "kotlin.CharSequence" -> obj("type" to str("string"))
-        "kotlin.Int", "kotlin.Short", "kotlin.Byte" -> obj("type" to str("integer"), "format" to str("int32"))
-        "kotlin.Long" -> obj("type" to str("integer"), "format" to str("int64"))
+        "kotlin.String", "kotlin.Char", "kotlin.CharSequence" -> Schemas.string()
+        "kotlin.Int", "kotlin.Short", "kotlin.Byte" -> Schemas.int32()
+        "kotlin.Long" -> Schemas.int64()
         "kotlin.UInt", "kotlin.UShort", "kotlin.UByte", "kotlin.ULong" -> obj("type" to str("integer"), "minimum" to JsonNode.num(0))
-        "kotlin.Float" -> obj("type" to str("number"), "format" to str("float"))
-        "kotlin.Double" -> obj("type" to str("number"), "format" to str("double"))
-        "kotlin.Boolean" -> obj("type" to str("boolean"))
+        "kotlin.Float" -> Schemas.float()
+        "kotlin.Double" -> Schemas.double()
+        "kotlin.Boolean" -> Schemas.boolean()
         "kotlin.time.Instant", "kotlinx.datetime.Instant" -> obj("type" to str("string"), "format" to str("date-time"))
-        "kotlin.uuid.Uuid" -> obj("type" to str("string"), "format" to str("uuid"))
+        "kotlin.uuid.Uuid" -> Schemas.uuid()
         "kotlinx.datetime.LocalDate" -> obj("type" to str("string"), "format" to str("date"))
-        "kotlinx.datetime.LocalDateTime", "kotlinx.datetime.LocalTime" -> obj("type" to str("string"))
-        "kotlin.time.Duration" -> obj("type" to str("string"))
-        "kotlin.ByteArray", "kotlin.ShortArray", "kotlin.IntArray" -> obj("type" to str("array"), "items" to obj("type" to str("integer"), "format" to str("int32")))
-        "kotlin.LongArray" -> obj("type" to str("array"), "items" to obj("type" to str("integer"), "format" to str("int64")))
-        "kotlin.FloatArray", "kotlin.DoubleArray" -> obj("type" to str("array"), "items" to obj("type" to str("number")))
-        "kotlin.BooleanArray" -> obj("type" to str("array"), "items" to obj("type" to str("boolean")))
+        "kotlinx.datetime.LocalDateTime", "kotlinx.datetime.LocalTime" -> Schemas.string()
+        "kotlin.time.Duration" -> Schemas.string()
+        "kotlin.ByteArray", "kotlin.ShortArray", "kotlin.IntArray" -> Schemas.arrayOf(Schemas.int32())
+        "kotlin.LongArray" -> Schemas.arrayOf(Schemas.int64())
+        "kotlin.FloatArray", "kotlin.DoubleArray" -> Schemas.arrayOf(obj("type" to str("number")))
+        "kotlin.BooleanArray" -> Schemas.arrayOf(Schemas.boolean())
         // kotlinx serializes CharArray as an array of one-character strings.
-        "kotlin.CharArray" -> obj("type" to str("array"), "items" to obj("type" to str("string")))
+        "kotlin.CharArray" -> Schemas.arrayOf(Schemas.string())
 
         // Free-form values: nothing useful can be said about their schema.
         "kotlin.Any", "kotlin.Unit", "kotlin.Nothing",

@@ -12,6 +12,10 @@ object Schemas {
     fun double(): JsonNode.Obj = obj("type" to str("number"), "format" to str("double"))
     fun boolean(): JsonNode.Obj = obj("type" to str("boolean"))
     fun uuid(): JsonNode.Obj = obj("type" to str("string"), "format" to str("uuid"))
+    fun objectType(): JsonNode.Obj = obj("type" to str("object"))
+
+    /** A `content` object serving [schema] as `application/json` (requests, responses). */
+    fun jsonContent(schema: JsonNode.Obj): JsonNode.Obj = obj("application/json" to obj("schema" to schema))
 
     /** An array schema of [items]. */
     fun arrayOf(items: JsonNode.Obj): JsonNode.Obj = obj("type" to str("array"), "items" to items)

@@ -9,4 +9,12 @@ class ParamInfo(
     var schema: JsonNode.Obj,
     var required: Boolean,
     var description: String? = null,
-)
+) {
+    /** This parameter's key in [HandlerLambdaScan.params]. */
+    val key: String get() = key(location, name)
+
+    companion object {
+        /** The `"<location>:<name>"` key format of [HandlerLambdaScan.params]. */
+        fun key(location: String, name: String): String = "$location:$name"
+    }
+}

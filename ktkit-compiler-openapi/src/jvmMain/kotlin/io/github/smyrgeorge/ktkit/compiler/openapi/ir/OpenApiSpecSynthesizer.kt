@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.ir.declarations.IrParameterKind
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.makeNullable
-import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 
 /**
  * Synthesizes the `openApiSpec()` override of a handler class: replaces the frontend's fake
@@ -32,8 +31,7 @@ object OpenApiSpecSynthesizer {
 
     /** The `openApiSpec()` declaration of the AbstractRestHandler ancestor, or `null` on an older runtime. */
     fun baseOpenApiSpecOf(irClass: IrClass): IrSimpleFunction? =
-        irClass.allSuperClasses()
-            .firstOrNull { it.fqNameWhenAvailable == KtkitNames.ABSTRACT_REST_HANDLER }
+        irClass.findSuperClass(KtkitNames.ABSTRACT_REST_HANDLER)
             ?.declarations
             ?.filterIsInstance<IrSimpleFunction>()
             ?.firstOrNull { it.isOpenApiSpecShape() }

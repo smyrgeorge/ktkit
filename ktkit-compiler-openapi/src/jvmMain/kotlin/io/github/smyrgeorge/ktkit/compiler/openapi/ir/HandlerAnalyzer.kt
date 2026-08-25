@@ -7,6 +7,7 @@ import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode.Companion.obj
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.JsonNode.Companion.str
 import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.SchemaGenerator
+import io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema.Schemas
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.KtkitNames
 import io.github.smyrgeorge.ktkit.compiler.openapi.utils.MetadataStore
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -33,7 +34,7 @@ class HandlerAnalyzer(
 
         // Anonymous handlers never require authentication — drives the 401/403 responses.
         // NOTE: security schemes/requirements are intentionally not emitted (yet).
-        val anonymous = chain.any { it.fqNameWhenAvailable == KtkitNames.ANONYMOUS_REST_HANDLER }
+        val anonymous = irClass.hasSuperClass(KtkitNames.ANONYMOUS_REST_HANDLER)
 
         val uriFn = chain.findDeclaredFunction {
             it.name.asString() == KtkitNames.URI && it.extensionReceiverParam() != null && it.body != null
@@ -154,7 +155,7 @@ class HandlerAnalyzer(
         errorResponses.forEach { (name, code) ->
             responsesObj[name] = obj(
                 "description" to str(HttpStatusCodes.phraseOf(code) ?: "Error"),
-                "content" to obj("application/json" to obj("schema" to schemas.apiErrorRef())),
+                "content" to Schemas.jsonContent(schemas.apiErrorRef()),
             )
         }
 

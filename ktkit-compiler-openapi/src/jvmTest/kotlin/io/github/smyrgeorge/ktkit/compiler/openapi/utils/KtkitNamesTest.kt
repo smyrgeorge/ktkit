@@ -68,7 +68,11 @@ class KtkitNamesTest {
             UnknownError::class to UnknownError("").httpStatus.code,
         )
         // A new SystemError implementation must be added above and to KtkitNames.ERROR_STATUS_BY_FQ.
-        assertEquals(SystemError::class.sealedSubclasses.toSet(), expected.keys, "uncovered SystemError implementations")
+        assertEquals(
+            SystemError::class.sealedSubclasses.toSet(),
+            expected.keys,
+            "uncovered SystemError implementations"
+        )
         assertEquals(expected.size, KtkitNames.ERROR_STATUS_BY_FQ.size)
         expected.forEach { (cls, code) ->
             assertEquals(code, KtkitNames.ERROR_STATUS_BY_FQ[cls.qualifiedName], "status of ${cls.simpleName}")

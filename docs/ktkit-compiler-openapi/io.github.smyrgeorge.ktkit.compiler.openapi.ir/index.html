@@ -1,0 +1,403 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>io.github.smyrgeorge.ktkit.compiler.openapi.ir</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../index.html" tabindex="1">
+                    ktkit
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">0.4.0
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":ktkit-compiler-openapi/jvmMain">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ktkit-compiler-openapi/jvmMain" data-filter=":ktkit-compiler-openapi/jvmMain">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    ktkit
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="package" id="content" pageids="ktkit-compiler-openapi::io.github.smyrgeorge.ktkit.compiler.openapi.ir////PointingToDeclaration//-1069426327">
+  <div class="breadcrumbs"><a href="../index.html">ktkit-compiler-openapi</a><span class="delimiter">/</span><span class="current">io.github.smyrgeorge.ktkit.compiler.openapi.ir</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button><button class="section-tab" data-togglable="PROPERTY,EXTENSION_PROPERTY">Properties</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="2009217172%2FClasslikes%2F-1069426327" anchor-label="HandlerAnalyzer" id="2009217172%2FClasslikes%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-handler-analyzer/index.html"><span>Handler</span><wbr><span><span>Analyzer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2009217172%2FClasslikes%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-handler-analyzer/index.html">HandlerAnalyzer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">messageCollector<span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.cli.common.messages/MessageCollector///PointingToDeclaration/">MessageCollector</span><span class="token punctuation">, </span></span><span class="parameter ">store<span class="token operator">: </span><a href="../io.github.smyrgeorge.ktkit.compiler.openapi.utils/-metadata-store/index.html">MetadataStore</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1652842960%2FClasslikes%2F-1069426327" anchor-label="OpenApiIrGenerationExtension" id="1652842960%2FClasslikes%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-open-api-ir-generation-extension/index.html"><span>Open</span><wbr><span>Api</span><wbr><span>Ir</span><wbr><span>Generation</span><wbr><span><span>Extension</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1652842960%2FClasslikes%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-open-api-ir-generation-extension/index.html">OpenApiIrGenerationExtension</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">configuration<span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.config/CompilerConfiguration///PointingToDeclaration/">CompilerConfiguration</span><span class="token punctuation">, </span></span><span class="parameter ">store<span class="token operator">: </span><a href="../io.github.smyrgeorge.ktkit.compiler.openapi.utils/-metadata-store/index.html">MetadataStore</a></span></span><span class="token punctuation">)</span> : <span data-unresolved-link="org.jetbrains.kotlin.backend.common.extensions/IrGenerationExtension///PointingToDeclaration/">IrGenerationExtension</span></div><div class="brief "><p class="paragraph">Analyzes every concrete <code class="lang-kotlin">AbstractRestHandler</code> subclass of the module (via <a href="-handler-analyzer/index.html">HandlerAnalyzer</a>) and generates its <code class="lang-kotlin">openApiSpec()</code> override (via <a href="-open-api-spec-synthesizer/index.html">OpenApiSpecSynthesizer</a>), returning the handler's OpenAPI fragment as a string constant.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="398877121%2FClasslikes%2F-1069426327" anchor-label="OpenApiSpecSynthesizer" id="398877121%2FClasslikes%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-open-api-spec-synthesizer/index.html"><span>Open</span><wbr><span>Api</span><wbr><span>Spec</span><wbr><span><span>Synthesizer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="398877121%2FClasslikes%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-open-api-spec-synthesizer/index.html">OpenApiSpecSynthesizer</a></div><div class="brief "><p class="paragraph">Synthesizes the <code class="lang-kotlin">openApiSpec()</code> override of a handler class: replaces the frontend's fake override with a real function returning the analyzed OpenAPI fragment as a string constant.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="800620487%2FProperties%2F-1069426327" anchor-label="simpleArguments" id="800620487%2FProperties%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="simple-arguments.html"><span>simple</span><wbr><span><span>Arguments</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="800620487%2FProperties%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">val </span><span data-unresolved-link="org.jetbrains.kotlin.ir.types/IrType///PointingToDeclaration/">IrType</span><span class="token punctuation">.</span><a href="simple-arguments.html">simpleArguments</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="org.jetbrains.kotlin.ir.types/IrTypeArgument///PointingToDeclaration/">IrTypeArgument</span><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="1490764001%2FFunctions%2F-1069426327" anchor-label="allSuperClasses" id="1490764001%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="all-super-classes.html"><span>all</span><wbr><span>Super</span><wbr><span><span>Classes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1490764001%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrClass///PointingToDeclaration/">IrClass</span><span class="token punctuation">.</span><a href="all-super-classes.html"><span class="token function">allSuperClasses</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrClass///PointingToDeclaration/">IrClass</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">All superclasses/superinterfaces of this class (excluding itself), breadth-first, deduplicated. Works across module boundaries (lazy IR classes expose their supertypes).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1950050804%2FFunctions%2F-1069426327" anchor-label="calleeName" id="-1950050804%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="callee-name.html"><span>callee</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1950050804%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrCall///PointingToDeclaration/">IrCall</span><span class="token punctuation">.</span><a href="callee-name.html"><span class="token function">calleeName</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-317879694%2FFunctions%2F-1069426327" anchor-label="calleeParentClassFq" id="-317879694%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="callee-parent-class-fq.html"><span>callee</span><wbr><span>Parent</span><wbr><span>Class</span><wbr><span><span>Fq</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-317879694%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrCall///PointingToDeclaration/">IrCall</span><span class="token punctuation">.</span><a href="callee-parent-class-fq.html"><span class="token function">calleeParentClassFq</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.name/FqName///PointingToDeclaration/">FqName</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The class declaring the callee of this call (fake overrides resolved), or <code class="lang-kotlin">null</code> for top-level callees.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1536445320%2FFunctions%2F-1069426327" anchor-label="classFq" id="1536445320%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="class-fq.html"><span>class</span><wbr><span><span>Fq</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1536445320%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.types/IrType///PointingToDeclaration/">IrType</span><span class="token punctuation">.</span><a href="class-fq.html"><span class="token function">classFq</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.name/FqName///PointingToDeclaration/">FqName</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1350379635%2FFunctions%2F-1069426327" anchor-label="constString" id="1350379635%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="const-string.html"><span>const</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1350379635%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrExpression///PointingToDeclaration/">IrExpression</span><span class="token punctuation">.</span><a href="const-string.html"><span class="token function">constString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Statically evaluates this expression as a String, supporting constants, string templates of constants and <code class="lang-kotlin">String.plus</code> chains. Returns <code class="lang-kotlin">null</code> for anything dynamic.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-894544332%2FFunctions%2F-1069426327" anchor-label="dispatchReceiverExpression" id="-894544332%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="dispatch-receiver-expression.html"><span>dispatch</span><wbr><span>Receiver</span><wbr><span><span>Expression</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-894544332%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrCall///PointingToDeclaration/">IrCall</span><span class="token punctuation">.</span><a href="dispatch-receiver-expression.html"><span class="token function">dispatchReceiverExpression</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrExpression///PointingToDeclaration/">IrExpression</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1295746840%2FFunctions%2F-1069426327" anchor-label="extensionReceiverParam" id="-1295746840%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="extension-receiver-param.html"><span>extension</span><wbr><span>Receiver</span><wbr><span><span>Param</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1295746840%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrSimpleFunction///PointingToDeclaration/">IrSimpleFunction</span><span class="token punctuation">.</span><a href="extension-receiver-param.html"><span class="token function">extensionReceiverParam</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrValueParameter///PointingToDeclaration/">IrValueParameter</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1128620643%2FFunctions%2F-1069426327" anchor-label="findDeclaredFunction" id="1128620643%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="find-declared-function.html"><span>find</span><wbr><span>Declared</span><wbr><span><span>Function</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1128620643%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrClass///PointingToDeclaration/">IrClass</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="find-declared-function.html"><span class="token function">findDeclaredFunction</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrSimpleFunction///PointingToDeclaration/">IrSimpleFunction</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrSimpleFunction///PointingToDeclaration/">IrSimpleFunction</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The first non-fake-override function matching <a href="find-declared-function.html">predicate</a>, searching this class chain in order. Only functions with a body in the current module can be analyzed, so callers typically require one.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1618824018%2FFunctions%2F-1069426327" anchor-label="isNullableType" id="-1618824018%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-nullable-type.html"><span>is</span><wbr><span>Nullable</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1618824018%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.types/IrType///PointingToDeclaration/">IrType</span><span class="token punctuation">.</span><a href="is-nullable-type.html"><span class="token function">isNullableType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1739082032%2FFunctions%2F-1069426327" anchor-label="regularArgument" id="-1739082032%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="regular-argument.html"><span>regular</span><wbr><span><span>Argument</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1739082032%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrCall///PointingToDeclaration/">IrCall</span><span class="token punctuation">.</span><a href="regular-argument.html"><span class="token function">regularArgument</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrExpression///PointingToDeclaration/">IrExpression</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The argument passed for the regular value parameter named <a href="regular-argument.html">name</a>, or <code class="lang-kotlin">null</code> when defaulted.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2028906360%2FFunctions%2F-1069426327" anchor-label="reportWarning" id="2028906360%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="report-warning.html"><span>report</span><wbr><span><span>Warning</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2028906360%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.cli.common.messages/MessageCollector///PointingToDeclaration/">MessageCollector</span><span class="token punctuation">.</span><a href="report-warning.html"><span class="token function">reportWarning</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">file<span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrFile///PointingToDeclaration/">IrFile</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">offset<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">message<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Reports a warning anchored at the given source offset.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-806372737%2FFunctions%2F-1069426327" anchor-label="resolvedCallee" id="-806372737%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resolved-callee.html"><span>resolved</span><wbr><span><span>Callee</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-806372737%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrCall///PointingToDeclaration/">IrCall</span><span class="token punctuation">.</span><a href="resolved-callee.html"><span class="token function">resolvedCallee</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.declarations/IrSimpleFunction///PointingToDeclaration/">IrSimpleFunction</span></div><div class="brief "><p class="paragraph">The callee resolved through fake overrides to its original declaration. Calls to inherited members reference the fake-override symbol of the dispatch receiver's class, not the declaring class — resolving is required to match callees by their declaring class.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-460725108%2FFunctions%2F-1069426327" anchor-label="typeOrNull" id="-460725108%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="type-or-null.html"><span>type</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-460725108%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.types/IrTypeArgument///PointingToDeclaration/">IrTypeArgument</span><span class="token punctuation">.</span><a href="type-or-null.html"><span class="token function">typeOrNull</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.types/IrType///PointingToDeclaration/">IrType</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="77321718%2FFunctions%2F-1069426327" anchor-label="unwrapCasts" id="77321718%2FFunctions%2F-1069426327" data-filterable-set=":ktkit-compiler-openapi/jvmMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit-compiler-openapi/jvmMain" data-filterable-set=":ktkit-compiler-openapi/jvmMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="unwrap-casts.html"><span>unwrap</span><wbr><span><span>Casts</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="77321718%2FFunctions%2F-1069426327"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit-compiler-openapi/jvmMain"><div class="symbol monospace"><span class="token keyword">tailrec </span><span class="token keyword">fun </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrExpression///PointingToDeclaration/">IrExpression</span><span class="token punctuation">.</span><a href="unwrap-casts.html"><span class="token function">unwrapCasts</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.jetbrains.kotlin.ir.expressions/IrExpression///PointingToDeclaration/">IrExpression</span></div><div class="brief "><p class="paragraph">Unwraps implicit casts/coercions inserted by the frontend.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>OpenApi</title>
+<link href="../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../../../index.html" tabindex="1">
+                    ktkit
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">0.4.0
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":ktkit/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ktkit/commonMain" data-filter=":ktkit/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    ktkit
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="ktkit::io.github.smyrgeorge.ktkit/Application.Conf.OpenApi///PointingToDeclaration//-1617436410">
+  <div class="breadcrumbs"><a href="../../../../index.html">ktkit</a><span class="delimiter">/</span><a href="../../../index.html">io.github.smyrgeorge.ktkit</a><span class="delimiter">/</span><a href="../../index.html">Application</a><span class="delimiter">/</span><a href="../index.html">Conf</a><span class="delimiter">/</span><span class="current">OpenApi</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Open</span><wbr><span><span>Api</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">OpenApi</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>basePath<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"/api/docs"</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>title<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>version<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"0.0.1"</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>description<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>servers<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>theme<span class="token operator">: </span><a href="-theme/index.html">Application.Conf.OpenApi.Theme</a><span class="token operator"> = </span>Theme.AUTO<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>ui<span class="token operator">: </span><a href="-ui/index.html">Application.Conf.OpenApi.Ui</a><span class="token operator"> = </span>Ui.Swagger()</span></span><span class="token punctuation">)</span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/smyrgeorge/ktkit/tree/main/ktkit/src/commonMain/kotlin/io/github/smyrgeorge/ktkit/Application.kt#L231">source</a>)</span></span></div><p class="paragraph">Configuration of the OpenAPI documentation endpoints served by <a href="../../../../io.github.smyrgeorge.ktkit.api.rest.openapi/-open-api-rest-handler/index.html">io.github.smyrgeorge.ktkit.api.rest.openapi.OpenApiRestHandler</a> (<code class="lang-kotlin">&lt;basePath&gt;</code> and <code class="lang-kotlin">&lt;basePath&gt;/openapi.json</code>, <code class="lang-kotlin">/api/docs</code> by default).</p><p class="paragraph">The specification itself is generated at compile time by the <code class="lang-kotlin">io.github.smyrgeorge.ktkit.openapi</code> compiler plugin; without the plugin the endpoints still exist (unless <a href="../../../../../ktkit/io.github.smyrgeorge.ktkit/-application/-conf/-open-api/--root--.html">enabled</a> is false) but the document contains no paths.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-1908834998%2FConstructors%2F-1617436410" anchor-label="OpenApi" id="-1908834998%2FConstructors%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-open-api.html"><span>Open</span><wbr><span><span>Api</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1908834998%2FConstructors%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">basePath<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"/api/docs"</span><span class="token punctuation">, </span></span><span class="parameter ">title<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">version<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"0.0.1"</span><span class="token punctuation">, </span></span><span class="parameter ">description<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">servers<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">theme<span class="token operator">: </span><a href="-theme/index.html">Application.Conf.OpenApi.Theme</a><span class="token operator"> = </span>Theme.AUTO<span class="token punctuation">, </span></span><span class="parameter ">ui<span class="token operator">: </span><a href="-ui/index.html">Application.Conf.OpenApi.Ui</a><span class="token operator"> = </span>Ui.Swagger()</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="1568321143%2FClasslikes%2F-1617436410" anchor-label="Theme" id="1568321143%2FClasslikes%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-theme/index.html"><span><span>Theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1568321143%2FClasslikes%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-theme/index.html">Theme</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-theme/index.html">Application.Conf.OpenApi.Theme</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Color theme of the documentation page.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1294660978%2FClasslikes%2F-1617436410" anchor-label="Ui" id="-1294660978%2FClasslikes%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ui/index.html"><span><span>Ui</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1294660978%2FClasslikes%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">interface </span><a href="-ui/index.html">Ui</a></div><div class="brief "><p class="paragraph">The interactive documentation UI served at <a href="../../../../../ktkit/io.github.smyrgeorge.ktkit/-application/-conf/-open-api/--root--.html">basePath</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="235104727%2FProperties%2F-1617436410" anchor-label="basePath" id="235104727%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="base-path.html"><span>base</span><wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="235104727%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="base-path.html">basePath</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The base path the documentation endpoints are mounted on: the documentation                     page is served at <code class="lang-kotlin">&lt;basePath&gt;</code> and the document at <code class="lang-kotlin">&lt;basePath&gt;/openapi.json</code>.                     Must start with <code class="lang-kotlin">/</code> and must not end with <code class="lang-kotlin">/</code>. Defaults to <code class="lang-kotlin">/api/docs</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1173705391%2FProperties%2F-1617436410" anchor-label="description" id="-1173705391%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="description.html"><span><span>description</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1173705391%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="description.html">description</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">An optional description of the API. Defaults to the application                        description.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="329872812%2FProperties%2F-1617436410" anchor-label="enabled" id="329872812%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enabled.html"><span><span>enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="329872812%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="enabled.html">enabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether to register the documentation endpoints. Defaults to true.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2130030141%2FProperties%2F-1617436410" anchor-label="servers" id="2130030141%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="servers.html"><span><span>servers</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2130030141%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="servers.html">servers</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">The server URLs advertised in the specification. Defaults to                    <code class="lang-kotlin">http://&lt;host&gt;:&lt;port&gt;</code> — set this when the application is reached                    through a reverse proxy or TLS terminator.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1209649116%2FProperties%2F-1617436410" anchor-label="theme" id="-1209649116%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="theme.html"><span><span>theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1209649116%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="theme.html">theme</a><span class="token operator">: </span><a href="-theme/index.html">Application.Conf.OpenApi.Theme</a></div><div class="brief "><p class="paragraph">The color theme of the documentation page. <a href="-theme/-a-u-t-o/index.html">Theme.AUTO</a> (default) follows                  the browser/OS preference, <a href="-theme/-d-a-r-k/index.html">Theme.DARK</a> and <a href="-theme/-l-i-g-h-t/index.html">Theme.LIGHT</a> force one.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1004242315%2FProperties%2F-1617436410" anchor-label="title" id="-1004242315%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="title.html"><span><span>title</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1004242315%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="title.html">title</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The title of the API. Defaults to the application name.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-38439015%2FProperties%2F-1617436410" anchor-label="ui" id="-38439015%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="ui.html"><span><span>ui</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-38439015%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="ui.html">ui</a><span class="token operator">: </span><a href="-ui/index.html">Application.Conf.OpenApi.Ui</a></div><div class="brief "><p class="paragraph">The documentation UI served at <code class="lang-kotlin">&lt;basePath&gt;</code>: <a href="-ui/-swagger/index.html">Ui.Swagger</a> (default) or               <a href="-ui/-scalar/index.html">Ui.Scalar</a>, each carrying the URLs of its own assets.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1448539147%2FProperties%2F-1617436410" anchor-label="version" id="-1448539147%2FProperties%2F-1617436410" data-filterable-set=":ktkit/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ktkit/commonMain" data-filterable-set=":ktkit/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="version.html"><span><span>version</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1448539147%2FProperties%2F-1617436410"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ktkit/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="version.html">version</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The version of the API, as reported in the specification.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

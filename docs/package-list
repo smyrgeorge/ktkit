@@ -12,9 +12,17 @@ io.github.smyrgeorge.ktkit.api.event
 io.github.smyrgeorge.ktkit.api.props
 io.github.smyrgeorge.ktkit.api.rest
 io.github.smyrgeorge.ktkit.api.rest.impl
+io.github.smyrgeorge.ktkit.api.rest.openapi
 io.github.smyrgeorge.ktkit.context
 io.github.smyrgeorge.ktkit.service
 io.github.smyrgeorge.ktkit.util
+module:ktkit-compiler-openapi
+io.github.smyrgeorge.ktkit.compiler.openapi
+io.github.smyrgeorge.ktkit.compiler.openapi.fir
+io.github.smyrgeorge.ktkit.compiler.openapi.ir
+io.github.smyrgeorge.ktkit.compiler.openapi.ir.route
+io.github.smyrgeorge.ktkit.compiler.openapi.ir.schema
+io.github.smyrgeorge.ktkit.compiler.openapi.utils
 module:ktkit-ktor-httpclient
 io.github.smyrgeorge.ktkit.ktor.httpclient
 io.github.smyrgeorge.ktkit.ktor.httpclient.impl

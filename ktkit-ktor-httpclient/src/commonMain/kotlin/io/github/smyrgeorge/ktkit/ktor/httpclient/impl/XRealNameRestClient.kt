@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package io.github.smyrgeorge.ktkit.ktor.httpclient.impl
 
 import arrow.core.raise.context.Raise
@@ -20,9 +18,9 @@ class XRealNameRestClient(
     baseUrl: String = "",
     client: HttpClient = HttpClientFactory.create(json = json),
 ) : AbstractRestClient(
+    baseUrl = baseUrl,
     json = json,
     client = client,
-    baseUrl = baseUrl,
     mapError = {
         val error = bodyOrRaise<ApiError>()
         RestClientErrorSpec.RestClientReceiveError(error)

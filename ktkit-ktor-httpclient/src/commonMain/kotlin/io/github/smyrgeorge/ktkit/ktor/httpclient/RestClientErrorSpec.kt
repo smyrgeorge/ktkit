@@ -29,9 +29,8 @@ interface RestClientErrorSpec : ErrorSpec {
         override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
     }
 
-    @Suppress("NOTHING_TO_INLINE")
     companion object {
         context(rc: Raise<RestClientErrorSpec>)
-        inline fun RestClientErrorSpec.raise(): Nothing = rc.raise(this)
+        fun RestClientErrorSpec.raise(): Nothing = rc.raise(this)
     }
 }

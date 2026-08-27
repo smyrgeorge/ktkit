@@ -1,7 +1,7 @@
 package io.github.smyrgeorge.ktkit.ktor.httpclient.impl
 
 import arrow.core.raise.context.Raise
-import arrow.core.raise.context.withError
+import arrow.core.raise.recover
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.ktor.httpclient.HttpClientFactory
 import io.github.smyrgeorge.ktkit.ktor.httpclient.RestClientErrorSpec
@@ -26,57 +26,57 @@ class TypedRestClient<E : ErrorSpec>(
         mapError = mapError,
     )
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T> get(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.get<T>(uri, builder) }
+    ): T = recover({ inner.get<T>(uri, builder) }) { r.raise(transform(it)) }
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T, reified B> post(
         uri: String,
         body: B,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.post<T, B>(uri, body, builder) }
+    ): T = recover({ inner.post<T, B>(uri, body, builder) }) { r.raise(transform(it)) }
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T> postMultipart(
         uri: String,
         data: ByteArray,
         fileName: String = "file",
         contentType: ContentType = ContentType.Application.OctetStream,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.postMultipart<T>(uri, data, fileName, contentType, builder) }
+    ): T = recover({ inner.postMultipart<T>(uri, data, fileName, contentType, builder) }) { r.raise(transform(it)) }
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T, reified B> put(
         uri: String,
         body: B? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.put<T, B>(uri, body, builder) }
+    ): T = recover({ inner.put<T, B>(uri, body, builder) }) { r.raise(transform(it)) }
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T, reified B> patch(
         uri: String,
         body: B? = null,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.patch<T, B>(uri, body, builder) }
+    ): T = recover({ inner.patch<T, B>(uri, body, builder) }) { r.raise(transform(it)) }
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T> delete(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.delete<T>(uri, builder) }
+    ): T = recover({ inner.delete<T>(uri, builder) }) { r.raise(transform(it)) }
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T> head(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.head<T>(uri, builder) }
+    ): T = recover({ inner.head<T>(uri, builder) }) { r.raise(transform(it)) }
 
-    context(_: Raise<E>)
+    context(r: Raise<E>)
     suspend inline fun <reified T> options(
         uri: String,
         crossinline builder: HttpRequestBuilder.() -> Unit = {},
-    ): T = withError(transform) { inner.options<T>(uri, builder) }
+    ): T = recover({ inner.options<T>(uri, builder) }) { r.raise(transform(it)) }
 }

@@ -73,11 +73,6 @@ class RestClientErrorSpecTest {
         assertContains(error.message, "bad json")
     }
 
-    /**
-     * Every member is a [RestClientErrorSpec], so a caller can handle the whole family in one `when`.
-     * The interface is not sealed, so this needs an `else`; the branch list is still the proof that
-     * all four are reachable through the one type.
-     */
     @Test
     fun everyMemberIsReachableThroughTheInterface() {
         val all: List<RestClientErrorSpec> = listOf(

@@ -52,11 +52,6 @@ class HttpClientFactoryTest {
         }
     }
 
-    /**
-     * Every call hands back its own client with its own lifecycle: closing one must not take the
-     * other down with it. Callers own what they are given, so a shared or cached client would be a
-     * real bug — `assertNotSame` alone would not catch it, hence the liveness check.
-     */
     @Test
     fun eachCallReturnsAnIndependentClient() {
         val a = HttpClientFactory.create(json = testJson)

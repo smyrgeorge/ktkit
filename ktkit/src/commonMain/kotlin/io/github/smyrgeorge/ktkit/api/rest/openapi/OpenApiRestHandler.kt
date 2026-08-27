@@ -21,7 +21,7 @@ import io.ktor.server.routing.get
  *   a CDN by default; theme via [Application.Conf.OpenApi.theme]).
  * - `GET <basePath>/openapi.json` — the merged OpenAPI 3.1 document.
  *
- * The document is assembled lazily on first request (and cached) by merging the compile-time
+ * The document is assembled lazily on the first request (and cached) by merging the compile-time
  * fragments of all registered handlers (see [OpenApiDocBuilder]). Registered automatically by the
  * framework unless disabled via [Application.Conf.OpenApi.enabled].
  */
@@ -33,7 +33,7 @@ class OpenApiRestHandler : AnonymousRestHandler() {
     }
 
     private val page: String by lazy {
-        // The spec reference is kept relative to the page URL so the docs also work behind a
+        // The spec reference is kept relative to the page URL, so the docs also work behind a
         // path-prefixing reverse proxy: '<base>/x/docs' resolves 'docs/openapi.json' correctly.
         val specUri = app.conf.openApi.basePath.substringAfterLast('/') + "/openapi.json"
         val conf = app.conf.openApi

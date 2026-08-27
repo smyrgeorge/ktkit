@@ -46,7 +46,7 @@ class KtkitExtensionTest {
         // A second block re-configures the options but does not re-wire the integration.
         extension.sqlx4k { it.arg("custom", "value") }
         assertEquals(1, metadataKsp.dependencies.size)
-        assertEquals(mapOf("custom" to "value"), extension.sqlx4k.extraArgs)
+        assertEquals(mapOf("custom" to "value"), extension.sqlx4k.args.get())
     }
 
     @Test

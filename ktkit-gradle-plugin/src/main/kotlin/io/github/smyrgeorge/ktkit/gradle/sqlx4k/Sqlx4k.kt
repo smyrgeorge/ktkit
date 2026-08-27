@@ -42,7 +42,7 @@ internal object Sqlx4k {
     fun apply(project: Project, ktkit: KtkitExtension) {
         val options = ktkit.sqlx4k
 
-        // The KSP wiring derives from the source sets, so they must be final by now — i.e.
+        // The KSP wiring derives from the source sets, so they must be final by now — i.e.,
         // configured in the first sqlx4k { } block. A later re-assignment fails loudly.
         options.sourceSets.finalizeValue()
         val sourceSets = options.sourceSets.get()
@@ -86,7 +86,8 @@ internal object Sqlx4k {
             project.extensions.configure(KspExtension::class.java) { ksp ->
                 ksp.arg("dialect", options.driver.get().dialect)
                 ksp.arg("output-package", options.generatedCodePackage.get())
-                options.extraArgs.forEach { (key, value) -> ksp.arg(key, value) }
+                // Applied last, so a caller-supplied argument overrides the two derived above.
+                options.args.get().forEach { (key, value) -> ksp.arg(key, value) }
             }
         }
 

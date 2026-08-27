@@ -3,6 +3,7 @@
 package io.github.smyrgeorge.ktkit.gradle.sqlx4k
 
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 
 /** Options of the sqlx4k module (`ktkit { sqlx4k { } }`). */
@@ -48,15 +49,40 @@ public abstract class Sqlx4kOptions {
         enabledExtensions.addAll(extensions.toList())
     }
 
-    internal val extraArgs: LinkedHashMap<String, String> = LinkedHashMap()
+    /**
+     * Arguments passed to the sqlx4k KSP code generator, applied last — after the ones this plugin
+     * derives itself ([driver] becomes `dialect`, [generatedCodePackage] becomes `output-package`),
+     * so an entry under the same key overrides them. Defaults to none.
+     *
+     * This is the escape hatch for every sqlx4k code-generator option ktkit does not model; see the
+     * sqlx4k README for the full list. The compile-time checks and the SQL optimizations are all on
+     * by default and are turned off here:
+     *
+     * ```kotlin
+     * sqlx4k {
+     *     driver = PostgreSQL
+     *     generatedCodePackage = "com.example.generated"
+     *     args = mapOf(
+     *         // Checks — fail the build on an inconsistent @Query or entity.
+     *         "validate-sql-syntax" to "false",
+     *         // Check the full list of options in the sqlx4k:
+     *         // https://github.com/smyrgeorge/sqlx4k
+     *     )
+     * }
+     * ```
+     *
+     * NOTE: assigning replaces the whole map, [arg] adds one entry to it.
+     */
+    public abstract val args: MapProperty<String, String>
 
-    /** Passes an additional argument to the sqlx4k KSP code generator. */
+    /** Adds a single argument to [args]. */
     public fun arg(key: String, value: String) {
-        extraArgs[key] = value
+        args.put(key, value)
     }
 
     init {
         enabledExtensions.convention(emptyList())
         sourceSets.convention(listOf("commonMain"))
+        args.convention(emptyMap())
     }
 }

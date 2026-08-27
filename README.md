@@ -26,11 +26,11 @@ A comprehensive Kotlin multiplatform toolkit for building server applications wi
 - [Ergonomics](#ergonomics)
 - [Modules and features](#modules-and-features)
     - [Gradle plugin (ktkit-gradle-plugin)](#gradle-plugin-ktkit-gradle-plugin)
-    - [Application bootstrap & configuration](#application-bootstrap--configuration)
+    - [Application bootstrap and configuration](#application-bootstrap-and-configuration)
     - [Kotlinx serialization](#kotlinx-serialization)
     - [API errors (RFC 9457)](#api-errors-rfc-9457)
     - [Security & permissions](#security--permissions)
-    - [Logging, tracing & metrics (log4k)](#logging-tracing--metrics-log4k)
+    - [Logging, tracing, and metrics (log4k)](#logging-tracing-and-metrics-log4k)
     - [Health & metrics endpoints](#health--metrics-endpoints)
     - [TOML Configuration Loading](#toml-configuration-loading)
     - [Database support (sqlx4k)](#database-support-sqlx4k)
@@ -155,6 +155,9 @@ ktkit {
         driver = PostgreSQL // also: MySQL, SQLite, SQLiteCipher
         generatedCodePackage = "io.github.smyrgeorge.ktkit.example.generated"
         extensions(Pgmq) // sqlx4k extensions; Pgmq (`ktkit-sqlx4k-pgmq`) is PostgreSQL only
+        // Any sqlx4k code-generator option, applied last.
+        // See the sqlx4k README for the full list.
+        args = mapOf("expand-select-star" to "false")
     }
     // Optional: package the jvm target as a runnable, self-contained ("fat") jar (configures `jvmJar`).
     jar {
@@ -170,9 +173,9 @@ The full list of options of each `ktkit { }` block is documented in its options 
 | `ktkit { }`   | [KtkitExtension.kt](ktkit-gradle-plugin/src/main/kotlin/io/github/smyrgeorge/ktkit/gradle/KtkitExtension.kt)         | The top-level extension: common options (e.g. `addDependencies`) and the entry point of the blocks below. |
 | `jar { }`     | [JarOptions.kt](ktkit-gradle-plugin/src/main/kotlin/io/github/smyrgeorge/ktkit/gradle/jar/JarOptions.kt)             | Packages the jvm target as a runnable, self-contained ("fat") jar.                                        |
 | `openApi { }` | [OpenApiOptions.kt](ktkit-gradle-plugin/src/main/kotlin/io/github/smyrgeorge/ktkit/gradle/openapi/OpenApiOptions.kt) | The compile-time OpenAPI generation (the ktkit OpenAPI compiler plugin). Enabled by default.              |
-| `sqlx4k { }`  | [Sqlx4kOptions.kt](ktkit-gradle-plugin/src/main/kotlin/io/github/smyrgeorge/ktkit/gradle/sqlx4k/Sqlx4kOptions.kt)    | Database access via sqlx4k: the driver, the generated-code package, and the code-generator settings.      |
+| `sqlx4k { }`  | [Sqlx4kOptions.kt](ktkit-gradle-plugin/src/main/kotlin/io/github/smyrgeorge/ktkit/gradle/sqlx4k/Sqlx4kOptions.kt)    | Database access via sqlx4k: the driver, the generated-code package, and the code-generator arguments.     |
 
-### Application bootstrap & configuration
+### Application bootstrap and configuration
 
 The `Application` wrapper is the entry point of a ktkit service: it manages the Ktor server lifecycle
 (startup/shutdown), sets up JSON and the Koin DI container, and auto-registers every REST handler bound as
@@ -273,7 +276,7 @@ class AdminRestHandler : XRealNameRestHandler(
 }
 ```
 
-### Logging, tracing & metrics (log4k)
+### Logging, tracing, and metrics (log4k)
 
 Observability is built on [log4k](https://github.com/smyrgeorge/log4k) — a multiplatform logging library with tracing
 and metrics. The `ExecContext` carries the request's tracing context end to end, so log lines and spans are correlated
@@ -315,7 +318,7 @@ For the full API (loading from a specific file, explicit base/override merging),
 ### Database support (sqlx4k)
 
 Database access is built on [sqlx4k](https://github.com/smyrgeorge/sqlx4k) — a coroutine-first SQL toolkit for Kotlin
-Multiplatform with compile-time query validation. PostgreSQL, MySQL/MariaDB and SQLite are supported, on JVM and Native
+Multiplatform with compile-time query validation. PostgreSQL, MySQL/MariaDB, and SQLite are supported, on JVM and Native
 targets alike.
 
 The `ktkit-sqlx4k` module glues sqlx4k into the toolkit: `@Table` entities with auto-managed audit columns (`createdAt`/

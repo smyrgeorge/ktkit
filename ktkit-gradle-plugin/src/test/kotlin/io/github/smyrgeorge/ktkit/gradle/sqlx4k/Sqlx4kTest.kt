@@ -1,9 +1,11 @@
 package io.github.smyrgeorge.ktkit.gradle.sqlx4k
 
+import com.google.devtools.ksp.gradle.KspExtension
 import io.github.smyrgeorge.ktkit.gradle.BuildConfig
 import io.github.smyrgeorge.ktkit.gradle.KtkitExtension
 import io.github.smyrgeorge.ktkit.gradle.KtkitGradlePlugin
 import io.github.smyrgeorge.ktkit.gradle.assertEvaluationFails
+import io.github.smyrgeorge.ktkit.gradle.evaluateNow
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalDependency
 import org.gradle.testfixtures.ProjectBuilder
@@ -55,13 +57,24 @@ class Sqlx4kTest {
     }
 
     @Test
-    fun `extra args are collected in order`() {
+    fun `args are collected in order`() {
         val project = ProjectBuilder.builder().build()
         val options = project.objects.newInstance(Sqlx4kOptions::class.java)
 
         options.arg("b", "2")
         options.arg("a", "1")
-        assertEquals(listOf("b" to "2", "a" to "1"), options.extraArgs.toList())
+        assertEquals(listOf("b" to "2", "a" to "1"), options.args.get().toList())
+    }
+
+    @Test
+    fun `assigning args replaces what arg added`() {
+        val project = ProjectBuilder.builder().build()
+        val options = project.objects.newInstance(Sqlx4kOptions::class.java)
+
+        options.arg("a", "1")
+        options.args.set(mapOf("b" to "2"))
+        options.arg("c", "3")
+        assertEquals(mapOf("b" to "2", "c" to "3"), options.args.get())
     }
 
     // ---------------------------------------------------------------------------------------
@@ -80,7 +93,7 @@ class Sqlx4kTest {
     @Test
     fun `the codegen processor is registered on the ksp configuration`() {
         val project = ProjectBuilder.builder().build()
-        // Created manually — on a real KMP project KSP creates it.
+        // Created manually — on a real KMP project, KSP creates it.
         val metadataKsp = project.configurations.create("kspCommonMainMetadata")
         project.enableSqlx4k {
             it.driver.set(Driver.PostgreSQL)
@@ -147,6 +160,25 @@ class Sqlx4kTest {
             it.sourceSets.set(listOf("jvmMain"))
         }
         assertEvaluationFails(project, "no KSP configuration 'kspJvm' exists")
+    }
+
+    @Test
+    fun `the derived and the caller-supplied ksp arguments reach ksp, the caller's last`() {
+        val project = ProjectBuilder.builder().build()
+        project.configurations.create("kspCommonMainMetadata")
+        project.enableSqlx4k {
+            it.driver.set(Driver.PostgreSQL)
+            it.generatedCodePackage.set("com.example.generated")
+            it.arg("expand-select-star", "false")
+            it.arg("output-package", "com.example.override")
+        }
+        project.evaluateNow()
+
+        val ksp = project.extensions.getByType(KspExtension::class.java).arguments
+        assertEquals("postgresql", ksp["dialect"])
+        assertEquals("false", ksp["expand-select-star"])
+        // The derived `output-package` is applied first, so the caller's entry wins.
+        assertEquals("com.example.override", ksp["output-package"])
     }
 
     /** Applies the ktkit plugin and enables sqlx4k with dependency additions disabled. */

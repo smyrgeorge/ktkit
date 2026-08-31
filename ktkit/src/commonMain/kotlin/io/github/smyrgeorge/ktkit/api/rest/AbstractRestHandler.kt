@@ -27,6 +27,7 @@ import io.github.smyrgeorge.log4k.TracingEvent.Span
 import io.github.smyrgeorge.log4k.classic.error
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.RoutingCall
@@ -115,7 +116,7 @@ abstract class AbstractRestHandler(
      * - Regular objects (responds with JSON)
      * - Unit (responds with 200 OK)
      *
-     * @param call The Ktor RoutingCall
+     * @param call The Ktor RoutingCall of the matched route
      * @param defaultUser The default principal to use if none is provided in the request
      * @param permissions Optional permission check function
      * @param onSuccessHttpStatusCode The HTTP status code to use for successful responses
@@ -241,13 +242,13 @@ abstract class AbstractRestHandler(
      * - Any other type: Responds with the provided success code and the result serialized as the response body.
      *
      * @param span The tracing span for the operation.
-     * @param call The Ktor RoutingCall.
+     * @param call The Ktor ApplicationCall.
      * @param status The HTTP status code indicating a successful response.
      * @param result The response body or stream to return to the client.
      */
     private suspend fun respond(
         span: Span.Local,
-        call: RoutingCall,
+        call: ApplicationCall,
         status: HttpStatusCode,
         result: Any?,
     ) {
@@ -265,12 +266,12 @@ abstract class AbstractRestHandler(
      * generated API error as a response with the corresponding HTTP status code.
      *
      * @param span The tracing span associated with the current context to assist with observability.
-     * @param call The call representing the HTTP request and response context.
+     * @param call The application call representing the HTTP request and response context.
      * @param error The throwable that triggered the error response handling.
      */
     private suspend fun respond(
         span: Span.Local,
-        call: RoutingCall,
+        call: ApplicationCall,
         error: Throwable,
     ) {
         val cause: ErrorSpec =

@@ -2,10 +2,10 @@ package io.github.smyrgeorge.ktkit.api.auth
 
 import io.github.smyrgeorge.ktkit.context.Principal
 import io.github.smyrgeorge.ktkit.service.Component
-import io.ktor.server.routing.RoutingCall
+import io.ktor.server.application.ApplicationCall
 
 /**
- * Defines a contract for extracting a [Principal] from an incoming [RoutingCall].
+ * Defines a contract for extracting a [Principal] from an incoming [ApplicationCall].
  *
  * Implementations of this interface are responsible for interpreting the HTTP request
  * to authenticate and extract any relevant user credentials or metadata. The extracted
@@ -16,24 +16,24 @@ import io.ktor.server.routing.RoutingCall
  * to enable custom logic for principal extraction.
  *
  * @see Principal
- * @see RoutingCall
+ * @see ApplicationCall
  */
 interface PrincipalExtractor : Component {
     /**
-     * Extracts a [Principal] from the given [RoutingCall].
+     * Extracts a [Principal] from the given [ApplicationCall].
      *
      * This method is responsible for parsing the incoming HTTP request represented by
-     * the [RoutingCall] to extract authentication information. The result of this
+     * the [ApplicationCall] to extract authentication information. The result of this
      * operation is a [Principal], if the extraction is successful, or null if no valid
      * token could be resolved. Any errors encountered during the process are captured
      * within the [Result] wrapper.
      *
-     * @param call The [RoutingCall] representing the incoming HTTP request from
+     * @param call The [ApplicationCall] representing the incoming HTTP request from
      * which the [Principal] will be extracted.
      * @return A [Result] containing a [Principal] if extraction is successful,
      * null if no token could be resolved, or an exception if an error occurs.
      */
-    fun extract(call: RoutingCall): Result<Principal?>
+    fun extract(call: ApplicationCall): Result<Principal?>
 
     /**
      * Extracts a [Principal] from the given header string.

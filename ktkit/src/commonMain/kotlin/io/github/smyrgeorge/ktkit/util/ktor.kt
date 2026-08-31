@@ -2,8 +2,10 @@ package io.github.smyrgeorge.ktkit.util
 
 import io.github.smyrgeorge.log4k.impl.OpenTelemetryAttributes
 import io.github.smyrgeorge.log4k.impl.Tags
-import io.ktor.server.request.*
-import io.ktor.server.routing.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
+import io.ktor.server.routing.RoutingCall
 import io.ktor.server.routing.path as routePath
 
 /**
@@ -33,5 +35,5 @@ fun RoutingCall.spanTags(serviceName: String): Tags =
         OpenTelemetryAttributes.URL_SCHEME to request.local.scheme,
     )
 
-fun RoutingCall.extractOpenTelemetryHeader(): TraceParent? =
+fun ApplicationCall.extractOpenTelemetryHeader(): TraceParent? =
     request.headers[TRACE_PARENT_HEADER]?.let { extractOpenTelemetryHeader(it) }

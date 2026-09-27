@@ -26,7 +26,7 @@ ksp = "2.3.12"
 # https://github.com/arrow-kt/arrow
 arrow = "2.2.3"
 # https://github.com/pgjdbc/r2dbc-postgresql
-r2dbc-postgresql = "1.1.2.RELEASE"
+r2dbc-postgresql = "1.1.3.RELEASE"
 
 [libraries]
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

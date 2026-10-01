@@ -15,6 +15,10 @@
 
 A comprehensive Kotlin multiplatform toolkit for building server applications with Ktor.
 
+<p align="center"><img src="banner.svg" alt="ktkit" width="100%"></p>
+
+---
+
 📖 [Documentation](https://smyrgeorge.github.io/ktkit/)
 
 🏠 [Homepage](https://smyrgeorge.github.io/) (under construction)

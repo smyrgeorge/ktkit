@@ -1,6 +1,6 @@
 [versions]
 # https://github.com/smyrgeorge/ktkit
-ktkit = "0.6.0"
+ktkit = "0.7.0"
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.jvm
 kotlin = "2.4.21"
 # https://github.com/Kotlin/kotlinx.coroutines
@@ -18,11 +18,11 @@ ktor = "3.6.1"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.2"
 # https://github.com/smyrgeorge/sqlx4k
-sqlx4k = "1.17.0"
+sqlx4k = "1.18.0"
 # https://github.com/orchestr7/ktoml
 ktoml = "0.7.1"
 # https://github.com/google/ksp
-ksp = "2.3.12"
+ksp = "2.3.13"
 # https://github.com/arrow-kt/arrow
 arrow = "2.3.0.1"
 # https://github.com/pgjdbc/r2dbc-postgresql

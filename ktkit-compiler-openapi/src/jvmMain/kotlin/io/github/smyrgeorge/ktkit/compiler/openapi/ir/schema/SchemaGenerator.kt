@@ -389,6 +389,9 @@ class SchemaGenerator(private val warn: (String) -> Unit) {
         "kotlin.uuid.Uuid" -> Schemas.uuid()
         "kotlinx.datetime.LocalDate" -> obj("type" to str("string"), "format" to str("date"))
         "kotlinx.datetime.LocalDateTime", "kotlinx.datetime.LocalTime" -> Schemas.string()
+        // ISO 8601 periods ("P1Y2M", "P1DT2H") — their default serializers write a single string.
+        "kotlinx.datetime.DatePeriod", "kotlinx.datetime.DateTimePeriod" -> obj("type" to str("string"), "format" to str("duration"))
+        "kotlinx.datetime.UtcOffset", "kotlinx.datetime.YearMonth" -> Schemas.string() // "+02:00", "2026-11"
         "kotlin.time.Duration" -> Schemas.string()
         "kotlin.ByteArray", "kotlin.ShortArray", "kotlin.IntArray" -> Schemas.arrayOf(Schemas.int32())
         "kotlin.LongArray" -> Schemas.arrayOf(Schemas.int64())

@@ -151,6 +151,23 @@ class SchemaGeneratorTest {
         assertEquals("p3.Data", schemas.obj("p3.Data").str("title"), "the title follows the renamed key")
     }
 
+    // kotlinx-datetime types serialize as ISO strings by default, e.g.
+    // DatePeriod "P1Y2M", DateTimePeriod "P1DT2H", UtcOffset "+02:00", YearMonth "2026-11".
+    @Test
+    fun kotlinxDateTimeTypesAreStrings() {
+        val props = schemas.obj("DateTimeDto").obj("properties")
+        assertEquals("string", props.obj("period").str("type"))
+        assertEquals("duration", props.obj("period").str("format"))
+        assertEquals("string", props.obj("dateTimePeriod").str("type"))
+        assertEquals("duration", props.obj("dateTimePeriod").str("format"))
+        assertEquals("string", props.obj("offset").str("type"))
+        assertEquals("string", props.obj("month").str("type"))
+        assertTrue(
+            Compilations.schemas.warnings.none { "kotlinx.datetime" in it },
+            "no warnings for kotlinx-datetime types, got: ${Compilations.schemas.warnings}"
+        )
+    }
+
     @Test
     fun objectsAreEmptyObjectSchemas() {
         val singleton = schemas.obj("SingletonDto")

@@ -39,7 +39,9 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.KoinConfiguration
 import org.koin.dsl.bind
+import org.koin.dsl.includes
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -403,11 +405,28 @@ class Application(
         val ktor: KtorApplication,
     ) {
         private var module: Module = Module()
+        private val configurations = mutableListOf<KoinConfiguration>()
         private var json: Json = Json { defaultWithErrors() }
         private var other: KtorApplication.() -> Unit = {}
 
         fun di(config: Module.() -> Unit) {
             module.config()
+        }
+
+        /**
+         * Applies a Koin [KoinConfiguration] when ktkit starts Koin, after ktkit's own definitions
+         * and the [di] module, so a definition here overrides theirs. Each call adds a configuration;
+         * both [di] overloads may be used in one `configure` block.
+         *
+         * Takes the value `koinConfiguration<T>()` returns under the Koin compiler plugin, which
+         * gives the plugin an entry point to check the app's dependency graph at compile time.
+         *
+         * ```kotlin
+         * di(koinConfiguration<MyApp> { modules(module { single { config } }) })
+         * ```
+         */
+        fun di(configuration: KoinConfiguration) {
+            configurations += configuration
         }
 
         fun withSystemUser(user: Principal) {
@@ -463,7 +482,10 @@ class Application(
             }
 
             // Start Koin.
-            val di = startKoin { modules(module) }.apply {
+            val di = startKoin {
+                modules(module)
+                includes(*configurations.toTypedArray())
+            }.apply {
                 app._di = this
             }
 

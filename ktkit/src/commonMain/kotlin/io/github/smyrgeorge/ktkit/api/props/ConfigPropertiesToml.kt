@@ -1,9 +1,12 @@
 package io.github.smyrgeorge.ktkit.api.props
 
 import com.akuleshov7.ktoml.Toml
-import com.akuleshov7.ktoml.TomlOutputConfig
+import com.akuleshov7.ktoml.TomlInputConfig
+import com.akuleshov7.ktoml.decoders.TomlArrayDecoder
+import com.akuleshov7.ktoml.decoders.TomlMainDecoder
+import com.akuleshov7.ktoml.decoders.TomlMapDecoder
 import com.akuleshov7.ktoml.tree.nodes.TomlFile
-import com.akuleshov7.ktoml.writers.TomlWriter
+import com.akuleshov7.ktoml.tree.nodes.TomlKeyValueArray
 import io.github.smyrgeorge.ktkit.util.FS
 import io.github.smyrgeorge.ktkit.util.getEnv
 import io.github.smyrgeorge.ktkit.util.plus
@@ -11,8 +14,12 @@ import io.github.smyrgeorge.ktkit.util.readEntireFileFromDisk
 import io.github.smyrgeorge.ktkit.util.readEntireFileFromResources
 import io.github.smyrgeorge.ktkit.util.toPath
 import kotlinx.io.files.Path
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.serializer
 
 /**
  * Utility object for managing and loading configuration properties from TOML files.
@@ -190,9 +197,25 @@ object ConfigPropertiesToml {
     inline fun <reified T : @Serializable Any> parse(base: String, override: String): T {
         val base: TomlFile = Toml.tomlParser.parseString(resolveEnvironmentVariables(base))
         val override: TomlFile = Toml.tomlParser.parseString(resolveEnvironmentVariables(override))
-        val merged = TomlWriter(TomlOutputConfig()).writeToString(base + override)
-        return Toml.decodeFromString(merged)
+        // Decode the merged tree itself: printing it with TomlWriter and parsing the text again
+        // loses dotted keys (ktoml 0.7.1 writes `x.y = 1` under `[a]` as a bare `y = 1`).
+        return decodeTree(serializer<T>(), base + override)
     }
+
+    /**
+     * Decodes an already parsed TOML tree, choosing the decoder by the target's kind exactly as
+     * ktoml's (private) `Toml.decode` does for [Toml.decodeFromString].
+     */
+    @PublishedApi
+    @OptIn(ExperimentalSerializationApi::class)
+    internal fun <T> decodeTree(deserializer: DeserializationStrategy<T>, tree: TomlFile): T =
+        when (deserializer.descriptor.kind) {
+            StructureKind.LIST ->
+                TomlArrayDecoder.decode(deserializer, tree.getFirstChild() as TomlKeyValueArray, TomlInputConfig())
+
+            StructureKind.MAP -> TomlMapDecoder.decode(deserializer, tree, TomlInputConfig())
+            else -> TomlMainDecoder.decode(deserializer, tree)
+        }
 
     /**
      * Resolves environment variable placeholders within the given string.

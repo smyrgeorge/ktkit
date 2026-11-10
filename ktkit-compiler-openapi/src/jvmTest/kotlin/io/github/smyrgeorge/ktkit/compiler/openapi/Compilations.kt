@@ -207,6 +207,14 @@ internal object Compilations {
                 @Serializable(with = CustomSer::class)
                 class Custom(val x: Int)
 
+                @Serializable
+                data class DateTimeDto(
+                    val period: kotlinx.datetime.DatePeriod,
+                    val dateTimePeriod: kotlinx.datetime.DateTimePeriod,
+                    val offset: kotlinx.datetime.UtcOffset,
+                    val month: kotlinx.datetime.YearMonth,
+                )
+
                 class SchemaRestHandler : AbstractRestHandler() {
                     override fun String.uri(): String = "/s$this"
 
@@ -222,6 +230,7 @@ internal object Compilations {
                         GET<Map<String, ItemDto>>("/map") { TODO() }
                         GET<SingletonDto>("/singleton") { TODO() }
                         GET<Custom>("/custom") { TODO() }
+                        GET<DateTimeDto>("/datetime") { TODO() }
                         GET<Plain>("/plain") { TODO() }
                         GET<p2.Data>("/d2") { TODO() }
                         GET<p3.Data>("/d3") { TODO() }

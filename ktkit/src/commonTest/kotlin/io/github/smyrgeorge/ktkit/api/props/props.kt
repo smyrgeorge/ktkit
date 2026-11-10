@@ -28,6 +28,27 @@ data class DatabaseConfig(
 )
 
 @Serializable
+data class DottedConfig(
+    val a: DottedSection
+)
+
+@Serializable
+data class DottedSection(
+    val x: DottedLeaf,
+    val z: DottedLeaf? = null
+)
+
+@Serializable
+data class DottedLeaf(
+    val y: Int
+)
+
+@Serializable
+data class LabelsConfig(
+    val labels: Map<String, String>
+)
+
+@Serializable
 data class ConfigWithOptional(
     val name: String,
     val description: String = "default"

@@ -287,7 +287,7 @@ abstract class AbstractRestHandler(
         }
 
         // Set the HTTP status code and tags on the span.
-        span.tags[OpenTelemetryAttributes.HTTP_REQUEST_METHOD] = cause.httpStatus.code
+        span.tags[OpenTelemetryAttributes.HTTP_RESPONSE_STATUS_CODE] = cause.httpStatus.code
 
         // Forcefully close the span if an error occurred.
         span.exception(error)

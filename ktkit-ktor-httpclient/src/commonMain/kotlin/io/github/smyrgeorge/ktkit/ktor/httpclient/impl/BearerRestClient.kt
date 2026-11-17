@@ -9,12 +9,13 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class BearerRestClient(
     json: Json,
     baseUrl: String = "",
-    client: HttpClient = HttpClientFactory.create(json = json),
+    client: HttpClient = HttpClientFactory.create(negotiation = { json(json) }),
     mapError: suspend context(Raise<RestClientErrorSpec>) HttpResponse.() -> RestClientErrorSpec,
 ) : AbstractRestClient(baseUrl = baseUrl, json = json, client = client, mapError = mapError) {
     context(_: Raise<RestClientErrorSpec>)

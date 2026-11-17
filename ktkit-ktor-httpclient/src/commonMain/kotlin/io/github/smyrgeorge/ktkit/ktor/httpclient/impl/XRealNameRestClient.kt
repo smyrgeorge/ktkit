@@ -11,12 +11,13 @@ import io.github.smyrgeorge.ktkit.ktor.httpclient.RestClientErrorSpec
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.ContentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class XRealNameRestClient(
     json: Json,
     baseUrl: String = "",
-    client: HttpClient = HttpClientFactory.create(json = json),
+    client: HttpClient = HttpClientFactory.create(negotiation = { json(json) }),
 ) : AbstractRestClient(
     baseUrl = baseUrl,
     json = json,

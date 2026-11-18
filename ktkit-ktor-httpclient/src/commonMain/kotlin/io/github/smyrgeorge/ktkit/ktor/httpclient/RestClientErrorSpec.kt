@@ -1,6 +1,5 @@
 package io.github.smyrgeorge.ktkit.ktor.httpclient
 
-import arrow.core.raise.context.Raise
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpec
 import io.github.smyrgeorge.ktkit.api.error.ErrorSpecData
 import io.github.smyrgeorge.ktkit.api.error.impl.details.EmptyErrorData
@@ -27,10 +26,5 @@ interface RestClientErrorSpec : ErrorSpec {
     ) : RestClientErrorSpec {
         override val message: String = "Could not extract response body (${cause::class.simpleName}): ${cause.message}"
         override val httpStatus: ErrorSpec.HttpStatus = ErrorSpec.HttpStatus.INTERNAL_SERVER_ERROR
-    }
-
-    companion object {
-        context(rc: Raise<RestClientErrorSpec>)
-        fun RestClientErrorSpec.raise(): Nothing = rc.raise(this)
     }
 }

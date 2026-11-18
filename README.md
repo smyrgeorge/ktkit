@@ -40,6 +40,7 @@ A comprehensive Kotlin multiplatform toolkit for building server applications wi
     - [Database support (sqlx4k)](#database-support-sqlx4k)
     - [Queue support (PGMQ)](#queue-support-pgmq)
     - [OpenAPI generation (ktkit-compiler-openapi)](#openapi-generation-ktkit-compiler-openapi)
+    - [HTTP client (ktkit-ktor-httpclient)](#http-client-ktkit-ktor-httpclient)
 - [Example](#example)
 - [Building & Development](#building--development)
     - [Build](#build)
@@ -358,6 +359,56 @@ the merged OpenAPI 3.1 document at `GET /api/docs/openapi.json`.
 
 - What the plugin provides (analysis rules, `@OpenApi` metadata, configuration, limitations):
   [ktkit-compiler-openapi](ktkit-compiler-openapi/README.md)
+
+### HTTP client (ktkit-ktor-httpclient)
+
+A REST client on the Ktor client, for every KMP target. Every call works in `Raise` of your own error type, so a
+failed call raises a typed error instead of throwing.
+
+- `TypedRestClient<E>` sends the request and decodes the body. Its verbs are `get`, `post`, `put`, `patch`, `delete`,
+  `head`, `options`, `postMultipart`, `postForm`, and the general `request(method, uri)`. Each one takes a `builder`
+  for headers, query parameters and anything else on the request.
+- `RestErrorMapper<E, P>` maps each failure to `E`: a non-2xx body decoded as the payload `P`, an optional fixed
+  error for a `401`, a request that could not be sent, and a body that could not be decoded.
+- `HttpClientFactory.create(...)` builds the `HttpClient`: timeouts, a connection pool, optional logging, the codec
+  (`negotiation`, kotlinx JSON by default) and a `configure` block for any other plugin.
+- `RestClient`, `BearerRestClient` and `XRealNameRestClient` are ready-made clients for ktkit services. They fail
+  with `RestClientErrorSpec` and read error bodies as `ApiError`. The last two add a token-first (or `Principal`-first)
+  form of each verb that sets the `Authorization: Bearer` (or `x-real-name`) header. In any `builder`, Ktor's
+  `bearerAuth(token)` and ktkit's `xRealName(principal)` set the same headers.
+
+Call another ktkit service:
+
+```kotlin
+val users = BearerRestClient(baseUrl = "https://users.internal/api/v1")
+
+context(_: Raise<RestClientErrorSpec>)
+suspend fun user(token: String, id: Uuid): User = users.get<User>(token, "/users/$id")
+```
+
+Call a third-party API with your own error type:
+
+```kotlin
+sealed interface PaymentsError : ErrorSpec { /* Api, Unauthorized, Network, Parse */ }
+
+val mapper = RestErrorMapper.of<PaymentsError, ProviderError>(
+    unauthorized = PaymentsError.Unauthorized,          // optional: raised on a 401 without reading the body
+    apiError = { body, status -> PaymentsError.Api(body, status) },
+    networkError = { PaymentsError.Network(it) },
+    parseError = { PaymentsError.Parse(it) },
+)
+
+val payments = TypedRestClient(
+    client = HttpClientFactory.create(negotiation = { json(providerJson) }) {
+        install(Auth) { /* ... */ }                     // any other Ktor plugin
+    },
+    baseUrl = "https://api.provider.com/v2",
+    mapper = mapper,
+)
+
+context(_: Raise<PaymentsError>)
+suspend fun charge(request: ChargeRequest): Charge = payments.post<Charge, ChargeRequest>("/charges", request)
+```
 
 ## Example
 
